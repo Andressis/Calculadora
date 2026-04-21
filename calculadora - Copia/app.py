@@ -6,10 +6,12 @@ from bson import ObjectId
 from formulas import *
 
 app = Flask(__name__)
-app.secret_key = 'calculadora_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'calculadora_secret_key_2024')
 bcrypt = Bcrypt(app)
 
-MONGO_URI = "mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0"
+import os
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0")
+SECRET_KEY = os.environ.get("SECRET_KEY", "calculadora_secret_key_2024")
 client    = MongoClient(MONGO_URI)
 db        = client['calculadora']
 usuarios  = db['usuarios']
