@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Inteligente Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div id="modal-auth" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+        <button class="modal-close" onclick="fecharModal()">✕</button>
+        <div class="modal-tabs">
+            <button id="tab-login"    class="tab-btn active" onclick="trocarTab('login')">Entrar</button>
+            <button id="tab-cadastro" class="tab-btn"        onclick="trocarTab('cadastro')">Cadastrar</button>
+        </div>
+        <div id="form-login" class="modal-form active">
+            <h2>Bem-vindo de volta!</h2>
+            <input id="login-email" type="email"    placeholder="E-mail">
+            <input id="login-senha" type="password" placeholder="Senha">
+            <button onclick="fazerLogin()">Entrar</button>
+            <p id="login-erro" class="auth-erro"></p>
+        </div>
+        <div id="form-cadastro" class="modal-form">
+            <h2>Criar conta</h2>
+            <input id="cad-nome"  type="text"     placeholder="Nome">
+            <input id="cad-email" type="email"    placeholder="E-mail">
+            <input id="cad-senha" type="password" placeholder="Senha (mín. 6 caracteres)">
+            <button onclick="fazerCadastro()">Criar conta</button>
+            <p id="cad-erro" class="auth-erro"></p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="header">
+        <h1>📚 Calculadora Inteligente</h1>
+        <div id="auth-area">
+            <button class="btn-auth" onclick="abrirModal()">Entrar</button>
+        </div>
+    </div>
+
+    <div class="controles-topo">
+        <select id="sel-categoria" onchange="trocarCategoria(this.value)">
+            <option value="">Categoria</option>
+            <option value="matematica">📘 Matemática</option>
+            <option value="fisica">⚙️ Física</option>
+            <option value="financeiro">💰 Financeiro</option>
+        </select>
+        <select id="sel-formula" onchange="trocarFormula(this.value)" disabled>
+            <option value="">Fórmula</option>
+        </select>
+        <button class="btn-limpar" onclick="limparTudo()">🧹</button>
+    </div>
+
+    <div id="formula" class="math-display"></div>
+    <div id="explicacao" class="explicacao"></div>
+
+    <div id="calc_basica" class="form form-basica">
+        <div class="basica-display" id="basica-display">0</div>
+        <div class="basica-inputs">
+            <input id="bas_a" type="number" placeholder="Número A">
+            <input id="bas_b" type="number" placeholder="Número B">
+        </div>
+        <div class="basica-btns">
+            <button class="bas-op" onclick="calcBasica('adicao')">+</button>
+            <button class="bas-op" onclick="calcBasica('subtracao')">−</button>
+            <button class="bas-op" onclick="calcBasica('multiplicacao')">×</button>
+            <button class="bas-op" onclick="calcBasica('divisao')">÷</button>
+        </div>
+        <button onclick="calc('calc_basica')">Calcular Tudo</button>
+    </div>
+
+    <div id="funcao_1grau" class="form">
+        <div class="grid-inputs">
+            <input id="f1_a" type="number" placeholder="Coef. a (inclinação)">
+            <input id="f1_b" type="number" placeholder="Coef. b (intercepto)">
+            <input id="f1_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('funcao_1grau')">Calcular</button>
+    </div>
+
+    <div id="funcao_2grau" class="form">
+        <div class="grid-inputs">
+            <input id="f2_a" type="number" placeholder="Coef. a">
+            <input id="f2_b" type="number" placeholder="Coef. b">
+            <input id="f2_c" type="number" placeholder="Coef. c">
+            <input id="f2_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('funcao_2grau')">Calcular</button>
+    </div>
+
+    <div id="funcao_exponencial" class="form">
+        <div class="grid-inputs">
+            <input id="fe_a" type="number" placeholder="Base a (ex: 2)">
+            <input id="fe_b" type="number" placeholder="Coef. b (ex: 1)">
+            <input id="fe_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('funcao_exponencial')">Calcular</button>
+    </div>
+
+    <div id="funcao_logaritmica" class="form">
+        <div class="grid-inputs">
+            <input id="fl_base" type="number" placeholder="Base do logaritmo (ex: 10)">
+            <input id="fl_x"    type="number" placeholder="Calcular log(x) para x= (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('funcao_logaritmica')">Calcular</button>
+    </div>
+
+    <div id="area_quadrado" class="form">
+        <div class="grid-inputs">
+            <input id="aq_lado" type="number" placeholder="Lado">
+        </div>
+        <button onclick="calc('area_quadrado')">Calcular</button>
+    </div>
+
+    <div id="area_retangulo" class="form">
+        <div class="grid-inputs">
+            <input id="ar_base"   type="number" placeholder="Base">
+            <input id="ar_altura" type="number" placeholder="Altura">
+        </div>
+        <button onclick="calc('area_retangulo')">Calcular</button>
+    </div>
+
+    <div id="area_triangulo" class="form">
+        <div class="grid-inputs">
+            <input id="at_base"   type="number" placeholder="Base">
+            <input id="at_altura" type="number" placeholder="Altura">
+        </div>
+        <button onclick="calc('area_triangulo')">Calcular</button>
+    </div>
+
+    <div id="area_circulo" class="form">
+        <div class="grid-inputs">
+            <input id="ac_raio" type="number" placeholder="Raio">
+        </div>
+        <button onclick="calc('area_circulo')">Calcular</button>
+    </div>
+
+    <div id="volume_cilindro" class="form">
+        <div class="grid-inputs">
+            <input id="vc_raio"   type="number" placeholder="Raio">
+            <input id="vc_altura" type="number" placeholder="Altura">
+        </div>
+        <button onclick="calc('volume_cilindro')">Calcular</button>
+    </div>
+
+    <div id="volume_esfera" class="form">
+        <div class="grid-inputs">
+            <input id="ve_raio" type="number" placeholder="Raio">
+        </div>
+        <button onclick="calc('volume_esfera')">Calcular</button>
+    </div>
+
+    <div id="pitagoras" class="form">
+        <div class="grid-inputs">
+            <input id="pit_a" type="number" placeholder="Cateto a (deixe vazio para calcular)">
+            <input id="pit_b" type="number" placeholder="Cateto b (deixe vazio para calcular)">
+            <input id="pit_c" type="number" placeholder="Hipotenusa c (deixe vazio para calcular)">
+        </div>
+        <button onclick="calc('pitagoras')">Calcular</button>
+    </div>
+
+    <div id="pa" class="form">
+        <div class="grid-inputs">
+            <input id="pa_a1" type="number" placeholder="Primeiro Termo (a1)">
+            <input id="pa_r"  type="number" placeholder="Razão (r)">
+            <input id="pa_n"  type="number" placeholder="Posição (n)" min="1">
+            <input id="pa_te" type="number" placeholder="Ver termo específico (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('pa')">Calcular</button>
+    </div>
+
+    <div id="pg" class="form">
+        <div class="grid-inputs">
+            <input id="pg_a1" type="number" placeholder="Primeiro Termo (a1)">
+            <input id="pg_q"  type="number" placeholder="Razão (q)">
+            <input id="pg_n"  type="number" placeholder="Posição (n)" min="1">
+            <input id="pg_te" type="number" placeholder="Ver termo específico (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('pg')">Calcular</button>
+    </div>
+
+    <div id="trigonometria" class="form">
+        <div class="grid-inputs">
+            <input id="trig_angulo" type="number" placeholder="Ângulo em graus">
+        </div>
+        <button onclick="calc('trigonometria')">Calcular</button>
+    </div>
+
+    <div id="media_aritmetica" class="form">
+        <div class="grid-inputs">
+            <input id="ma_valores" type="text" placeholder="Valores separados por vírgula (ex: 5, 7, 9)">
+        </div>
+        <button onclick="calc('media_aritmetica')">Calcular</button>
+    </div>
+
+    <div id="media_ponderada" class="form">
+        <div class="grid-inputs">
+            <input id="mp_valores" type="text" placeholder="Valores separados por vírgula (ex: 8, 6, 9)">
+            <input id="mp_pesos"   type="text" placeholder="Pesos separados por vírgula (ex: 2, 3, 5)">
+        </div>
+        <button onclick="calc('media_ponderada')">Calcular</button>
+    </div>
+
+    <div id="probabilidade_simples" class="form">
+        <div class="grid-inputs">
+            <input id="ps_fav" type="number" placeholder="Casos favoráveis">
+            <input id="ps_pos" type="number" placeholder="Total de casos possíveis">
+        </div>
+        <button onclick="calc('probabilidade_simples')">Calcular</button>
+    </div>
+
+    <div id="probabilidade_composta" class="form">
+        <div class="grid-inputs">
+            <input id="pc_pa" type="number" placeholder="P(A) — ex: 0.3">
+            <input id="pc_pb" type="number" placeholder="P(B) — ex: 0.5">
+        </div>
+        <button onclick="calc('probabilidade_composta')">Calcular</button>
+    </div>
+
+    <div id="velocidade_media" class="form">
+        <div class="grid-inputs">
+            <input id="vm_ds" type="number" placeholder="Deslocamento Δs (m)">
+            <input id="vm_dt" type="number" placeholder="Tempo Δt (s)">
+        </div>
+        <button onclick="calc('velocidade_media')">Calcular</button>
+    </div>
+
+    <div id="movimento_uniforme" class="form">
+        <div class="grid-inputs">
+            <input id="mu_s0" type="number" placeholder="Posição inicial s0 (m)">
+            <input id="mu_v"  type="number" placeholder="Velocidade v (m/s)">
+            <input id="mu_t"  type="number" placeholder="Tempo final t (s)">
+        </div>
+        <button onclick="calc('movimento_uniforme')">Calcular</button>
+    </div>
+
+    <div id="muv" class="form">
+        <div class="grid-inputs">
+            <input id="muv_s0" type="number" placeholder="Posição inicial s0 (m)">
+            <input id="muv_v0" type="number" placeholder="Velocidade inicial v0 (m/s)">
+            <input id="muv_a"  type="number" placeholder="Aceleração a (m/s²)">
+            <input id="muv_t"  type="number" placeholder="Tempo t (s)">
+        </div>
+        <button onclick="calc('muv')">Calcular</button>
+    </div>
+
+    <div id="torricelli" class="form">
+        <div class="grid-inputs">
+            <input id="tor_v0" type="number" placeholder="Velocidade Inicial v0 (m/s)">
+            <input id="tor_a"  type="number" placeholder="Aceleração a (m/s²)">
+            <input id="tor_ds" type="number" placeholder="Deslocamento Δs (m)">
+        </div>
+        <button onclick="calc('torricelli')">Calcular</button>
+    </div>
+
+    <div id="segunda_lei_newton" class="form">
+        <div class="grid-inputs">
+            <input id="sln_m" type="number" placeholder="Massa m (kg)">
+            <input id="sln_a" type="number" placeholder="Aceleração a (m/s²)">
+        </div>
+        <button onclick="calc('segunda_lei_newton')">Calcular</button>
+    </div>
+
+    <div id="peso" class="form">
+        <div class="grid-inputs">
+            <input id="pe_m" type="number" placeholder="Massa m (kg)">
+            <input id="pe_g" type="number" placeholder="g (m/s²) — padrão 9.8 (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('peso')">Calcular</button>
+    </div>
+
+    <div id="forca_atrito" class="form">
+        <div class="grid-inputs">
+            <input id="fa_mi"     type="number" placeholder="Coef. de atrito μ">
+            <input id="fa_normal" type="number" placeholder="Força normal N (N)">
+        </div>
+        <button onclick="calc('forca_atrito')">Calcular</button>
+    </div>
+
+    <div id="trabalho" class="form">
+        <div class="grid-inputs">
+            <input id="tr_F"    type="number" placeholder="Força F (N)">
+            <input id="tr_dist" type="number" placeholder="Distância d (m)">
+            <input id="tr_ang"  type="number" placeholder="Ângulo θ° (padrão 0°, opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('trabalho')">Calcular</button>
+    </div>
+
+    <div id="energia_cinetica" class="form">
+        <div class="grid-inputs">
+            <input id="ec_m" type="number" placeholder="Massa m (kg)">
+            <input id="ec_v" type="number" placeholder="Velocidade v (m/s)">
+        </div>
+        <button onclick="calc('energia_cinetica')">Calcular</button>
+    </div>
+
+    <div id="energia_potencial" class="form">
+        <div class="grid-inputs">
+            <input id="ep_m" type="number" placeholder="Massa m (kg)">
+            <input id="ep_h" type="number" placeholder="Altura h (m)">
+            <input id="ep_g" type="number" placeholder="g (m/s²) — padrão 9.8 (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('energia_potencial')">Calcular</button>
+    </div>
+
+    <div id="conservacao_energia" class="form">
+        <div class="grid-inputs">
+            <input id="ce_m"  type="number" placeholder="Massa m (kg)">
+            <input id="ce_h"  type="number" placeholder="Altura h (m)">
+            <input id="ce_v0" type="number" placeholder="Vel. inicial v0 (m/s) — padrão 0 (opcional)" class="input-opcional">
+        </div>
+        <button onclick="calc('conservacao_energia')">Calcular</button>
+    </div>
+
+    <div id="lei_ohm" class="form">
+        <div class="grid-inputs">
+            <input id="ohm_V" type="number" placeholder="Tensão V (V) — deixe vazio para calcular">
+            <input id="ohm_I" type="number" placeholder="Corrente I (A) — deixe vazio para calcular">
+            <input id="ohm_R" type="number" placeholder="Resistência R (Ω) — deixe vazio para calcular">
+        </div>
+        <button onclick="calc('lei_ohm')">Calcular</button>
+    </div>
+
+    <div id="potencia_eletrica" class="form">
+        <div class="grid-inputs">
+            <input id="pot_V" type="number" placeholder="Tensão V (V) — informe 2 dos 3">
+            <input id="pot_I" type="number" placeholder="Corrente I (A)">
+            <input id="pot_R" type="number" placeholder="Resistência R (Ω)">
+        </div>
+        <button onclick="calc('potencia_eletrica')">Calcular</button>
+    </div>
+
+    <div id="resistores_serie" class="form">
+        <div class="grid-inputs">
+            <input id="rs_res" type="text" placeholder="Resistências separadas por vírgula (ex: 10, 20, 30)">
+        </div>
+        <button onclick="calc('resistores_serie')">Calcular</button>
+    </div>
+
+    <div id="resistores_paralelo" class="form">
+        <div class="grid-inputs">
+            <input id="rp_res" type="text" placeholder="Resistências separadas por vírgula (ex: 10, 20, 30)">
+        </div>
+        <button onclick="calc('resistores_paralelo')">Calcular</button>
+    </div>
+
+    <div id="calor_sensivel" class="form">
+        <div class="grid-inputs">
+            <input id="cs_m"  type="number" placeholder="Massa m (kg)">
+            <input id="cs_c"  type="number" placeholder="Calor específico c (J/kg·°C)">
+            <input id="cs_dT" type="number" placeholder="Variação de temp. ΔT (°C)">
+        </div>
+        <button onclick="calc('calor_sensivel')">Calcular</button>
+    </div>
+
+    <div id="calor_latente" class="form">
+        <div class="grid-inputs">
+            <input id="cl_m" type="number" placeholder="Massa m (kg)">
+            <input id="cl_L" type="number" placeholder="Calor latente L (J/kg)">
+        </div>
+        <button onclick="calc('calor_latente')">Calcular</button>
+    </div>
+
+    <div id="dilatacao_termica" class="form">
+        <div class="grid-inputs">
+            <input id="dt_L0"    type="number" placeholder="Comprimento inicial L0 (m)">
+            <input id="dt_alpha" type="number" placeholder="Coef. dilatação α (ex: 0.000012)">
+            <input id="dt_dT"    type="number" placeholder="Variação de temp. ΔT (°C)">
+        </div>
+        <button onclick="calc('dilatacao_termica')">Calcular</button>
+    </div>
+
+    <div id="velocidade_onda" class="form">
+        <div class="grid-inputs">
+            <input id="vo_f"   type="number" placeholder="Frequência f (Hz)">
+            <input id="vo_lam" type="number" placeholder="Comprimento de onda λ (m)">
+        </div>
+        <button onclick="calc('velocidade_onda')">Calcular</button>
+    </div>
+
+    <div id="equacao_ondulatoria" class="form">
+        <div class="grid-inputs">
+            <input id="eo_v"   type="number" placeholder="Velocidade v (m/s)">
+            <input id="eo_f"   type="number" placeholder="Frequência f (Hz) — deixe vazio para calcular">
+            <input id="eo_lam" type="number" placeholder="Comprimento λ (m) — deixe vazio para calcular">
+        </div>
+        <button onclick="calc('equacao_ondulatoria')">Calcular</button>
+    </div>
+
+    <div id="refracao_snell" class="form">
+        <div class="grid-inputs">
+            <input id="sn_n1"  type="number" placeholder="Índice de refração n1">
+            <input id="sn_ang" type="number" placeholder="Ângulo de incidência θ1 (graus)">
+            <input id="sn_n2"  type="number" placeholder="Índice de refração n2">
+        </div>
+        <button onclick="calc('refracao_snell')">Calcular</button>
+    </div>
+
+    <div id="juros_simples" class="form">
+        <div class="grid-inputs">
+            <input id="js_C" type="number" placeholder="Capital C (R$)">
+            <input id="js_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="js_t" type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('juros_simples')">Calcular</button>
+    </div>
+
+    <div id="juros_compostos" class="form">
+        <div class="grid-inputs">
+            <input id="jc_C" type="number" placeholder="Capital C (R$)">
+            <input id="jc_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="jc_t" type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('juros_compostos')">Calcular</button>
+    </div>
+
+    <div id="desconto_simples" class="form">
+        <div class="grid-inputs">
+            <input id="ds_N" type="number" placeholder="Valor nominal N (R$)">
+            <input id="ds_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="ds_t" type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('desconto_simples')">Calcular</button>
+    </div>
+
+    <div id="desconto_composto" class="form">
+        <div class="grid-inputs">
+            <input id="dc_N" type="number" placeholder="Valor nominal N (R$)">
+            <input id="dc_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="dc_t" type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('desconto_composto')">Calcular</button>
+    </div>
+
+    <div id="valor_presente" class="form">
+        <div class="grid-inputs">
+            <input id="vp_VF" type="number" placeholder="Valor Futuro VF (R$)">
+            <input id="vp_i"  type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="vp_t"  type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('valor_presente')">Calcular</button>
+    </div>
+
+    <div id="valor_futuro" class="form">
+        <div class="grid-inputs">
+            <input id="vf_VP" type="number" placeholder="Valor Presente VP (R$)">
+            <input id="vf_i"  type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
+            <input id="vf_t"  type="number" placeholder="Tempo t (períodos)">
+        </div>
+        <button onclick="calc('valor_futuro')">Calcular</button>
+    </div>
+
+    <div id="amortizacao_price" class="form">
+        <div class="grid-inputs">
+            <input id="ap_PV" type="number" placeholder="Valor do empréstimo PV (R$)">
+            <input id="ap_i"  type="number" placeholder="Taxa mensal i (ex: 0.02 = 2%)">
+            <input id="ap_n"  type="number" placeholder="Nº de parcelas n">
+        </div>
+        <button onclick="calc('amortizacao_price')">Calcular</button>
+    </div>
+
+    <div id="regra_72" class="form">
+        <div class="grid-inputs">
+            <input id="r72_i" type="number" placeholder="Taxa anual i (ex: 6 = 6%)">
+        </div>
+        <button onclick="calc('regra_72')">Calcular</button>
+    </div>
+
+    <div id="resultado" class="resultado-box"></div>
+
+    <div class="visualizacao">
+        <canvas id="grafico"></canvas>
+    </div>
+
+    <div id="secao-historico" class="historico-secao" style="display:none">
+        <div class="historico-header">
+            <h3>🕘 Histórico</h3>
+            <button class="btn-limpar-hist" onclick="limparHistorico()">🗑 Limpar tudo</button>
+        </div>
+        <div id="historico-lista" class="historico-lista">
+            <p class="hist-vazio">Nenhum cálculo registrado ainda.</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
