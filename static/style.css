@@ -524,6 +524,7 @@ canvas.visivel {
     letter-spacing: 0;
     font-weight: 600;
     transition: all 0.2s;
+    border: 1px solid transparent;
 }
 
 .tab-btn.active {
