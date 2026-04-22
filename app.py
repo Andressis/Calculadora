@@ -10,13 +10,19 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'calculadora_secret_key_2024')
 bcrypt = Bcrypt(app)
 
-import os
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0")
-SECRET_KEY = os.environ.get("SECRET_KEY", "calculadora_secret_key_2024")
 client    = MongoClient(MONGO_URI)
 db        = client['calculadora']
 usuarios  = db['usuarios']
 historico = db['historico']
+
+
+def criar_admin():
+    if not usuarios.find_one({"email": "admin"}):
+        hash_senha = bcrypt.generate_password_hash("admin").decode('utf-8')
+        usuarios.insert_one({"nome": "Admin", "email": "admin", "senha": hash_senha})
+
+criar_admin()
 
 
 @app.route('/cadastro', methods=['POST'])
