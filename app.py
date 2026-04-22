@@ -1,28 +1,55 @@
 import os
+import random
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, render_template, session
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
-from datetime import datetime
 from bson import ObjectId
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from formulas import *
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'calculadora_secret_key_2024')
 bcrypt = Bcrypt(app)
 
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0")
+MONGO_URI      = os.environ.get('MONGO_URI',       'mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0')
+SENDGRID_KEY   = os.environ.get('SENDGRID_KEY',    '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')
+EMAIL_REMETENTE = os.environ.get('EMAIL_REMETENTE', 'andrevtrassis@gmail.com')
+
 client    = MongoClient(MONGO_URI)
 db        = client['calculadora']
 usuarios  = db['usuarios']
 historico = db['historico']
+codigos   = db['codigos_verificacao']
 
 
 def criar_admin():
     if not usuarios.find_one({"email": "admin"}):
         hash_senha = bcrypt.generate_password_hash("admin").decode('utf-8')
-        usuarios.insert_one({"nome": "Admin", "email": "admin", "senha": hash_senha})
+        usuarios.insert_one({"nome": "Admin", "email": "admin", "senha": hash_senha, "verificado": True})
 
 criar_admin()
+
+
+def enviar_codigo(email, codigo):
+    mensagem = Mail(
+        from_email=EMAIL_REMETENTE,
+        to_emails=email,
+        subject='Código de verificação — Calculadora Inteligente',
+        html_content=f'''
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;background:#0f172a;padding:32px;border-radius:16px;">
+            <h2 style="color:#38bdf8;margin-bottom:8px;">📚 Calculadora Inteligente</h2>
+            <p style="color:#cbd5e1;font-size:15px;">Seu código de verificação é:</p>
+            <div style="background:#020617;border:2px solid #38bdf8;border-radius:12px;padding:20px;text-align:center;margin:20px 0;">
+                <span style="font-size:36px;font-weight:800;letter-spacing:10px;color:#38bdf8;font-family:monospace;">{codigo}</span>
+            </div>
+            <p style="color:#64748b;font-size:13px;">Este código expira em 10 minutos. Se você não solicitou isso, ignore este e-mail.</p>
+        </div>
+        '''
+    )
+    sg = SendGridAPIClient(SENDGRID_KEY)
+    sg.send(mensagem)
 
 
 @app.route('/cadastro', methods=['POST'])
@@ -39,8 +66,76 @@ def cadastro():
     if usuarios.find_one({"email": email}):
         return jsonify({"erro": "E-mail já cadastrado."}), 400
 
+    codigo  = str(random.randint(100000, 999999))
+    expira  = datetime.utcnow() + timedelta(minutes=10)
     hash_senha = bcrypt.generate_password_hash(senha).decode('utf-8')
-    usuarios.insert_one({"nome": nome, "email": email, "senha": hash_senha})
+
+    codigos.delete_many({"email": email})
+    codigos.insert_one({
+        "email":  email,
+        "nome":   nome,
+        "senha":  hash_senha,
+        "codigo": codigo,
+        "expira": expira
+    })
+
+    try:
+        enviar_codigo(email, codigo)
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao enviar e-mail: {str(e)}"}), 500
+
+    return jsonify({"ok": True, "aguardando_codigo": True})
+
+
+@app.route('/verificar_codigo', methods=['POST'])
+def verificar_codigo():
+    data   = request.json
+    email  = data.get('email', '').strip().lower()
+    codigo = data.get('codigo', '').strip()
+
+    registro = codigos.find_one({"email": email})
+
+    if not registro:
+        return jsonify({"erro": "Nenhum código pendente para este e-mail."}), 400
+    if datetime.utcnow() > registro['expira']:
+        codigos.delete_one({"email": email})
+        return jsonify({"erro": "Código expirado. Faça o cadastro novamente."}), 400
+    if registro['codigo'] != codigo:
+        return jsonify({"erro": "Código incorreto."}), 400
+
+    usuarios.insert_one({
+        "nome":       registro['nome'],
+        "email":      registro['email'],
+        "senha":      registro['senha'],
+        "verificado": True
+    })
+    codigos.delete_one({"email": email})
+
+    usuario = usuarios.find_one({"email": email})
+    session['usuario_id']   = str(usuario['_id'])
+    session['usuario_nome'] = usuario['nome']
+
+    return jsonify({"ok": True, "nome": usuario['nome']})
+
+
+@app.route('/reenviar_codigo', methods=['POST'])
+def reenviar_codigo():
+    data  = request.json
+    email = data.get('email', '').strip().lower()
+
+    registro = codigos.find_one({"email": email})
+    if not registro:
+        return jsonify({"erro": "Nenhum cadastro pendente para este e-mail."}), 400
+
+    codigo = str(random.randint(100000, 999999))
+    expira = datetime.utcnow() + timedelta(minutes=10)
+    codigos.update_one({"email": email}, {"$set": {"codigo": codigo, "expira": expira}})
+
+    try:
+        enviar_codigo(email, codigo)
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao reenviar: {str(e)}"}), 500
+
     return jsonify({"ok": True})
 
 
@@ -142,7 +237,7 @@ def calc(tipo):
     try:
         if tipo == 'calc_basica':
             req('a', 'b')
-            res    = calc_basica(f('a'), f('b'))
+            res     = calc_basica(f('a'), f('b'))
             entrada = {'a': d['a'], 'b': d['b']}
 
         elif tipo == 'funcao_1grau':

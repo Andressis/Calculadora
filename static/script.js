@@ -457,10 +457,37 @@ async function fazerCadastro() {
     if (!nome||!email||!senha) { erro.textContent='Preencha todos os campos.'; return; }
     const json = await fetch('/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,senha})}).then(r=>r.json());
     if (json.erro) { erro.textContent=json.erro; return; }
-    document.getElementById('login-email').value = email;
-    document.getElementById('login-senha').value = senha;
-    trocarTab('login');
-    await fazerLogin();
+    if (json.aguardando_codigo) {
+        window._emailVerificacao = email;
+        mostrarFormVerificacao(email);
+    }
+}
+
+function mostrarFormVerificacao(email) {
+    document.getElementById('form-cadastro').classList.remove('active');
+    document.getElementById('form-verificacao').classList.add('active');
+    document.getElementById('tab-cadastro').classList.remove('active');
+    document.getElementById('ver-email-hint').textContent = email;
+}
+
+async function verificarCodigo() {
+    const codigo = document.getElementById('ver-codigo').value.trim();
+    const erro   = document.getElementById('ver-erro');
+    if (!codigo) { erro.textContent = 'Digite o código.'; return; }
+    const json = await fetch('/verificar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email: window._emailVerificacao, codigo})}).then(r=>r.json());
+    if (json.erro) { erro.textContent = json.erro; return; }
+    fecharModal();
+    atualizarAuthUI(json.nome);
+    carregarHistorico();
+}
+
+async function reenviarCodigo() {
+    const erro = document.getElementById('ver-erro');
+    const json = await fetch('/reenviar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email: window._emailVerificacao})}).then(r=>r.json());
+    if (json.erro) { erro.textContent = json.erro; return; }
+    erro.style.color = '#22c55e';
+    erro.textContent = 'Código reenviado!';
+    setTimeout(() => { erro.textContent = ''; erro.style.color = '#f87171'; }, 3000);
 }
 async function fazerLogout() {
     await fetch('/logout',{method:'POST'});

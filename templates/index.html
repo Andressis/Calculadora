@@ -32,6 +32,15 @@
             <button onclick="fazerCadastro()">Criar conta</button>
             <p id="cad-erro" class="auth-erro"></p>
         </div>
+
+        <div id="form-verificacao" class="modal-form">
+            <h2>Verificar e-mail</h2>
+            <p class="ver-hint">Enviamos um código de 6 dígitos para<br><strong id="ver-email-hint"></strong></p>
+            <input id="ver-codigo" type="text" placeholder="Digite o código" maxlength="6" style="text-align:center;letter-spacing:8px;font-size:22px;">
+            <button onclick="verificarCodigo()">Confirmar</button>
+            <p id="ver-erro" class="auth-erro"></p>
+            <button class="btn-reenviar" onclick="reenviarCodigo()">Reenviar código</button>
+        </div>
     </div>
 </div>
 

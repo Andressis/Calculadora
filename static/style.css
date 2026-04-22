@@ -863,3 +863,35 @@ select:disabled {
     transform: translateY(0);
     background: rgba(56,189,248,0.35);
 }
+
+.ver-hint {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.ver-hint strong {
+    color: #38bdf8;
+}
+
+.btn-reenviar {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    background: transparent;
+    color: #64748b;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+}
+
+.btn-reenviar:hover {
+    color: #94a3b8;
+    background: rgba(255,255,255,0.05);
+    transform: none;
+    filter: none;
+}
