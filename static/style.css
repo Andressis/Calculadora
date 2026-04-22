@@ -145,7 +145,7 @@ button {
     overflow: hidden;
 }
 
-button:not(.btn-limpar) {
+button:not(.btn-limpar):not(.tab-btn) {
     background: linear-gradient(135deg, #22c55e, #10b981);
     color: white;
 }
