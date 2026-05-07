@@ -19,6 +19,11 @@ db        = client['calculadora']
 usuarios  = db['usuarios']
 historico = db['historico']
 
+@app.route('/ads.txt')
+def ads_txt():
+    return "google.com, pub-5366946523055708, DIRECT, f08c47fec0942fa0", 200, {
+        'Content-Type': 'text/plain'
+    }
 
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
