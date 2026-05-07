@@ -4,12 +4,16 @@ from pymongo import MongoClient
 from datetime import datetime
 from bson import ObjectId
 from formulas import *
+import os
+from dotenv import load_dotenv
 
-app = Flask(__name__)
-app.secret_key = 'calculadora_secret_key_2024'
+load_dotenv()
+
+app = Flask(__name__)          
+app.secret_key = os.getenv("SECRET_KEY")
 bcrypt = Bcrypt(app)
 
-MONGO_URI = "mongodb+srv://Andre:Andre123@cluster0.ox6wtsx.mongodb.net/?appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI")
 client    = MongoClient(MONGO_URI)
 db        = client['calculadora']
 usuarios  = db['usuarios']
