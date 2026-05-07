@@ -21,3 +21,4 @@ scipy==1.17.1
 six==1.17.0
 tqdm==4.67.3
 Werkzeug==3.1.8
+python-dotenv==1.1.0
