@@ -2,58 +2,58 @@ let chart = null;
 
 const categorias = {
     matematica: [
-        { id: "calc_basica",           label: "Calculadora Básica" },
-        { id: "funcao_1grau",          label: "Função do 1º grau" },
-        { id: "funcao_2grau",          label: "Função do 2º grau (Bhaskara)" },
-        { id: "funcao_exponencial",    label: "Função Exponencial" },
-        { id: "funcao_logaritmica",    label: "Função Logarítmica" },
-        { id: "area_quadrado",         label: "Área do Quadrado" },
-        { id: "area_retangulo",        label: "Área do Retângulo" },
-        { id: "area_triangulo",        label: "Área do Triângulo" },
-        { id: "area_circulo",          label: "Área do Círculo" },
-        { id: "volume_cilindro",       label: "Volume do Cilindro" },
-        { id: "volume_esfera",         label: "Volume da Esfera" },
-        { id: "pitagoras",             label: "Teorema de Pitágoras" },
-        { id: "pa",                    label: "Progressão Aritmética (PA)" },
-        { id: "pg",                    label: "Progressão Geométrica (PG)" },
-        { id: "trigonometria",         label: "Trigonometria" },
-        { id: "media_aritmetica",      label: "Média Aritmética" },
-        { id: "media_ponderada",       label: "Média Ponderada" },
-        { id: "probabilidade_simples", label: "Probabilidade Simples" },
-        { id: "probabilidade_composta",label: "Probabilidade Composta" },
+        { id: "calc_basica",           label: "🔢 Calculadora Básica" },
+        { id: "funcao_1grau",          label: "📈 Função do 1º grau" },
+        { id: "funcao_2grau",          label: "📈 Função do 2º grau (Bhaskara)" },
+        { id: "funcao_exponencial",    label: "📈 Função Exponencial" },
+        { id: "funcao_logaritmica",    label: "📈 Função Logarítmica" },
+        { id: "area_quadrado",         label: "📐 Área do Quadrado" },
+        { id: "area_retangulo",        label: "📐 Área do Retângulo" },
+        { id: "area_triangulo",        label: "📐 Área do Triângulo" },
+        { id: "area_circulo",          label: "📐 Área do Círculo" },
+        { id: "volume_cilindro",       label: "📐 Volume do Cilindro" },
+        { id: "volume_esfera",         label: "📐 Volume da Esfera" },
+        { id: "pitagoras",             label: "📐 Teorema de Pitágoras" },
+        { id: "pa",                    label: "📊 Progressão Aritmética (PA)" },
+        { id: "pg",                    label: "📊 Progressão Geométrica (PG)" },
+        { id: "trigonometria",         label: "📐 Trigonometria" },
+        { id: "media_aritmetica",      label: "🧮 Média Aritmética" },
+        { id: "media_ponderada",       label: "🧮 Média Ponderada" },
+        { id: "probabilidade_simples", label: "🧮 Probabilidade Simples" },
+        { id: "probabilidade_composta",label: "🧮 Probabilidade Composta" },
     ],
     fisica: [
-        { id: "velocidade_media",      label: "Velocidade Média" },
-        { id: "movimento_uniforme",    label: "Movimento Uniforme (MU)" },
-        { id: "muv",                   label: "Movimento Unif. Variado (MUV)" },
-        { id: "torricelli",            label: "Equação de Torricelli" },
-        { id: "segunda_lei_newton",    label: "2ª Lei de Newton (F=ma)" },
-        { id: "peso",                  label: "Peso" },
-        { id: "forca_atrito",          label: "Força de Atrito" },
-        { id: "trabalho",              label: "Trabalho de uma Força" },
-        { id: "energia_cinetica",      label: "Energia Cinética" },
-        { id: "energia_potencial",     label: "Energia Potencial" },
-        { id: "conservacao_energia",   label: "Conservação de Energia" },
-        { id: "lei_ohm",               label: "Lei de Ohm" },
-        { id: "potencia_eletrica",     label: "Potência Elétrica" },
-        { id: "resistores_serie",      label: "Resistores em Série" },
-        { id: "resistores_paralelo",   label: "Resistores em Paralelo" },
-        { id: "calor_sensivel",        label: "Calor Sensível" },
-        { id: "calor_latente",         label: "Calor Latente" },
-        { id: "dilatacao_termica",     label: "Dilatação Térmica" },
-        { id: "velocidade_onda",       label: "Velocidade da Onda" },
-        { id: "equacao_ondulatoria",   label: "Equação Ondulatória" },
-        { id: "refracao_snell",        label: "Refração (Lei de Snell)" },
+        { id: "velocidade_media",      label: "🚗 Velocidade Média" },
+        { id: "movimento_uniforme",    label: "🚗 Movimento Uniforme (MU)" },
+        { id: "muv",                   label: "🚗 Movimento Unif. Variado (MUV)" },
+        { id: "torricelli",            label: "🚗 Equação de Torricelli" },
+        { id: "segunda_lei_newton",    label: "💥 2ª Lei de Newton (F=ma)" },
+        { id: "peso",                  label: "💥 Peso" },
+        { id: "forca_atrito",          label: "💥 Força de Atrito" },
+        { id: "trabalho",              label: "⚡ Trabalho de uma Força" },
+        { id: "energia_cinetica",      label: "⚡ Energia Cinética" },
+        { id: "energia_potencial",     label: "⚡ Energia Potencial" },
+        { id: "conservacao_energia",   label: "⚡ Conservação de Energia" },
+        { id: "lei_ohm",               label: "🔌 Lei de Ohm" },
+        { id: "potencia_eletrica",     label: "🔌 Potência Elétrica" },
+        { id: "resistores_serie",      label: "🔌 Resistores em Série" },
+        { id: "resistores_paralelo",   label: "🔌 Resistores em Paralelo" },
+        { id: "calor_sensivel",        label: "🌡️ Calor Sensível" },
+        { id: "calor_latente",         label: "🌡️ Calor Latente" },
+        { id: "dilatacao_termica",     label: "🌡️ Dilatação Térmica" },
+        { id: "velocidade_onda",       label: "🌊 Velocidade da Onda" },
+        { id: "equacao_ondulatoria",   label: "🌊 Equação Ondulatória" },
+        { id: "refracao_snell",        label: "🌊 Refração (Lei de Snell)" },
     ],
     financeiro: [
-        { id: "juros_simples",         label: "Juros Simples" },
-        { id: "juros_compostos",       label: "Juros Compostos" },
-        { id: "desconto_simples",      label: "Desconto Simples" },
-        { id: "desconto_composto",     label: "Desconto Composto" },
-        { id: "valor_presente",        label: "Valor Presente" },
-        { id: "valor_futuro",          label: "Valor Futuro" },
-        { id: "amortizacao_price",     label: "Amortização (Tabela Price)" },
-        { id: "regra_72",              label: "Regra de 72" },
+        { id: "juros_simples",         label: "💰 Juros Simples" },
+        { id: "juros_compostos",       label: "💰 Juros Compostos" },
+        { id: "desconto_simples",      label: "💰 Desconto Simples" },
+        { id: "desconto_composto",     label: "💰 Desconto Composto" },
+        { id: "valor_presente",        label: "💰 Valor Presente" },
+        { id: "valor_futuro",          label: "💰 Valor Futuro" },
+        { id: "amortizacao_price",     label: "💰 Amortização (Tabela Price)" },
+        { id: "regra_72",              label: "💰 Regra de 72" },
     ]
 };
 
@@ -457,37 +457,10 @@ async function fazerCadastro() {
     if (!nome||!email||!senha) { erro.textContent='Preencha todos os campos.'; return; }
     const json = await fetch('/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,senha})}).then(r=>r.json());
     if (json.erro) { erro.textContent=json.erro; return; }
-    if (json.aguardando_codigo) {
-        window._emailVerificacao = email;
-        mostrarFormVerificacao(email);
-    }
-}
-
-function mostrarFormVerificacao(email) {
-    document.getElementById('form-cadastro').classList.remove('active');
-    document.getElementById('form-verificacao').classList.add('active');
-    document.getElementById('tab-cadastro').classList.remove('active');
-    document.getElementById('ver-email-hint').textContent = email;
-}
-
-async function verificarCodigo() {
-    const codigo = document.getElementById('ver-codigo').value.trim();
-    const erro   = document.getElementById('ver-erro');
-    if (!codigo) { erro.textContent = 'Digite o código.'; return; }
-    const json = await fetch('/verificar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email: window._emailVerificacao, codigo})}).then(r=>r.json());
-    if (json.erro) { erro.textContent = json.erro; return; }
-    fecharModal();
-    atualizarAuthUI(json.nome);
-    carregarHistorico();
-}
-
-async function reenviarCodigo() {
-    const erro = document.getElementById('ver-erro');
-    const json = await fetch('/reenviar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email: window._emailVerificacao})}).then(r=>r.json());
-    if (json.erro) { erro.textContent = json.erro; return; }
-    erro.style.color = '#22c55e';
-    erro.textContent = 'Código reenviado!';
-    setTimeout(() => { erro.textContent = ''; erro.style.color = '#f87171'; }, 3000);
+    document.getElementById('login-email').value = email;
+    document.getElementById('login-senha').value = senha;
+    trocarTab('login');
+    await fazerLogin();
 }
 async function fazerLogout() {
     await fetch('/logout',{method:'POST'});

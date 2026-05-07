@@ -1,542 +1,2611 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-adsense-account" content="ca-pub-5366946523055708">
-    <title>Calculadora</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5366946523055708"
-         crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXΣM</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<div id="modal-auth" class="modal-overlay" style="display:none">
-    <div class="modal-box">
-        <button class="modal-close" onclick="fecharModal()">✕</button>
-        <div class="modal-tabs">
-            <button id="tab-login"    class="tab-btn active" onclick="trocarTab('login')">Entrar</button>
-            <button id="tab-cadastro" class="tab-btn"        onclick="trocarTab('cadastro')">Cadastrar</button>
-        </div>
-        <div id="form-login" class="modal-form active">
-            <h2>Bem-vindo de volta!</h2>
-            <input id="login-email" type="email"    placeholder="E-mail">
-            <input id="login-senha" type="password" placeholder="Senha">
-            <button onclick="fazerLogin()">Entrar</button>
-            <p id="login-erro" class="auth-erro"></p>
-        </div>
-        <div id="form-cadastro" class="modal-form">
-            <h2>Criar conta</h2>
-            <input id="cad-nome"  type="text"     placeholder="Nome">
-            <input id="cad-email" type="email"    placeholder="E-mail">
-            <input id="cad-senha" type="password" placeholder="Senha (mín. 6 caracteres)">
-            <button onclick="fazerCadastro()">Criar conta</button>
-            <p id="cad-erro" class="auth-erro"></p>
-        </div>
+<header>
+  <div class="header-left">
+    <div class="logo">N<span>Σ</span>X<span>U</span>M</div>
+    <nav class="nav-abas">
+      <button class="nav-aba active" onclick="mudarAba('calculadora')">Calculadora</button>
+      <button class="nav-aba" onclick="mudarAba('sobre')">Sobre</button>
+      <button class="nav-aba" onclick="mudarAba('calculos')">Calculos</button>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div id="auth-area"><button class="btn-auth" onclick="abrirModal()">Entrar</button></div>
+    <button class="btn-tema-header" id="btn-tema-header" onclick="alternarModo()">Modo Claro</button>
+  </div>
+</header>
 
-        <div id="form-verificacao" class="modal-form">
-            <h2>Verificar e-mail</h2>
-            <p class="ver-hint">Enviamos um código de 6 dígitos para<br><strong id="ver-email-hint"></strong></p>
-            <input id="ver-codigo" type="text" placeholder="Digite o código" maxlength="6" style="text-align:center;letter-spacing:8px;font-size:22px;">
-            <button onclick="verificarCodigo()">Confirmar</button>
-            <p id="ver-erro" class="auth-erro"></p>
-            <button class="btn-reenviar" onclick="reenviarCodigo()">Reenviar código</button>
-        </div>
+<main>
+  <div class="pagina active" id="pagina-calculadora">
+  <!-- SELETORES -->
+  <div class="selects-row">
+    <select id="sel-categoria" onchange="trocarCategoria(this.value)">
+      <option value="">Categoria</option>
+      <option value="matematica">Matematica</option>
+      <option value="fisica">Fisica</option>
+      <option value="financeiro">Financeiro</option>
+    </select>
+    <select id="sel-formula" disabled onchange="trocarFormula(this.value)">
+      <option value="">Fórmula</option>
+    </select>
+    <button class="btn-limpar" onclick="limparTudo()">Limpar</button>
+  </div>
+
+  <!-- FÓRMULA LATEX + EXPLICAÇÃO -->
+  <div class="formula-box">
+    <div id="formula"></div>
+    <div id="explicacao"></div>
+  </div>
+
+  <!-- FORMULÁRIOS -->
+  <div id="forms-container">
+
+    <!-- CALCULADORA BÁSICA -->
+    <div class="form" id="calc_basica">
+      <div class="form-row">
+        <input type="number" id="bas_a" placeholder="A" step="any">
+        <input type="number" id="bas_b" placeholder="B" step="any">
+      </div>
+      <div id="basica-display"></div>
+      <div class="basica-grid">
+        <button class="btn-op" onclick="calcBasica('adicao')">+</button>
+        <button class="btn-op" onclick="calcBasica('subtracao')">−</button>
+        <button class="btn-op" onclick="calcBasica('multiplicacao')">×</button>
+        <button class="btn-op" onclick="calcBasica('divisao')">÷</button>
+      </div>
+      <button class="btn-calc" onclick="calc('calc_basica')">Calcular Tudo</button>
     </div>
+
+    <!-- FUNÇÃO 1º GRAU -->
+    <div class="form" id="funcao_1grau">
+      <div class="form-row">
+        <input type="number" id="f1_a" placeholder="a (inclinação)" step="any">
+        <input type="number" id="f1_b" placeholder="b (intercepto)" step="any">
+        <input type="number" id="f1_x" placeholder="x (opcional)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('funcao_1grau')">Calcular</button>
+    </div>
+
+    <!-- FUNÇÃO 2º GRAU -->
+    <div class="form" id="funcao_2grau">
+      <div class="form-row">
+        <input type="number" id="f2_a" placeholder="a" step="any">
+        <input type="number" id="f2_b" placeholder="b" step="any">
+        <input type="number" id="f2_c" placeholder="c" step="any">
+        <input type="number" id="f2_x" placeholder="x (opcional)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('funcao_2grau')">Calcular</button>
+    </div>
+
+    <!-- FUNÇÃO EXPONENCIAL -->
+    <div class="form" id="funcao_exponencial">
+      <div class="form-row">
+        <input type="number" id="fe_a" placeholder="a (base)" step="any">
+        <input type="number" id="fe_b" placeholder="b (coeficiente)" step="any">
+        <input type="number" id="fe_x" placeholder="x (opcional)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('funcao_exponencial')">Calcular</button>
+    </div>
+
+    <!-- FUNÇÃO LOGARÍTMICA -->
+    <div class="form" id="funcao_logaritmica">
+      <div class="form-row">
+        <input type="number" id="fl_base" placeholder="base" step="any">
+        <input type="number" id="fl_x" placeholder="x (opcional)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('funcao_logaritmica')">Calcular</button>
+    </div>
+
+    <!-- ÁREA QUADRADO -->
+    <div class="form" id="area_quadrado">
+      <div class="form-row">
+        <input type="number" id="aq_lado" placeholder="lado" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('area_quadrado')">Calcular</button>
+    </div>
+
+    <!-- ÁREA RETÂNGULO -->
+    <div class="form" id="area_retangulo">
+      <div class="form-row">
+        <input type="number" id="ar_base" placeholder="base" step="any" min="0">
+        <input type="number" id="ar_altura" placeholder="altura" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('area_retangulo')">Calcular</button>
+    </div>
+
+    <!-- ÁREA TRIÂNGULO -->
+    <div class="form" id="area_triangulo">
+      <div class="form-row">
+        <input type="number" id="at_base" placeholder="base" step="any" min="0">
+        <input type="number" id="at_altura" placeholder="altura" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('area_triangulo')">Calcular</button>
+    </div>
+
+    <!-- ÁREA CÍRCULO -->
+    <div class="form" id="area_circulo">
+      <div class="form-row">
+        <input type="number" id="ac_raio" placeholder="raio" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('area_circulo')">Calcular</button>
+    </div>
+
+    <!-- VOLUME CILINDRO -->
+    <div class="form" id="volume_cilindro">
+      <div class="form-row">
+        <input type="number" id="vc_raio" placeholder="raio" step="any" min="0">
+        <input type="number" id="vc_altura" placeholder="altura" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('volume_cilindro')">Calcular</button>
+    </div>
+
+    <!-- VOLUME ESFERA -->
+    <div class="form" id="volume_esfera">
+      <div class="form-row">
+        <input type="number" id="ve_raio" placeholder="raio" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('volume_esfera')">Calcular</button>
+    </div>
+
+    <!-- PITÁGORAS -->
+    <div class="form" id="pitagoras">
+      <p style="font-size:.8rem;color:var(--muted)">Deixe o campo que deseja calcular em branco.</p>
+      <div class="form-row">
+        <input type="number" id="pit_a" placeholder="cateto a" step="any" min="0">
+        <input type="number" id="pit_b" placeholder="cateto b" step="any" min="0">
+        <input type="number" id="pit_c" placeholder="hipotenusa c" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('pitagoras')">Calcular</button>
+    </div>
+
+    <!-- PA -->
+    <div class="form" id="pa">
+      <div class="form-row">
+        <input type="number" id="pa_a1" placeholder="a1 (1º termo)" step="any">
+        <input type="number" id="pa_r" placeholder="r (razão)" step="any">
+        <input type="number" id="pa_n" placeholder="n (posição)" step="any" min="1">
+        <input type="number" id="pa_te" placeholder="termo específico (opcional)" step="any" min="1">
+      </div>
+      <button class="btn-calc" onclick="calc('pa')">Calcular</button>
+    </div>
+
+    <!-- PG -->
+    <div class="form" id="pg">
+      <div class="form-row">
+        <input type="number" id="pg_a1" placeholder="a1 (1º termo)" step="any">
+        <input type="number" id="pg_q" placeholder="q (razão)" step="any">
+        <input type="number" id="pg_n" placeholder="n (posição)" step="any" min="1">
+        <input type="number" id="pg_te" placeholder="termo específico (opcional)" step="any" min="1">
+      </div>
+      <button class="btn-calc" onclick="calc('pg')">Calcular</button>
+    </div>
+
+    <!-- TRIGONOMETRIA -->
+    <div class="form" id="trigonometria">
+      <div class="form-row">
+        <input type="number" id="trig_angulo" placeholder="ângulo em graus" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('trigonometria')">Calcular</button>
+    </div>
+
+    <!-- MÉDIA ARITMÉTICA -->
+    <div class="form" id="media_aritmetica">
+      <div class="form-row">
+        <input type="text" id="ma_valores" placeholder="valores separados por vírgula (ex: 5,7,9)">
+      </div>
+      <button class="btn-calc" onclick="calc('media_aritmetica')">Calcular</button>
+    </div>
+
+    <!-- MÉDIA PONDERADA -->
+    <div class="form" id="media_ponderada">
+      <div class="form-row">
+        <input type="text" id="mp_valores" placeholder="valores (ex: 8,6,9)">
+        <input type="text" id="mp_pesos" placeholder="pesos (ex: 2,3,5)">
+      </div>
+      <button class="btn-calc" onclick="calc('media_ponderada')">Calcular</button>
+    </div>
+
+    <!-- PROBABILIDADE SIMPLES -->
+    <div class="form" id="probabilidade_simples">
+      <div class="form-row">
+        <input type="number" id="ps_fav" placeholder="casos favoráveis" step="any" min="0">
+        <input type="number" id="ps_pos" placeholder="casos possíveis" step="any" min="1">
+      </div>
+      <button class="btn-calc" onclick="calc('probabilidade_simples')">Calcular</button>
+    </div>
+
+    <!-- PROBABILIDADE COMPOSTA -->
+    <div class="form" id="probabilidade_composta">
+      <div class="form-row">
+        <input type="number" id="pc_pa" placeholder="P(A) entre 0 e 1" step="any" min="0" max="1">
+        <input type="number" id="pc_pb" placeholder="P(B) entre 0 e 1" step="any" min="0" max="1">
+      </div>
+      <button class="btn-calc" onclick="calc('probabilidade_composta')">Calcular</button>
+    </div>
+
+    <!-- VELOCIDADE MÉDIA -->
+    <div class="form" id="velocidade_media">
+      <div class="form-row">
+        <input type="number" id="vm_ds" placeholder="Δs (m)" step="any">
+        <input type="number" id="vm_dt" placeholder="Δt (s)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('velocidade_media')">Calcular</button>
+    </div>
+
+    <!-- MU -->
+    <div class="form" id="movimento_uniforme">
+      <div class="form-row">
+        <input type="number" id="mu_s0" placeholder="s0 (pos. inicial)" step="any">
+        <input type="number" id="mu_v" placeholder="v (velocidade)" step="any">
+        <input type="number" id="mu_t" placeholder="t (tempo final)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('movimento_uniforme')">Calcular</button>
+    </div>
+
+    <!-- MUV -->
+    <div class="form" id="muv">
+      <div class="form-row">
+        <input type="number" id="muv_s0" placeholder="s0" step="any">
+        <input type="number" id="muv_v0" placeholder="v0" step="any">
+        <input type="number" id="muv_a" placeholder="a (aceleração)" step="any">
+        <input type="number" id="muv_t" placeholder="t (tempo)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('muv')">Calcular</button>
+    </div>
+
+    <!-- TORRICELLI -->
+    <div class="form" id="torricelli">
+      <div class="form-row">
+        <input type="number" id="tor_v0" placeholder="v0 (m/s)" step="any">
+        <input type="number" id="tor_a" placeholder="a (m/s²)" step="any">
+        <input type="number" id="tor_ds" placeholder="Δs (m)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('torricelli')">Calcular</button>
+    </div>
+
+    <!-- 2ª LEI DE NEWTON -->
+    <div class="form" id="segunda_lei_newton">
+      <div class="form-row">
+        <input type="number" id="sln_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="sln_a" placeholder="a (m/s²)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('segunda_lei_newton')">Calcular</button>
+    </div>
+
+    <!-- PESO -->
+    <div class="form" id="peso">
+      <div class="form-row">
+        <input type="number" id="pe_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="pe_g" placeholder="g (padrão 9.8)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('peso')">Calcular</button>
+    </div>
+
+    <!-- FORÇA DE ATRITO -->
+    <div class="form" id="forca_atrito">
+      <div class="form-row">
+        <input type="number" id="fa_mi" placeholder="μ (coef. atrito)" step="any" min="0">
+        <input type="number" id="fa_normal" placeholder="N (força normal)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('forca_atrito')">Calcular</button>
+    </div>
+
+    <!-- TRABALHO -->
+    <div class="form" id="trabalho">
+      <div class="form-row">
+        <input type="number" id="tr_F" placeholder="F (N)" step="any">
+        <input type="number" id="tr_dist" placeholder="d (m)" step="any">
+        <input type="number" id="tr_ang" placeholder="θ em graus (opcional, padrão 0)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('trabalho')">Calcular</button>
+    </div>
+
+    <!-- ENERGIA CINÉTICA -->
+    <div class="form" id="energia_cinetica">
+      <div class="form-row">
+        <input type="number" id="ec_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="ec_v" placeholder="v (m/s)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('energia_cinetica')">Calcular</button>
+    </div>
+
+    <!-- ENERGIA POTENCIAL -->
+    <div class="form" id="energia_potencial">
+      <div class="form-row">
+        <input type="number" id="ep_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="ep_h" placeholder="h (m)" step="any" min="0">
+        <input type="number" id="ep_g" placeholder="g (padrão 9.8)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('energia_potencial')">Calcular</button>
+    </div>
+
+    <!-- CONSERVAÇÃO DE ENERGIA -->
+    <div class="form" id="conservacao_energia">
+      <div class="form-row">
+        <input type="number" id="ce_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="ce_h" placeholder="h (m)" step="any" min="0">
+        <input type="number" id="ce_v0" placeholder="v0 (opcional, padrão 0)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('conservacao_energia')">Calcular</button>
+    </div>
+
+    <!-- LEI DE OHM -->
+    <div class="form" id="lei_ohm">
+      <p style="font-size:.8rem;color:var(--muted)">Preencha dois dos três campos.</p>
+      <div class="form-row">
+        <input type="number" id="ohm_V" placeholder="V (Tensão)" step="any">
+        <input type="number" id="ohm_I" placeholder="I (Corrente A)" step="any">
+        <input type="number" id="ohm_R" placeholder="R (Resistência Ω)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('lei_ohm')">Calcular</button>
+    </div>
+
+    <!-- POTÊNCIA ELÉTRICA -->
+    <div class="form" id="potencia_eletrica">
+      <p style="font-size:.8rem;color:var(--muted)">Preencha dois dos três campos.</p>
+      <div class="form-row">
+        <input type="number" id="pot_V" placeholder="V (Tensão)" step="any">
+        <input type="number" id="pot_I" placeholder="I (Corrente A)" step="any">
+        <input type="number" id="pot_R" placeholder="R (Resistência Ω)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('potencia_eletrica')">Calcular</button>
+    </div>
+
+    <!-- RESISTORES SÉRIE -->
+    <div class="form" id="resistores_serie">
+      <div class="form-row">
+        <input type="text" id="rs_res" placeholder="resistências separadas por vírgula (ex: 10,20,30)">
+      </div>
+      <button class="btn-calc" onclick="calc('resistores_serie')">Calcular</button>
+    </div>
+
+    <!-- RESISTORES PARALELO -->
+    <div class="form" id="resistores_paralelo">
+      <div class="form-row">
+        <input type="text" id="rp_res" placeholder="resistências separadas por vírgula (ex: 10,20)">
+      </div>
+      <button class="btn-calc" onclick="calc('resistores_paralelo')">Calcular</button>
+    </div>
+
+    <!-- CALOR SENSÍVEL -->
+    <div class="form" id="calor_sensivel">
+      <div class="form-row">
+        <input type="number" id="cs_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="cs_c" placeholder="c (calor específico)" step="any">
+        <input type="number" id="cs_dT" placeholder="ΔT (variação temp.)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('calor_sensivel')">Calcular</button>
+    </div>
+
+    <!-- CALOR LATENTE -->
+    <div class="form" id="calor_latente">
+      <div class="form-row">
+        <input type="number" id="cl_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="cl_L" placeholder="L (calor latente J/kg)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('calor_latente')">Calcular</button>
+    </div>
+
+    <!-- DILATAÇÃO TÉRMICA -->
+    <div class="form" id="dilatacao_termica">
+      <div class="form-row">
+        <input type="number" id="dt_L0" placeholder="L0 (comp. inicial)" step="any" min="0">
+        <input type="number" id="dt_alpha" placeholder="α (coef. dilatação)" step="any">
+        <input type="number" id="dt_dT" placeholder="ΔT (variação temp.)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('dilatacao_termica')">Calcular</button>
+    </div>
+
+    <!-- VELOCIDADE DA ONDA -->
+    <div class="form" id="velocidade_onda">
+      <div class="form-row">
+        <input type="number" id="vo_f" placeholder="f (frequência Hz)" step="any" min="0">
+        <input type="number" id="vo_lam" placeholder="λ (comprimento de onda m)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('velocidade_onda')">Calcular</button>
+    </div>
+
+    <!-- EQUAÇÃO ONDULATÓRIA -->
+    <div class="form" id="equacao_ondulatoria">
+      <p style="font-size:.8rem;color:var(--muted)">Preencha v e deixe f ou λ vazio para calcular.</p>
+      <div class="form-row">
+        <input type="number" id="eo_v" placeholder="v (velocidade m/s)" step="any">
+        <input type="number" id="eo_f" placeholder="f (frequência Hz)" step="any">
+        <input type="number" id="eo_lam" placeholder="λ (m)" step="any">
+      </div>
+      <button class="btn-calc" onclick="calc('equacao_ondulatoria')">Calcular</button>
+    </div>
+
+    <!-- REFRAÇÃO SNELL -->
+    <div class="form" id="refracao_snell">
+      <div class="form-row">
+        <input type="number" id="sn_n1" placeholder="n1 (índice 1)" step="any" min="0">
+        <input type="number" id="sn_ang" placeholder="θ1 (ângulo em graus)" step="any">
+        <input type="number" id="sn_n2" placeholder="n2 (índice 2)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('refracao_snell')">Calcular</button>
+    </div>
+
+    <!-- JUROS SIMPLES -->
+    <div class="form" id="juros_simples">
+      <div class="form-row">
+        <input type="number" id="js_C" placeholder="C (capital)" step="any" min="0">
+        <input type="number" id="js_i" placeholder="i (taxa, ex: 0.05)" step="any">
+        <input type="number" id="js_t" placeholder="t (períodos)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('juros_simples')">Calcular</button>
+    </div>
+
+    <!-- JUROS COMPOSTOS -->
+    <div class="form" id="juros_compostos">
+      <div class="form-row">
+        <input type="number" id="jc_C" placeholder="C (capital)" step="any" min="0">
+        <input type="number" id="jc_i" placeholder="i (taxa, ex: 0.05)" step="any">
+        <input type="number" id="jc_t" placeholder="t (períodos)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('juros_compostos')">Calcular</button>
+    </div>
+
+    <!-- DESCONTO SIMPLES -->
+    <div class="form" id="desconto_simples">
+      <div class="form-row">
+        <input type="number" id="ds_N" placeholder="N (valor nominal)" step="any" min="0">
+        <input type="number" id="ds_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="ds_t" placeholder="t (tempo)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('desconto_simples')">Calcular</button>
+    </div>
+
+    <!-- DESCONTO COMPOSTO -->
+    <div class="form" id="desconto_composto">
+      <div class="form-row">
+        <input type="number" id="dc_N" placeholder="N (valor nominal)" step="any" min="0">
+        <input type="number" id="dc_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="dc_t" placeholder="t (tempo)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('desconto_composto')">Calcular</button>
+    </div>
+
+    <!-- VALOR PRESENTE -->
+    <div class="form" id="valor_presente">
+      <div class="form-row">
+        <input type="number" id="vp_VF" placeholder="VF (valor futuro)" step="any" min="0">
+        <input type="number" id="vp_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="vp_t" placeholder="t (períodos)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('valor_presente')">Calcular</button>
+    </div>
+
+    <!-- VALOR FUTURO -->
+    <div class="form" id="valor_futuro">
+      <div class="form-row">
+        <input type="number" id="vf_VP" placeholder="VP (valor presente)" step="any" min="0">
+        <input type="number" id="vf_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="vf_t" placeholder="t (períodos)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('valor_futuro')">Calcular</button>
+    </div>
+
+    <!-- AMORTIZAÇÃO PRICE -->
+    <div class="form" id="amortizacao_price">
+      <div class="form-row">
+        <input type="number" id="ap_PV" placeholder="PV (valor do empréstimo)" step="any" min="0">
+        <input type="number" id="ap_i" placeholder="i (taxa mensal, ex: 0.02)" step="any">
+        <input type="number" id="ap_n" placeholder="n (nº parcelas)" step="any" min="1">
+      </div>
+      <button class="btn-calc" onclick="calc('amortizacao_price')">Calcular</button>
+    </div>
+
+    <!-- REGRA DE 72 -->
+    <div class="form" id="regra_72">
+      <div class="form-row">
+        <input type="number" id="r72_i" placeholder="i (taxa em %, ex: 6)" step="any" min="0">
+      </div>
+      <button class="btn-calc" onclick="calc('regra_72')">Calcular</button>
+    </div>
+
+  </div><!-- /forms-container -->
+
+  <!-- RESULTADO -->
+  <div id="resultado"></div>
+
+  <!-- GRÁFICO -->
+  <canvas id="grafico"></canvas>
+
+  <!-- HISTÓRICO -->
+  <section id="secao-historico">
+    <div class="historico-header">
+      <h2>Historico de Calculos</h2>
+      <button class="btn-limpar-hist" onclick="limparHistorico()">Limpar tudo</button>
+    </div>
+    <div id="historico-lista"></div>
+  </section>
+
+  </div><!-- /pagina-calculadora -->
+
+  <!-- ABA SOBRE -->
+  <div class="pagina" id="pagina-sobre">
+    <div class="sobre-intro">
+      <div class="sobre-titulo">NΣXUM</div>
+      <p>Uma plataforma completa de calculos cientificos e financeiros com mais de <strong>47 formulas</strong> organizadas em Matematica, Fisica e Financeiro. Cada formula exibe a equacao, descricao dos parametros e — onde aplicavel — graficos e visualizacoes geometricas em tempo real. O historico fica salvo na nuvem para usuarios cadastrados.</p>
+    </div>
+    <div class="sobre-grid">
+      <div class="sobre-card"><h3>Matematica — Funcoes</h3><ul>
+        <li><strong>Calculadora Basica:</strong> adicao, subtracao, multiplicacao e divisao.</li>
+        <li><strong>Funcao 1 grau f(x)=ax+b:</strong> calcula raiz e gera grafico da reta.</li>
+        <li><strong>Funcao 2 grau (Bhaskara):</strong> delta, raizes, vertice e concavidade.</li>
+        <li><strong>Funcao Exponencial b·a^x:</strong> crescente ou decrescente, com grafico.</li>
+        <li><strong>Funcao Logaritmica log_a(x):</strong> calcula log de qualquer base.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Matematica — Geometria</h3><ul>
+        <li><strong>Area do Quadrado:</strong> area e perimetro com visualizacao SVG.</li>
+        <li><strong>Area do Retangulo:</strong> area e perimetro com visualizacao SVG.</li>
+        <li><strong>Area do Triangulo:</strong> area com linha de altura desenhada.</li>
+        <li><strong>Area do Circulo:</strong> area e circunferencia com raio ilustrado.</li>
+        <li><strong>Volume do Cilindro:</strong> volume, area lateral e total.</li>
+        <li><strong>Volume da Esfera:</strong> volume e area da superficie.</li>
+        <li><strong>Teorema de Pitagoras:</strong> calcula qualquer lado do triangulo retangulo.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Matematica — Sequencias e Estatistica</h3><ul>
+        <li><strong>Progressao Aritmetica (PA):</strong> termo geral, soma e primeiros termos.</li>
+        <li><strong>Progressao Geometrica (PG):</strong> termo geral, soma finita e infinita.</li>
+        <li><strong>Trigonometria:</strong> seno, cosseno e tangente para qualquer angulo.</li>
+        <li><strong>Media Aritmetica:</strong> media de qualquer lista de valores.</li>
+        <li><strong>Media Ponderada:</strong> media com pesos distintos por valor.</li>
+        <li><strong>Probabilidade Simples:</strong> P(A) = favoraveis / possiveis.</li>
+        <li><strong>Probabilidade Composta:</strong> P(A∩B) e P(A∪B) para eventos independentes.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Fisica — Mecanica</h3><ul>
+        <li><strong>Velocidade Media:</strong> v = Δs/Δt em m/s e km/h.</li>
+        <li><strong>Movimento Uniforme (MU):</strong> s = s0 + vt, com grafico.</li>
+        <li><strong>Movimento Unif. Variado (MUV):</strong> posicao e velocidade final.</li>
+        <li><strong>Equacao de Torricelli:</strong> v² = v0² + 2aΔs.</li>
+        <li><strong>2ª Lei de Newton:</strong> F = ma.</li>
+        <li><strong>Peso:</strong> P = mg com gravidade configuravel.</li>
+        <li><strong>Forca de Atrito:</strong> f = μN.</li>
+        <li><strong>Trabalho:</strong> W = F·d·cosθ.</li>
+        <li><strong>Energia Cinetica:</strong> Ec = mv²/2.</li>
+        <li><strong>Energia Potencial:</strong> Ep = mgh.</li>
+        <li><strong>Conservacao de Energia:</strong> energia mecanica total do sistema.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Fisica — Eletricidade, Termica e Ondas</h3><ul>
+        <li><strong>Lei de Ohm:</strong> V = R·I — dado dois, calcula o terceiro.</li>
+        <li><strong>Potencia Eletrica:</strong> P = V·I, V²/R ou I²R.</li>
+        <li><strong>Resistores em Serie:</strong> soma direta.</li>
+        <li><strong>Resistores em Paralelo:</strong> inverso da soma dos inversos.</li>
+        <li><strong>Calor Sensivel:</strong> Q = mcΔT.</li>
+        <li><strong>Calor Latente:</strong> Q = mL.</li>
+        <li><strong>Dilatacao Termica:</strong> ΔL = L0·α·ΔT.</li>
+        <li><strong>Velocidade da Onda:</strong> v = f·λ.</li>
+        <li><strong>Equacao Ondulatoria:</strong> calcula f ou λ a partir de v.</li>
+        <li><strong>Refracao — Lei de Snell:</strong> n1·sinθ1 = n2·sinθ2.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Financeiro</h3><ul>
+        <li><strong>Juros Simples:</strong> M = C(1+it), com grafico.</li>
+        <li><strong>Juros Compostos:</strong> M = C(1+i)^t, com grafico.</li>
+        <li><strong>Desconto Simples:</strong> D = N·i·t.</li>
+        <li><strong>Desconto Composto:</strong> VA = N/(1+i)^t.</li>
+        <li><strong>Valor Presente:</strong> VP = VF/(1+i)^t.</li>
+        <li><strong>Valor Futuro:</strong> VF = VP·(1+i)^t.</li>
+        <li><strong>Amortizacao Tabela Price:</strong> parcela fixa com tabela detalhada.</li>
+        <li><strong>Regra de 72:</strong> tempo para dobrar o capital.</li>
+      </ul></div>
+      <div class="sobre-card"><h3>Recursos da Plataforma</h3><ul>
+        <li><strong>Formulas em LaTeX:</strong> equacao matematica formatada para cada calculo.</li>
+        <li><strong>Graficos interativos:</strong> funcoes, sequencias e financeiro geram graficos.</li>
+        <li><strong>Visualizacoes SVG:</strong> figuras geometricas com cotas e medidas.</li>
+        <li><strong>Historico na nuvem:</strong> calculos salvos e sincronizados para usuarios logados.</li>
+        <li><strong>Modo claro e escuro:</strong> alternavel pelo botao no modal de login.</li>
+        <li><strong>Responsivo:</strong> funciona em celular, tablet e desktop.</li>
+      </ul></div>
+    </div>
+  </div><!-- /pagina-sobre -->
+
+  <!-- ABA CALCULOS -->
+  <div class="pagina" id="pagina-calculos">
+    <div class="calculos-cats">
+      <button class="calc-cat-btn active" onclick="filtrarCalcCat('todos', this)">Todos</button>
+      <button class="calc-cat-btn" onclick="filtrarCalcCat('matematica', this)">Matematica</button>
+      <button class="calc-cat-btn" onclick="filtrarCalcCat('fisica', this)">Fisica</button>
+      <button class="calc-cat-btn" onclick="filtrarCalcCat('financeiro', this)">Financeiro</button>
+    </div>
+    <div class="calculos-lista" id="calculos-lista"></div>
+  </div><!-- /pagina-calculos -->
+
+</main>
+
+<!-- MODAL AUTH -->
+<div id="modal-auth" onclick="if(event.target===this)fecharModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModal()">✕</button>
+    <h2>NΣXUM</h2>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</button>
+      <button class="modal-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="modal-form active" id="form-login">
+      <input type="email" id="login-email" placeholder="E-mail">
+      <input type="password" id="login-senha" placeholder="Senha">
+      <div class="modal-erro" id="login-erro"></div>
+      <button class="btn-calc" onclick="fazerLogin()">Entrar</button>
+      <button class="btn-modo" onclick="alternarModo()">Modo Claro</button>
+    </div>
+
+    <!-- CADASTRO -->
+    <div class="modal-form" id="form-cadastro">
+      <input type="text" id="cad-nome" placeholder="Nome">
+      <input type="email" id="cad-email" placeholder="E-mail">
+      <input type="password" id="cad-senha" placeholder="Senha (mín. 6 caracteres)">
+      <div class="modal-erro" id="cad-erro"></div>
+      <button class="btn-calc" onclick="fazerCadastro()">Cadastrar</button>
+      <button class="btn-modo" onclick="alternarModo()">Modo Claro</button>
+    </div>
+
+    <!-- VERIFICAÇÃO DE CÓDIGO -->
+    <div class="modal-form" id="form-verificacao">
+      <p class="verificacao-hint">Enviamos um código de 6 dígitos para <strong id="ver-email-hint"></strong>. Verifique sua caixa de entrada.</p>
+      <input type="text" id="ver-codigo" placeholder="Código de verificação" maxlength="6">
+      <div class="modal-erro" id="ver-erro"></div>
+      <button class="btn-calc" onclick="verificarCodigo()">Verificar</button>
+      <button class="btn-link" onclick="reenviarCodigo()">Reenviar código</button>
+    </div>
+  </div>
 </div>
 
-<div class="container">
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DADOS
+// ═══════════════════════════════════════════════════════════════
+let chart = null;
 
-    <div class="header">
-        <h1>Calculadora Inteligente</h1>
-        <div id="auth-area">
-            <button class="btn-auth" onclick="abrirModal()">ENTRAR</button>
-        </div>
+const categorias = {
+    matematica: [
+        { id:"calc_basica",           label:"Calculadora Básica" },
+        { id:"funcao_1grau",          label:"Função do 1º grau" },
+        { id:"funcao_2grau",          label:"Função do 2º grau (Bhaskara)" },
+        { id:"funcao_exponencial",    label:"Função Exponencial" },
+        { id:"funcao_logaritmica",    label:"Função Logarítmica" },
+        { id:"area_quadrado",         label:"Área do Quadrado" },
+        { id:"area_retangulo",        label:"Área do Retângulo" },
+        { id:"area_triangulo",        label:"Área do Triângulo" },
+        { id:"area_circulo",          label:"Área do Círculo" },
+        { id:"volume_cilindro",       label:"Volume do Cilindro" },
+        { id:"volume_esfera",         label:"Volume da Esfera" },
+        { id:"pitagoras",             label:"Teorema de Pitágoras" },
+        { id:"pa",                    label:"Progressão Aritmética (PA)" },
+        { id:"pg",                    label:"Progressão Geométrica (PG)" },
+        { id:"trigonometria",         label:"Trigonometria" },
+        { id:"media_aritmetica",      label:"Média Aritmética" },
+        { id:"media_ponderada",       label:"Média Ponderada" },
+        { id:"probabilidade_simples", label:"Probabilidade Simples" },
+        { id:"probabilidade_composta",label:"Probabilidade Composta" },
+    ],
+    fisica: [
+        { id:"velocidade_media",      label:"Velocidade Média" },
+        { id:"movimento_uniforme",    label:"Movimento Uniforme (MU)" },
+        { id:"muv",                   label:"Movimento Unif. Variado (MUV)" },
+        { id:"torricelli",            label:"Equação de Torricelli" },
+        { id:"segunda_lei_newton",    label:"2ª Lei de Newton (F=ma)" },
+        { id:"peso",                  label:"Peso" },
+        { id:"forca_atrito",          label:"Força de Atrito" },
+        { id:"trabalho",              label:"Trabalho de uma Força" },
+        { id:"energia_cinetica",      label:"Energia Cinética" },
+        { id:"energia_potencial",     label:"Energia Potencial" },
+        { id:"conservacao_energia",   label:"Conservação de Energia" },
+        { id:"lei_ohm",               label:"Lei de Ohm" },
+        { id:"potencia_eletrica",     label:"Potência Elétrica" },
+        { id:"resistores_serie",      label:"Resistores em Série" },
+        { id:"resistores_paralelo",   label:"Resistores em Paralelo" },
+        { id:"calor_sensivel",        label:"Calor Sensível" },
+        { id:"calor_latente",         label:"Calor Latente" },
+        { id:"dilatacao_termica",     label:"Dilatação Térmica" },
+        { id:"velocidade_onda",       label:"Velocidade da Onda" },
+        { id:"equacao_ondulatoria",   label:"Equação Ondulatória" },
+        { id:"refracao_snell",        label:"Refração (Lei de Snell)" },
+    ],
+    financeiro: [
+        { id:"juros_simples",         label:"Juros Simples" },
+        { id:"juros_compostos",       label:"Juros Compostos" },
+        { id:"desconto_simples",      label:"Desconto Simples" },
+        { id:"desconto_composto",     label:"Desconto Composto" },
+        { id:"valor_presente",        label:"Valor Presente" },
+        { id:"valor_futuro",          label:"Valor Futuro" },
+        { id:"amortizacao_price",     label:"Amortização (Tabela Price)" },
+        { id:"regra_72",              label:"Regra de 72" },
+    ]
+};
+
+const formulasLatex = {
+    calc_basica:           "a + b, \\quad a - b, \\quad a \\times b, \\quad a \\div b",
+    funcao_1grau:          "f(x) = ax + b",
+    funcao_2grau:          "f(x) = ax^2 + bx + c",
+    funcao_exponencial:    "f(x) = b \\cdot a^x",
+    funcao_logaritmica:    "f(x) = \\log_a(x)",
+    area_quadrado:         "A = l^2",
+    area_retangulo:        "A = b \\times h",
+    area_triangulo:        "A = \\dfrac{b \\times h}{2}",
+    area_circulo:          "A = \\pi r^2",
+    volume_cilindro:       "V = \\pi r^2 h",
+    volume_esfera:         "V = \\dfrac{4}{3}\\pi r^3",
+    pitagoras:             "a^2 + b^2 = c^2",
+    pa:                    "a_n = a_1 + (n-1)r",
+    pg:                    "a_n = a_1 \\cdot q^{(n-1)}",
+    trigonometria:         "\\sin^2\\theta + \\cos^2\\theta = 1",
+    media_aritmetica:      "\\bar{x} = \\dfrac{\\sum x_i}{n}",
+    media_ponderada:       "\\bar{x}_p = \\dfrac{\\sum x_i p_i}{\\sum p_i}",
+    probabilidade_simples: "P(A) = \\dfrac{n(A)}{n(\\Omega)}",
+    probabilidade_composta:"P(A \\cap B) = P(A) \\cdot P(B)",
+    velocidade_media:      "v_m = \\dfrac{\\Delta s}{\\Delta t}",
+    movimento_uniforme:    "s = s_0 + vt",
+    muv:                   "s = s_0 + v_0 t + \\dfrac{at^2}{2}",
+    torricelli:            "v^2 = v_0^2 + 2a\\Delta s",
+    segunda_lei_newton:    "F = ma",
+    peso:                  "P = mg",
+    forca_atrito:          "f = \\mu N",
+    trabalho:              "W = F \\cdot d \\cdot \\cos\\theta",
+    energia_cinetica:      "E_c = \\dfrac{mv^2}{2}",
+    energia_potencial:     "E_p = mgh",
+    conservacao_energia:   "E_m = E_c + E_p",
+    lei_ohm:               "V = R \\cdot I",
+    potencia_eletrica:     "P = V \\cdot I",
+    resistores_serie:      "R_T = R_1 + R_2 + \\cdots",
+    resistores_paralelo:   "\\dfrac{1}{R_T} = \\dfrac{1}{R_1} + \\dfrac{1}{R_2} + \\cdots",
+    calor_sensivel:        "Q = mc\\Delta T",
+    calor_latente:         "Q = mL",
+    dilatacao_termica:     "\\Delta L = L_0 \\alpha \\Delta T",
+    velocidade_onda:       "v = f \\cdot \\lambda",
+    equacao_ondulatoria:   "v = f \\cdot \\lambda",
+    refracao_snell:        "n_1 \\sin\\theta_1 = n_2 \\sin\\theta_2",
+    juros_simples:         "M = C(1 + it)",
+    juros_compostos:       "M = C(1 + i)^t",
+    desconto_simples:      "D = N \\cdot i \\cdot t",
+    desconto_composto:     "VA = \\dfrac{N}{(1+i)^t}",
+    valor_presente:        "VP = \\dfrac{VF}{(1+i)^t}",
+    valor_futuro:          "VF = VP \\cdot (1+i)^t",
+    amortizacao_price:     "PMT = PV \\cdot \\dfrac{i(1+i)^n}{(1+i)^n - 1}",
+    regra_72:              "t \\approx \\dfrac{72}{i}",
+};
+
+const explicacoes = {
+    calc_basica:           "Digite os dois números e clique em uma operação ou em <b>Calcular Tudo</b>.<br><small>💡 Suporta decimais — use ponto (ex: 3.14)</small>",
+    funcao_1grau:          "<b>a:</b> inclinação, <b>b:</b> intercepto no eixo y.<br><small>💡 Teste: a=2, b=-1 → f(x)=2x-1, raiz=0.5</small>",
+    funcao_2grau:          "<b>a:</b> coef. x², <b>b:</b> coef. x, <b>c:</b> constante.<br><small>💡 Teste: a=1, b=-5, c=6 → raízes 3 e 2</small>",
+    funcao_exponencial:    "<b>a:</b> base (>0, ≠1), <b>b:</b> coeficiente.<br><small>💡 Teste: a=2, b=1 → dobra a cada unidade</small>",
+    funcao_logaritmica:    "<b>base:</b> base do log (>0, ≠1), <b>x:</b> calcular log(x).<br><small>💡 Teste: base=10, x=100 → log=2</small>",
+    area_quadrado:         "<b>lado:</b> comprimento do lado.<br><small>💡 Teste: lado=5 → A=25</small>",
+    area_retangulo:        "<b>base</b> e <b>altura</b> em qualquer unidade.<br><small>💡 Teste: base=4, altura=6 → A=24</small>",
+    area_triangulo:        "<b>base</b> e <b>altura</b> perpendicular à base.<br><small>💡 Teste: base=6, altura=4 → A=12</small>",
+    area_circulo:          "<b>raio:</b> distância do centro à borda.<br><small>💡 Teste: raio=5 → A≈78.54</small>",
+    volume_cilindro:       "<b>raio</b> da base e <b>altura</b> do cilindro.<br><small>💡 Teste: raio=3, altura=10 → V≈282.74</small>",
+    volume_esfera:         "<b>raio:</b> raio da esfera.<br><small>💡 Teste: raio=4 → V≈268.08</small>",
+    pitagoras:             "Deixe <b>um campo vazio</b> para calcular aquele lado.<br><small>💡 Teste: a=3, b=4 → hipotenusa=5</small>",
+    pa:                    "<b>a1:</b> 1º termo, <b>r:</b> razão, <b>n:</b> posição.<br><small>💡 Teste: a1=2, r=3, n=10 → an=29</small>",
+    pg:                    "<b>a1:</b> 1º termo, <b>q:</b> razão, <b>n:</b> posição.<br><small>💡 Teste: a1=100, q=0.5, n=5</small>",
+    trigonometria:         "<b>ângulo:</b> em graus (0° a 360°).<br><small>💡 Teste: 30° → sen=0.5, cos≈0.866, tan≈0.577</small>",
+    media_aritmetica:      "Digite os <b>valores separados por vírgula</b>.<br><small>💡 Teste: 5, 7, 9, 11 → média=8</small>",
+    media_ponderada:       "Digite <b>valores</b> e seus <b>pesos</b> separados por vírgula.<br><small>💡 Teste: valores=8,6,9 / pesos=2,3,5</small>",
+    probabilidade_simples: "<b>favoráveis:</b> casos do evento, <b>possíveis:</b> total de casos.<br><small>💡 Teste: fav=3, pos=6 → P=50%</small>",
+    probabilidade_composta:"<b>P(A)</b> e <b>P(B)</b> entre 0 e 1 (eventos independentes).<br><small>💡 Teste: P(A)=0.3, P(B)=0.5</small>",
+    velocidade_media:      "<b>Δs:</b> deslocamento (m), <b>Δt:</b> tempo (s).<br><small>💡 Teste: ds=100, dt=10 → v=10 m/s</small>",
+    movimento_uniforme:    "<b>s0:</b> pos. inicial, <b>v:</b> velocidade, <b>t:</b> tempo final.<br><small>💡 Teste: s0=0, v=5, t=10 → s=50m</small>",
+    muv:                   "<b>s0, v0, a, t</b> — posição, velocidade inicial, aceleração e tempo.<br><small>💡 Teste: s0=0, v0=0, a=2, t=5 → s=25m</small>",
+    torricelli:            "<b>v0:</b> vel. inicial, <b>a:</b> aceleração, <b>Δs:</b> deslocamento.<br><small>💡 Teste: v0=0, a=2, ds=25 → v=10 m/s</small>",
+    segunda_lei_newton:    "<b>m:</b> massa (kg), <b>a:</b> aceleração (m/s²).<br><small>💡 Teste: m=70, a=2 → F=140 N</small>",
+    peso:                  "<b>m:</b> massa (kg), <b>g:</b> gravidade (padrão 9.8 m/s²).<br><small>💡 Teste: m=70 → P=686 N</small>",
+    forca_atrito:          "<b>μ:</b> coef. de atrito, <b>N:</b> força normal (N).<br><small>💡 Teste: μ=0.4, N=100 → fat=40 N</small>",
+    trabalho:              "<b>F:</b> força (N), <b>d:</b> distância (m), <b>θ:</b> ângulo (padrão 0°).<br><small>💡 Teste: F=50, d=10 → W=500 J</small>",
+    energia_cinetica:      "<b>m:</b> massa (kg), <b>v:</b> velocidade (m/s).<br><small>💡 Teste: m=80, v=10 → Ec=4000 J</small>",
+    energia_potencial:     "<b>m:</b> massa (kg), <b>h:</b> altura (m).<br><small>💡 Teste: m=10, h=5 → Ep=490 J</small>",
+    conservacao_energia:   "<b>m:</b> massa, <b>h:</b> altura, <b>v0:</b> velocidade inicial (padrão 0).<br><small>💡 Teste: m=2, h=10 → Etotal=196 J</small>",
+    lei_ohm:               "Preencha <b>dois dos três campos</b> para calcular o terceiro.<br><small>💡 Teste: V=12, R=4 → I=3 A</small>",
+    potencia_eletrica:     "Preencha <b>dois dos três campos</b>.<br><small>💡 Teste: V=220, I=5 → P=1100 W</small>",
+    resistores_serie:      "Digite as <b>resistências separadas por vírgula</b>.<br><small>💡 Teste: 10, 20, 30 → RT=60 Ω</small>",
+    resistores_paralelo:   "Digite as <b>resistências separadas por vírgula</b>.<br><small>💡 Teste: 10, 20 → RT≈6.67 Ω</small>",
+    calor_sensivel:        "<b>m:</b> massa (kg), <b>c:</b> calor específico, <b>ΔT:</b> variação de temperatura.<br><small>💡 Teste: m=2, c=4186, dT=10 → Q=83720 J</small>",
+    calor_latente:         "<b>m:</b> massa (kg), <b>L:</b> calor latente (J/kg).<br><small>💡 Teste: m=0.5, L=334000 → Q=167000 J</small>",
+    dilatacao_termica:     "<b>L0:</b> comp. inicial, <b>α:</b> coef. dilatação, <b>ΔT:</b> variação de temp.<br><small>💡 Teste: L0=10, α=0.000012, dT=100 → ΔL=0.012 m</small>",
+    velocidade_onda:       "<b>f:</b> frequência (Hz), <b>λ:</b> comprimento de onda (m).<br><small>💡 Teste: f=440, λ=0.77 → v≈339 m/s</small>",
+    equacao_ondulatoria:   "<b>v:</b> velocidade, deixe <b>f ou λ vazio</b> para calcular.<br><small>💡 Teste: v=340, f=170 → λ=2 m</small>",
+    refracao_snell:        "<b>n1, θ1:</b> meio e ângulo de incidência, <b>n2:</b> meio de refração.<br><small>💡 Teste: n1=1, θ1=30, n2=1.5 → θ2≈19.47°</small>",
+    juros_simples:         "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M=1600</small>",
+    juros_compostos:       "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M≈1795.86</small>",
+    desconto_simples:      "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA=910</small>",
+    desconto_composto:     "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA≈915.14</small>",
+    valor_presente:        "<b>VF:</b> valor futuro, <b>i:</b> taxa, <b>t:</b> períodos.<br><small>💡 Teste: VF=1000, i=0.05, t=5 → VP≈783.53</small>",
+    valor_futuro:          "<b>VP:</b> valor presente, <b>i:</b> taxa, <b>t:</b> períodos.<br><small>💡 Teste: VP=1000, i=0.05, t=5 → VF≈1276.28</small>",
+    amortizacao_price:     "<b>PV:</b> valor do empréstimo, <b>i:</b> taxa mensal, <b>n:</b> parcelas.<br><small>💡 Teste: PV=10000, i=0.02, n=12 → parcela≈948.79</small>",
+    regra_72:              "<b>i:</b> taxa anual em % (ex: 6 = 6% ao ano).<br><small>💡 Teste: i=6 → tempo≈12 anos para dobrar</small>",
+};
+
+const inputMap = {
+    calc_basica:           { a:'bas_a', b:'bas_b' },
+    funcao_1grau:          { a:'f1_a', b:'f1_b', x:'f1_x' },
+    funcao_2grau:          { a:'f2_a', b:'f2_b', c:'f2_c', x:'f2_x' },
+    funcao_exponencial:    { a:'fe_a', b:'fe_b', x:'fe_x' },
+    funcao_logaritmica:    { base:'fl_base', x:'fl_x' },
+    area_quadrado:         { lado:'aq_lado' },
+    area_retangulo:        { base:'ar_base', altura:'ar_altura' },
+    area_triangulo:        { base:'at_base', altura:'at_altura' },
+    area_circulo:          { raio:'ac_raio' },
+    volume_cilindro:       { raio:'vc_raio', altura:'vc_altura' },
+    volume_esfera:         { raio:'ve_raio' },
+    pitagoras:             { a:'pit_a', b:'pit_b', c:'pit_c' },
+    pa:                    { a1:'pa_a1', r:'pa_r', n:'pa_n', termo_especifico:'pa_te' },
+    pg:                    { a1:'pg_a1', q:'pg_q', n:'pg_n', termo_especifico:'pg_te' },
+    trigonometria:         { angulo:'trig_angulo' },
+    media_aritmetica:      { valores:'ma_valores' },
+    media_ponderada:       { valores:'mp_valores', pesos:'mp_pesos' },
+    probabilidade_simples: { favoraveis:'ps_fav', possiveis:'ps_pos' },
+    probabilidade_composta:{ p_a:'pc_pa', p_b:'pc_pb' },
+    velocidade_media:      { ds:'vm_ds', dt:'vm_dt' },
+    movimento_uniforme:    { s0:'mu_s0', v:'mu_v', t:'mu_t' },
+    muv:                   { s0:'muv_s0', v0:'muv_v0', a:'muv_a', t:'muv_t' },
+    torricelli:            { v0:'tor_v0', a:'tor_a', ds:'tor_ds' },
+    segunda_lei_newton:    { m:'sln_m', a:'sln_a' },
+    peso:                  { m:'pe_m', g:'pe_g' },
+    forca_atrito:          { mi:'fa_mi', normal:'fa_normal' },
+    trabalho:              { F:'tr_F', dist:'tr_dist', angulo:'tr_ang' },
+    energia_cinetica:      { m:'ec_m', v:'ec_v' },
+    energia_potencial:     { m:'ep_m', h:'ep_h', g:'ep_g' },
+    conservacao_energia:   { m:'ce_m', h:'ce_h', v0:'ce_v0' },
+    lei_ohm:               { V:'ohm_V', I:'ohm_I', R:'ohm_R' },
+    potencia_eletrica:     { V:'pot_V', I:'pot_I', R:'pot_R' },
+    resistores_serie:      { resistores:'rs_res' },
+    resistores_paralelo:   { resistores:'rp_res' },
+    calor_sensivel:        { m:'cs_m', c:'cs_c', dT:'cs_dT' },
+    calor_latente:         { m:'cl_m', L:'cl_L' },
+    dilatacao_termica:     { L0:'dt_L0', alpha:'dt_alpha', dT:'dt_dT' },
+    velocidade_onda:       { f:'vo_f', lam:'vo_lam' },
+    equacao_ondulatoria:   { v:'eo_v', f:'eo_f', lam:'eo_lam' },
+    refracao_snell:        { n1:'sn_n1', angulo1:'sn_ang', n2:'sn_n2' },
+    juros_simples:         { C:'js_C', i:'js_i', t:'js_t' },
+    juros_compostos:       { C:'jc_C', i:'jc_i', t:'jc_t' },
+    desconto_simples:      { N:'ds_N', i:'ds_i', t:'ds_t' },
+    desconto_composto:     { N:'dc_N', i:'dc_i', t:'dc_t' },
+    valor_presente:        { VF:'vp_VF', i:'vp_i', t:'vp_t' },
+    valor_futuro:          { VP:'vf_VP', i:'vf_i', t:'vf_t' },
+    amortizacao_price:     { PV:'ap_PV', i:'ap_i', n:'ap_n' },
+    regra_72:              { i:'r72_i' },
+};
+
+const temGrafico = new Set([
+    'funcao_1grau','funcao_2grau','funcao_exponencial','funcao_logaritmica',
+    'pa','pg','movimento_uniforme','muv','juros_simples','juros_compostos'
+]);
+
+const labelMap = {
+    delta:'Δ (delta)', x1:'x₁', x2:'x₂', raiz:'Raiz', y_para_x:'f(x)',
+    log_x:'log(x)', coef_angular:'Coef. angular', coef_linear:'Coef. linear',
+    concavidade:'Concavidade', vertice_x:'Vértice x', vertice_y:'Vértice y',
+    tipo:'Tipo', base:'Base', coeficiente:'Coeficiente',
+    area:'Área', perimetro:'Perímetro', circunferencia:'Circunferência',
+    volume:'Volume', area_lateral:'Área lateral', area_total:'Área total',
+    area_superficie:'Área superfície', hipotenusa:'Hipotenusa',
+    cateto_a:'Cateto a', cateto_b:'Cateto b',
+    an:'Termo aₙ', soma:'Soma Sₙ', soma_infinita:'Soma infinita',
+    seno:'Seno', cosseno:'Cosseno', tangente:'Tangente',
+    relacao_fundamental:'sen²+cos²', media:'Média', quantidade:'Qtd',
+    media_ponderada:'Média pond.', soma_pesos:'Soma pesos',
+    probabilidade:'Probabilidade', percentual:'Percentual', fracao:'Fração',
+    'P(A∩B)':'P(A∩B)', 'P(A∪B)':'P(A∪B)', 'P(A)':'P(A)', 'P(B)':'P(B)',
+    velocidade_ms:'Velocidade (m/s)', velocidade_kmh:'Velocidade (km/h)',
+    posicao_final:'Posição final', velocidade:'Velocidade',
+    posicao:'Posição', velocidade_final:'Vel. final',
+    v:'Velocidade (m/s)', kmh:'Velocidade (km/h)',
+    forca_N:'Força (N)', peso_N:'Peso (N)', massa_kg:'Massa (kg)',
+    forca_atrito_N:'Força de atrito (N)', trabalho_J:'Trabalho (J)',
+    Ec:'Energia cinética (J)', Ep:'Energia potencial (J)',
+    energia_total_J:'Energia total (J)', Ec_inicial:'Ec inicial (J)',
+    velocidade_final_ms:'Vel. final (m/s)',
+    V:'Tensão (V)', I:'Corrente (A)', R:'Resistência (Ω)',
+    P_W:'Potência (W)', R_total:'R total (Ω)',
+    Q_J:'Calor (J)', variacao_m:'ΔL (m)', comprimento_final_m:'L final (m)',
+    v_ms:'Velocidade (m/s)', frequencia_Hz:'Frequência (Hz)',
+    comprimento_onda_m:'Comprimento λ (m)',
+    angulo_refracao_graus:'Ângulo de refração (°)',
+    juros:'Juros (R$)', montante:'Montante (R$)',
+    desconto:'Desconto (R$)', valor_atual:'Valor atual (R$)',
+    valor_presente:'Valor presente (R$)', valor_futuro:'Valor futuro (R$)',
+    parcela:'Parcela (R$)', total_pago:'Total pago (R$)',
+    total_juros:'Total juros (R$)', tempo_anos:'Tempo (anos)',
+    taxa_usada:'Taxa usada (%)', g_usado:'g usado',
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  UI NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+let formulaAtual = null;
+
+function trocarCategoria(cat) {
+    const selF = document.getElementById('sel-formula');
+    selF.innerHTML = '<option value="">Fórmula</option>';
+    trocarFormula('');
+    if (!cat) { selF.disabled = true; return; }
+    categorias[cat].forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.id; opt.textContent = f.label;
+        selF.appendChild(opt);
+    });
+    selF.disabled = false;
+}
+
+function trocarFormula(tipo) {
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    document.getElementById('resultado').innerHTML = '';
+    document.getElementById('figura-geo')?.remove();
+    esconderGrafico();
+    formulaAtual = tipo || null;
+    if (!tipo) {
+        document.getElementById('formula').innerHTML   = '';
+        document.getElementById('explicacao').innerHTML = '';
+        return;
+    }
+    document.getElementById(tipo)?.classList.add('active');
+    const latex = formulasLatex[tipo];
+    document.getElementById('formula').innerHTML = latex ? `$$${latex}$$` : '';
+    if (latex) MathJax.typeset();
+    document.getElementById('explicacao').innerHTML = explicacoes[tipo] || '';
+}
+
+function limparTudo() {
+    document.getElementById('sel-categoria').value = '';
+    document.getElementById('sel-formula').innerHTML = '<option value="">Fórmula</option>';
+    document.getElementById('sel-formula').disabled = true;
+    trocarFormula('');
+    document.querySelectorAll('input').forEach(i => i.value = '');
+    if (chart) { chart.destroy(); chart = null; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CALC
+// ═══════════════════════════════════════════════════════════════
+async function calc(tipo) {
+    const btn = document.querySelector(`#${tipo} button`);
+    const map  = inputMap[tipo] || {};
+    const data = {};
+    Object.entries(map).forEach(([key, elId]) => {
+        const el = document.getElementById(elId);
+        data[key] = el ? el.value : '';
+    });
+    btn.disabled = true; btn.classList.add('btn-loading');
+    try {
+        const res  = await fetch(`/calc/${tipo}`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        mostrarResultado(tipo, json);
+        if (!json.erro) {
+            desenharGrafico(tipo, json, data);
+            desenharFigura(tipo, json, data);
+        }
+        const sessao = await fetch('/sessao').then(r=>r.json());
+        if (sessao.logado) carregarHistorico();
+    } catch(err) {
+        document.getElementById('resultado').innerHTML =
+            `<div class="erro">Erro de conexao.</div>`;
+    } finally {
+        btn.disabled = false; btn.classList.remove('btn-loading');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RESULTADO
+// ═══════════════════════════════════════════════════════════════
+function mostrarResultado(tipo, json) {
+    const resDiv = document.getElementById('resultado');
+    if (json.erro) { resDiv.innerHTML = `<div class="erro">${json.erro}</div>`; return; }
+    let html = `<div class="card-res"><h3>Resultado</h3>`;
+    const omitir = new Set(['pontos','sequencia','tabela','termo_especifico_pos','termo_especifico_val','termo_especifico_erro','raizes']);
+    Object.entries(json).forEach(([k,v]) => {
+        if (omitir.has(k)) return;
+        const label = labelMap[k] || k;
+        let val = typeof v === 'number' ? (Math.abs(v) < 0.0001 && v !== 0 ? v.toExponential(4) : v) : v;
+        html += `<p>${label}: <span>${val}</span></p>`;
+    });
+    if (json.termo_especifico_erro) {
+        html += `<div class="termo-especifico-box"><p class="termo-especifico-erro">${json.termo_especifico_erro}</p></div>`;
+    } else if (json.termo_especifico_pos !== undefined) {
+        html += `<div class="termo-especifico-box"><p>Termo a<sub>${json.termo_especifico_pos}</sub> = <span>${json.termo_especifico_val}</span></p></div>`;
+    }
+    if (json.sequencia?.length) {
+        const tags = json.sequencia.map((v,i) => `<span>a${i+1}=${v}</span>`).join('');
+        html += `<div class="sequencia-box"><p>Primeiros ${json.sequencia.length} termos</p><div class="sequencia-tags">${tags}</div></div>`;
+    }
+    if (json.tabela?.length) {
+        html += `<div class="tabela-price"><table><thead><tr><th>Parc.</th><th>Juros</th><th>Amort.</th><th>Saldo</th></tr></thead><tbody>`;
+        json.tabela.forEach(r => {
+            html += `<tr><td>${r.parcela}</td><td>R$ ${r.juros}</td><td>R$ ${r.amortizacao}</td><td>R$ ${r.saldo}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+    }
+    html += `</div>`;
+    resDiv.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GRÁFICO
+// ═══════════════════════════════════════════════════════════════
+function esconderGrafico() {
+    const ctx = document.getElementById('grafico');
+    ctx.classList.remove('visivel');
+    setTimeout(() => { ctx.style.display = 'none'; }, 400);
+}
+
+function desenharGrafico(tipo, json, data) {
+    if (!temGrafico.has(tipo) || !json.pontos) { esconderGrafico(); return; }
+    const ctx = document.getElementById('grafico');
+    ctx.style.display = 'block';
+    requestAnimationFrame(() => ctx.classList.add('visivel'));
+    const labels  = json.pontos.map(p => p.t ?? p.x);
+    const valores = json.pontos.map(p => p.y ?? p.s ?? p.M);
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: tipo,
+                data: valores,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56,189,248,0.08)',
+                pointBackgroundColor: '#818cf8',
+                pointRadius: 3, fill: true, tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: isLightMode() ? '#475569' : '#94a3b8', font:{ family:'Syne' } } } },
+            scales: {
+                x: { ticks:{ color: isLightMode() ? '#475569' : '#64748b' }, grid:{ color: isLightMode() ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)' } },
+                y: { ticks:{ color: isLightMode() ? '#475569' : '#64748b' }, grid:{ color: isLightMode() ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ██████╗ ███████╗███████╗███████╗███╗   ██╗██╗  ██╗ ██████╗
+//  ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██║  ██║██╔═══██╗
+//  ██║  ██║█████╗  ███████╗█████╗  ██╔██╗ ██║███████║██║   ██║
+//  ██║  ██║██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██╔══██║██║   ██║
+//  ██████╔╝███████╗███████║███████╗██║ ╚████║██║  ██║╚██████╔╝
+//  ╚═════╝ ╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝
+//  FIGURAS GEOMÉTRICAS SVG
+// ═══════════════════════════════════════════════════════════════
+
+const FIGURAS_COM_DESENHO = new Set([
+    'area_triangulo','area_quadrado','area_retangulo',
+    'area_circulo','volume_cilindro','volume_esfera','pitagoras'
+]);
+
+const C = {
+    fill:    'rgba(56,189,248,0.10)',
+    stroke:  '#38bdf8',
+    cota:    '#818cf8',
+    texto:   '#e2e8f0',
+    muted:   '#94a3b8',
+    amarelo: '#fbbf24',
+    amarFill:'rgba(251,191,36,0.18)',
+};
+
+// ── helpers SVG ─────────────────────────────────────────────
+function ns(tag, attrs={}) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+}
+
+function svgRoot(w, h) {
+    const s = ns('svg', { viewBox:`0 0 ${w} ${h}`, width:'100%' });
+    s.style.maxWidth = '440px';
+    s.style.display  = 'inline-block';
+    return s;
+}
+
+// texto centrado
+function svgTxt(x, y, text, {fill=C.cota, size=13, weight='normal', anchor='middle'}={}) {
+    const t = ns('text', {
+        x, y,
+        fill,
+        'font-size': size,
+        'font-family': 'Syne, sans-serif',
+        'text-anchor': anchor,
+        'dominant-baseline': 'middle',
+        'font-weight': weight,
+    });
+    t.textContent = text;
+    return t;
+}
+
+// badge com fundo escuro para labels de cota
+function svgBadge(svg, x, y, text, {size=12}={}) {
+    const tmp = ns('text',{ 'font-size':size, 'font-family':'Syne, sans-serif' });
+    tmp.textContent = text; svg.appendChild(tmp);
+    const W = Math.max(text.length * size * 0.58 + 10, 36);
+    svg.removeChild(tmp);
+    const g = ns('g');
+    g.appendChild(ns('rect',{ x:x-W/2, y:y-10, width:W, height:20, rx:5,
+        fill:'rgba(2,6,23,0.85)', stroke:'rgba(129,140,248,0.3)', 'stroke-width':'1' }));
+    g.appendChild(svgTxt(x, y, text, {size}));
+    return g;
+}
+
+// seta preenchida
+function svgArrow(x, y, angDeg, size=7) {
+    const rad = angDeg * Math.PI/180;
+    const ux  = Math.cos(rad), uy = Math.sin(rad);
+    const px  = -uy, py = ux; // perpendicular
+    const d = `M${x},${y} L${x+ux*size+px*size*0.4},${y+uy*size+py*size*0.4} L${x+ux*size-px*size*0.4},${y+uy*size-py*size*0.4}Z`;
+    return ns('path',{ d, fill:C.cota });
+}
+
+// linha de cota completa com label
+function svgCota(svg, x1, y1, x2, y2, label, {offset=22, labelFrac=0.5}={}) {
+    const dx = x2-x1, dy = y2-y1;
+    const len = Math.sqrt(dx*dx+dy*dy) || 1;
+    // normal perpendicular apontando "para fora"
+    const nx = -dy/len * offset, ny = dx/len * offset;
+
+    const cx1=x1+nx, cy1=y1+ny, cx2=x2+nx, cy2=y2+ny;
+    const ang = Math.atan2(cy2-cy1, cx2-cx1) * 180/Math.PI;
+
+    // linhas de extensão
+    svg.appendChild(ns('line',{x1,y1,x2:cx1,y2:cy1,stroke:C.cota,'stroke-width':'1','stroke-dasharray':'3 3','stroke-opacity':'0.5'}));
+    svg.appendChild(ns('line',{x1:x2,y1:y2,x2:cx2,y2:cy2,stroke:C.cota,'stroke-width':'1','stroke-dasharray':'3 3','stroke-opacity':'0.5'}));
+    // linha de cota
+    svg.appendChild(ns('line',{x1:cx1,y1:cy1,x2:cx2,y2:cy2,stroke:C.cota,'stroke-width':'1.5','stroke-dasharray':'4 2'}));
+    // setas
+    svg.appendChild(svgArrow(cx1, cy1, ang+180));
+    svg.appendChild(svgArrow(cx2, cy2, ang));
+    // label
+    const lx = cx1 + (cx2-cx1)*labelFrac;
+    const ly = cy1 + (cy2-cy1)*labelFrac;
+    svg.appendChild(svgBadge(svg, lx, ly, label));
+}
+
+// ângulo reto (quadradinho)
+function svgAnguloReto(cx, cy, size=10, dirX=1, dirY=-1) {
+    // dirX/dirY indicam a direção dos lados
+    const g = ns('g');
+    const px = cx + dirX*size, py = cy;
+    const qx = cx + dirX*size, qy = cy + dirY*size;
+    const rx2 = cx, ry2 = cy + dirY*size;
+    g.appendChild(ns('path',{
+        d:`M${px},${py} L${qx},${qy} L${rx2},${ry2}`,
+        fill:'none', stroke:C.amarelo, 'stroke-width':'1.5'
+    }));
+    return g;
+}
+
+// ── QUADRADO ────────────────────────────────────────────────
+function figQuadrado(lado) {
+    if (isNaN(lado)||lado<=0) return null;
+    const W=330, H=300, PAD=65;
+    const sz = Math.min(W-PAD*2, H-PAD*2);
+    const x0 = (W-sz)/2, y0 = (H-sz)/2;
+    const s = svgRoot(W, H);
+
+    // sombra suave
+    s.appendChild(ns('rect',{x:x0+4,y:y0+4,width:sz,height:sz,rx:3,fill:'rgba(56,189,248,0.06)'}));
+    // figura
+    s.appendChild(ns('rect',{x:x0,y:y0,width:sz,height:sz,rx:3,fill:C.fill,stroke:C.stroke,'stroke-width':'2'}));
+
+    // marcas de igualdade nos lados (2 traços em cada lado)
+    const midX = x0+sz/2, midY = y0+sz/2;
+    const mk = 6;
+    // topo e base
+    [[x0+sz/2, y0],[x0+sz/2, y0+sz]].forEach(([mx,my]) => {
+        s.appendChild(ns('line',{x1:mx-mk,y1:my-3,x2:mx-mk,y2:my+3,stroke:C.cota,'stroke-width':'1.5'}));
+        s.appendChild(ns('line',{x1:mx+mk,y1:my-3,x2:mx+mk,y2:my+3,stroke:C.cota,'stroke-width':'1.5'}));
+    });
+    // lados
+    [[x0, midY],[x0+sz, midY]].forEach(([mx,my]) => {
+        s.appendChild(ns('line',{x1:mx-3,y1:my-mk,x2:mx+3,y2:my-mk,stroke:C.cota,'stroke-width':'1.5'}));
+        s.appendChild(ns('line',{x1:mx-3,y1:my+mk,x2:mx+3,y2:my+mk,stroke:C.cota,'stroke-width':'1.5'}));
+    });
+
+    // ângulos retos nos 4 cantos
+    s.appendChild(svgAnguloReto(x0, y0,     9,  1,  1));
+    s.appendChild(svgAnguloReto(x0+sz, y0,  9, -1,  1));
+    s.appendChild(svgAnguloReto(x0, y0+sz,  9,  1, -1));
+    s.appendChild(svgAnguloReto(x0+sz, y0+sz, 9, -1, -1));
+
+    // cotas
+    svgCota(s, x0, y0+sz, x0+sz, y0+sz, `${lado}`, {offset:24});
+    svgCota(s, x0+sz, y0, x0+sz, y0+sz, `${lado}`, {offset:24});
+
+    // texto central
+    s.appendChild(svgTxt(W/2, H/2-7, `A = ${(lado*lado).toFixed(4)}`, {fill:C.texto, size:14, weight:'700'}));
+    s.appendChild(svgTxt(W/2, H/2+12, `P = ${(4*lado).toFixed(4)}`, {fill:C.muted, size:11}));
+    return s;
+}
+
+// ── RETÂNGULO ───────────────────────────────────────────────
+function figRetangulo(base, altura) {
+    if (isNaN(base)||isNaN(altura)||base<=0||altura<=0) return null;
+    const W=380, H=300, PAD=65;
+    const asp = base/altura;
+    let rw = W-PAD*2, rh = rw/asp;
+    if (rh > H-PAD*2) { rh = H-PAD*2; rw = rh*asp; }
+    rw = Math.min(rw, W-PAD*2); rh = Math.min(rh, H-PAD*2);
+    const x0 = (W-rw)/2, y0 = (H-rh)/2;
+    const s = svgRoot(W, H);
+
+    s.appendChild(ns('rect',{x:x0+4,y:y0+4,width:rw,height:rh,rx:3,fill:'rgba(56,189,248,0.06)'}));
+    s.appendChild(ns('rect',{x:x0,y:y0,width:rw,height:rh,rx:3,fill:C.fill,stroke:C.stroke,'stroke-width':'2'}));
+
+    // ângulos retos
+    s.appendChild(svgAnguloReto(x0, y0,     9,  1,  1));
+    s.appendChild(svgAnguloReto(x0+rw, y0,  9, -1,  1));
+    s.appendChild(svgAnguloReto(x0, y0+rh,  9,  1, -1));
+    s.appendChild(svgAnguloReto(x0+rw, y0+rh, 9, -1, -1));
+
+    svgCota(s, x0, y0+rh, x0+rw, y0+rh, `base = ${base}`, {offset:24});
+    svgCota(s, x0+rw, y0, x0+rw, y0+rh, `h = ${altura}`, {offset:24});
+
+    s.appendChild(svgTxt(W/2, H/2-7, `A = ${(base*altura).toFixed(4)}`, {fill:C.texto, size:13, weight:'700'}));
+    s.appendChild(svgTxt(W/2, H/2+12, `P = ${(2*(base+altura)).toFixed(4)}`, {fill:C.muted, size:11}));
+    return s;
+}
+
+// ── TRIÂNGULO ───────────────────────────────────────────────
+function figTriangulo(base, altura) {
+    if (isNaN(base)||isNaN(altura)||base<=0||altura<=0) return null;
+    const W=360, H=310, PADX=70, PADY=60;
+    const maxW=W-PADX*2, maxH=H-PADY*2;
+    let tw=maxW, th=tw*(altura/base);
+    if (th>maxH) { th=maxH; tw=th*(base/altura); }
+    tw=Math.min(tw,maxW); th=Math.min(th,maxH);
+
+    // Vértices
+    const Bx=PADX, By=H-PADY;              // base esquerda
+    const Cx=PADX+tw, Cy=H-PADY;           // base direita
+    const Ax=PADX+tw*0.5, Ay=H-PADY-th;   // ápice
+    // Pé da altura (projeção do ápice sobre a base)
+    const Hx=Ax, Hy=By;
+
+    const s = svgRoot(W, H);
+
+    // grade pontilhada de fundo (sutil)
+    for (let gx=PADX; gx<=W-PADX; gx+=30)
+        s.appendChild(ns('line',{x1:gx,y1:PADY,x2:gx,y2:H-PADY,stroke:'rgba(255,255,255,0.03)','stroke-width':'1'}));
+
+    // preenchimento
+    s.appendChild(ns('polygon',{
+        points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`,
+        fill:C.fill, stroke:C.stroke, 'stroke-width':'2'
+    }));
+
+    // linha de altura (tracejada amarela)
+    s.appendChild(ns('line',{
+        x1:Ax,y1:Ay, x2:Hx,y2:Hy,
+        stroke:C.amarelo,'stroke-width':'1.5','stroke-dasharray':'5 3'
+    }));
+
+    // ângulo reto no pé da altura
+    const ar = 9;
+    s.appendChild(ns('path',{
+        d:`M${Hx-ar},${Hy} L${Hx-ar},${Hy-ar} L${Hx},${Hy-ar}`,
+        fill:'none', stroke:C.amarelo, 'stroke-width':'1.5'
+    }));
+
+    // pontos de vértice
+    [[Ax,Ay],[Bx,By],[Cx,Cy]].forEach(([px,py]) =>
+        s.appendChild(ns('circle',{cx:px,cy:py,r:'3.5',fill:C.stroke})));
+    // pé da altura
+    s.appendChild(ns('circle',{cx:Hx,cy:Hy,r:'2.5',fill:C.amarelo}));
+
+    // cotas
+    svgCota(s, Bx, By, Cx, Cy, `base = ${base}`, {offset:24});
+    svgCota(s, Hx, Hy, Hx, Ay, `h = ${altura}`, {offset:26, labelFrac:0.5});
+
+    // resultado no centro de massa do triângulo
+    const cx=(Ax+Bx+Cx)/3, cy=(Ay+By+Cy)/3;
+    const area = (base*altura/2).toFixed(4);
+    s.appendChild(svgBadge(s, cx, cy+4, `A = ${area}`));
+
+    return s;
+}
+
+// ── CÍRCULO ─────────────────────────────────────────────────
+function figCirculo(raio) {
+    if (isNaN(raio)||raio<=0) return null;
+    const W=300, H=290, cx=W/2, cy=H/2, r=100;
+    const s = svgRoot(W, H);
+
+    // círculo exterior tracejado (diâmetro visual)
+    s.appendChild(ns('circle',{cx,cy,r:r+1,fill:'none',stroke:'rgba(56,189,248,0.15)','stroke-width':'1','stroke-dasharray':'3 4'}));
+    // preenchimento
+    s.appendChild(ns('circle',{cx,cy,r,fill:C.fill,stroke:C.stroke,'stroke-width':'2'}));
+
+    // diâmetro horizontal tracejado
+    s.appendChild(ns('line',{x1:cx-r,y1:cy,x2:cx+r,y2:cy,stroke:'rgba(56,189,248,0.25)','stroke-width':'1','stroke-dasharray':'4 3'}));
+    // diâmetro vertical tracejado
+    s.appendChild(ns('line',{x1:cx,y1:cy-r,x2:cx,y2:cy+r,stroke:'rgba(56,189,248,0.25)','stroke-width':'1','stroke-dasharray':'4 3'}));
+
+    // raio (diagonal superior direita, 45°)
+    const ang = -Math.PI/4;
+    const ex = cx + r*Math.cos(ang), ey = cy + r*Math.sin(ang);
+    s.appendChild(ns('line',{x1:cx,y1:cy,x2:ex,y2:ey,stroke:C.cota,'stroke-width':'1.8'}));
+    s.appendChild(ns('circle',{cx,cy,r:'4',fill:C.cota}));
+    s.appendChild(ns('circle',{cx:ex,cy:ey,r:'4',fill:C.stroke}));
+
+    // badge raio
+    s.appendChild(svgBadge(s, (cx+ex)/2+14, (cy+ey)/2-14, `r = ${raio}`));
+
+    // resultados
+    const area = (Math.PI*raio*raio).toFixed(4);
+    const circ = (2*Math.PI*raio).toFixed(4);
+    s.appendChild(svgTxt(cx, cy+8, `A = ${area}`, {fill:C.texto,size:13,weight:'700'}));
+    s.appendChild(svgTxt(cx, cy+25, `C = ${circ}`, {fill:C.muted,size:11}));
+    return s;
+}
+
+// ── CILINDRO (perspectiva 2.5D) ─────────────────────────────
+function figCilindro(raio, altura) {
+    if (isNaN(raio)||isNaN(altura)||raio<=0||altura<=0) return null;
+    const W=300, H=330;
+    const cx=W/2, rx=85, ry=20;
+    const ytop=65, cH=185;
+    const s = svgRoot(W, H);
+
+    // sombra da base
+    s.appendChild(ns('ellipse',{cx,cy:ytop+cH+4,rx:rx+4,ry:ry+3,fill:'rgba(56,189,248,0.07)'}));
+
+    // corpo
+    s.appendChild(ns('rect',{x:cx-rx,y:ytop,width:rx*2,height:cH,fill:C.fill,stroke:C.stroke,'stroke-width':'2'}));
+    // borda lateral direita (mais clara = luz)
+    s.appendChild(ns('rect',{x:cx+rx-4,y:ytop,width:4,height:cH,fill:'rgba(56,189,248,0.12)',stroke:'none'}));
+
+    // elipse de baixo
+    s.appendChild(ns('ellipse',{cx,cy:ytop+cH,rx,ry,fill:'rgba(56,189,248,0.18)',stroke:C.stroke,'stroke-width':'2'}));
+    // elipse de cima
+    s.appendChild(ns('ellipse',{cx,cy:ytop,rx,ry,fill:'rgba(56,189,248,0.25)',stroke:C.stroke,'stroke-width':'2'}));
+
+    // linha de raio na elipse de cima
+    s.appendChild(ns('line',{x1:cx,y1:ytop,x2:cx+rx,y2:ytop,stroke:C.cota,'stroke-width':'1.5','stroke-dasharray':'4 2'}));
+    s.appendChild(ns('circle',{cx,cy:ytop,r:'3',fill:C.cota}));
+    s.appendChild(ns('circle',{cx:cx+rx,cy:ytop,r:'3',fill:C.stroke}));
+    s.appendChild(svgBadge(s, cx+rx/2, ytop-16, `r = ${raio}`));
+
+    // cota altura (lado direito)
+    svgCota(s, cx+rx+8, ytop, cx+rx+8, ytop+cH, `h = ${altura}`, {offset:20});
+
+    // volume no centro
+    const vol = (Math.PI*raio*raio*altura).toFixed(4);
+    s.appendChild(svgTxt(cx, ytop+cH/2-6, `V = ${vol}`, {fill:C.texto,size:12,weight:'700'}));
+    return s;
+}
+
+// ── ESFERA ──────────────────────────────────────────────────
+function figEsfera(raio) {
+    if (isNaN(raio)||raio<=0) return null;
+    const W=290, H=280, cx=W/2, cy=H/2, r=105;
+    const s = svgRoot(W, H);
+
+    const defs = ns('defs');
+    // gradiente radial para efeito 3D
+    const rg = ns('radialGradient',{id:'esf-grad',cx:'38%',cy:'32%',r:'56%'});
+    rg.appendChild(ns('stop',{offset:'0%','stop-color':'rgba(129,140,248,0.45)'}));
+    rg.appendChild(ns('stop',{offset:'60%','stop-color':'rgba(56,189,248,0.12)'}));
+    rg.appendChild(ns('stop',{offset:'100%','stop-color':'rgba(56,189,248,0.03)'}));
+    defs.appendChild(rg);
+    // filtro blur para brilho
+    const flt = ns('filter',{id:'esf-blur'});
+    flt.appendChild(ns('feGaussianBlur',{'in':'SourceGraphic',stdDeviation:'2'}));
+    defs.appendChild(flt);
+    s.appendChild(defs);
+
+    // sombra
+    s.appendChild(ns('circle',{cx:cx+6,cy:cy+8,r:r-5,fill:'rgba(0,0,0,0.25)',filter:'url(#esf-blur)'}));
+    // esfera
+    s.appendChild(ns('circle',{cx,cy,r,fill:'url(#esf-grad)',stroke:C.stroke,'stroke-width':'2'}));
+    // equador tracejado
+    s.appendChild(ns('ellipse',{cx,cy,rx:r,ry:r*0.25,fill:'none',stroke:C.stroke,'stroke-width':'1.2','stroke-dasharray':'5 3','stroke-opacity':'0.5'}));
+    // meridiano
+    s.appendChild(ns('ellipse',{cx,cy,rx:r*0.25,ry:r,fill:'none',stroke:C.stroke,'stroke-width':'1','stroke-dasharray':'4 4','stroke-opacity':'0.3'}));
+    // brilho
+    s.appendChild(ns('circle',{cx:cx-r*0.28,cy:cy-r*0.3,r:r*0.18,fill:'rgba(255,255,255,0.12)'}));
+
+    // raio (diagonal)
+    const ang = -Math.PI/5;
+    const ex = cx + r*Math.cos(ang), ey = cy + r*Math.sin(ang);
+    s.appendChild(ns('line',{x1:cx,y1:cy,x2:ex,y2:ey,stroke:C.cota,'stroke-width':'1.8','stroke-dasharray':'4 2'}));
+    s.appendChild(ns('circle',{cx,cy,r:'3.5',fill:C.cota}));
+    s.appendChild(ns('circle',{cx:ex,cy:ey,r:'3.5',fill:C.stroke}));
+    s.appendChild(svgBadge(s, (cx+ex)/2+16, (cy+ey)/2-14, `r = ${raio}`));
+
+    const vol = ((4/3)*Math.PI*raio**3).toFixed(4);
+    const sup = (4*Math.PI*raio**2).toFixed(4);
+    s.appendChild(svgTxt(cx, cy+10, `V = ${vol}`, {fill:C.texto,size:12,weight:'700'}));
+    s.appendChild(svgTxt(cx, cy+26, `A = ${sup}`, {fill:C.muted,size:11}));
+    return s;
+}
+
+// ── PITÁGORAS ───────────────────────────────────────────────
+function figPitagoras(data, json) {
+    let a = parseFloat(data.a), b = parseFloat(data.b), c = parseFloat(data.c);
+    if (json.hipotenusa)  c = json.hipotenusa;
+    else if (json.cateto_a) a = json.cateto_a;
+    else if (json.cateto_b) b = json.cateto_b;
+    if ([a,b,c].some(v => isNaN(v)||v<=0)) return null;
+
+    const W=370, H=310, PAD=70;
+    const maxW=W-PAD*2, maxH=H-PAD*2;
+    const sc = Math.min(maxW/b, maxH/a);
+    const tw = b*sc, th = a*sc;
+    const ox = (W-tw)/2, oy = (H-th)/2;
+
+    // Vértices (triângulo retângulo com ângulo reto em A)
+    const Ax=ox,    Ay=oy+th;   // ângulo reto (esq-baixo)
+    const Bx=ox+tw, By=oy+th;   // base direita
+    const Cx=ox,    Cy=oy;       // topo esquerdo
+
+    const s = svgRoot(W, H);
+
+    // preenchimento
+    s.appendChild(ns('polygon',{
+        points:`${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}`,
+        fill:C.fill, stroke:C.stroke, 'stroke-width':'2'
+    }));
+
+    // ângulo reto em A
+    const ar=11;
+    s.appendChild(ns('path',{
+        d:`M${Ax+ar},${Ay} L${Ax+ar},${Ay-ar} L${Ax},${Ay-ar}`,
+        fill:'none', stroke:C.amarelo, 'stroke-width':'1.8'
+    }));
+
+    // pontos de vértice
+    [[Ax,Ay,'A'],[Bx,By,'B'],[Cx,Cy,'C']].forEach(([px,py,lbl]) => {
+        s.appendChild(ns('circle',{cx:px,cy:py,r:'4',fill:C.stroke}));
+    });
+
+    // cotas
+    svgCota(s, Ax, Ay, Bx, By, `b = ${b}`, {offset:26});
+    svgCota(s, Cx, Cy, Ax, Ay, `a = ${a}`, {offset:26});
+    svgCota(s, Bx, By, Cx, Cy, `c = ${parseFloat(c.toFixed(4))}`, {offset:30});
+
+    // fórmula embaixo
+    s.appendChild(svgTxt(W/2, H-18, 'a² + b² = c²', {fill:C.muted,size:11}));
+    return s;
+}
+
+// ── PONTO DE ENTRADA ────────────────────────────────────────
+function desenharFigura(tipo, json, data) {
+    document.getElementById('figura-geo')?.remove();
+    if (!FIGURAS_COM_DESENHO.has(tipo)) return;
+
+    let svgEl = null;
+    if      (tipo === 'area_quadrado')   svgEl = figQuadrado(parseFloat(data.lado));
+    else if (tipo === 'area_retangulo')  svgEl = figRetangulo(parseFloat(data.base), parseFloat(data.altura));
+    else if (tipo === 'area_triangulo')  svgEl = figTriangulo(parseFloat(data.base), parseFloat(data.altura));
+    else if (tipo === 'area_circulo')    svgEl = figCirculo(parseFloat(data.raio));
+    else if (tipo === 'volume_cilindro') svgEl = figCilindro(parseFloat(data.raio), parseFloat(data.altura));
+    else if (tipo === 'volume_esfera')   svgEl = figEsfera(parseFloat(data.raio));
+    else if (tipo === 'pitagoras')       svgEl = figPitagoras(data, json);
+
+    if (!svgEl) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'figura-geo';
+    const tit = document.createElement('p');
+    tit.className = 'fig-titulo'; tit.textContent = 'Visualização';
+    wrapper.appendChild(tit);
+    wrapper.appendChild(svgEl);
+    document.getElementById('resultado').appendChild(wrapper);
+
+    // animação entrada
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => wrapper.classList.add('visivel'));
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CALCULADORA BÁSICA
+// ═══════════════════════════════════════════════════════════════
+async function calcBasica(operacao) {
+    const a = document.getElementById('bas_a').value;
+    const b = document.getElementById('bas_b').value;
+    if (a===''||b==='') { document.getElementById('basica-display').textContent='Informe A e B'; return; }
+    const res = await fetch('/calc/calc_basica',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a,b})
+    }).then(r=>r.json());
+    if (res.erro) { document.getElementById('basica-display').textContent='Erro'; return; }
+    const opMap = { adicao:'+', subtracao:'−', multiplicacao:'×', divisao:'÷' };
+    document.getElementById('basica-display').textContent = `${a} ${opMap[operacao]} ${b} = ${res[operacao]}`;
+    document.getElementById('resultado').innerHTML = '';
+    const sessao = await fetch('/sessao').then(r=>r.json());
+    if (sessao.logado) carregarHistorico();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════════
+function abrirModal() { document.getElementById('modal-auth').style.display='flex'; trocarTab('login'); }
+function fecharModal() {
+    document.getElementById('modal-auth').style.display='none';
+    document.getElementById('login-erro').textContent='';
+    document.getElementById('cad-erro').textContent='';
+}
+function trocarTab(tab) {
+    document.getElementById('form-login').classList.toggle('active',    tab==='login');
+    document.getElementById('form-cadastro').classList.toggle('active', tab==='cadastro');
+    document.getElementById('tab-login').classList.toggle('active',     tab==='login');
+    document.getElementById('tab-cadastro').classList.toggle('active',  tab==='cadastro');
+}
+async function fazerLogin() {
+    const email=document.getElementById('login-email').value.trim();
+    const senha=document.getElementById('login-senha').value;
+    const erro=document.getElementById('login-erro');
+    if (!email||!senha) { erro.textContent='Preencha todos os campos.'; return; }
+    const json=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})}).then(r=>r.json());
+    if (json.erro) { erro.textContent=json.erro; return; }
+    fecharModal(); atualizarAuthUI(json.nome); carregarHistorico();
+}
+async function fazerCadastro() {
+    const nome=document.getElementById('cad-nome').value.trim();
+    const email=document.getElementById('cad-email').value.trim();
+    const senha=document.getElementById('cad-senha').value;
+    const erro=document.getElementById('cad-erro');
+    if (!nome||!email||!senha) { erro.textContent='Preencha todos os campos.'; return; }
+    const json=await fetch('/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,senha})}).then(r=>r.json());
+    if (json.erro) { erro.textContent=json.erro; return; }
+    if (json.aguardando_codigo) { window._emailVerificacao=email; mostrarFormVerificacao(email); }
+}
+function mostrarFormVerificacao(email) {
+    document.getElementById('form-cadastro').classList.remove('active');
+    document.getElementById('form-verificacao').classList.add('active');
+    document.getElementById('tab-cadastro').classList.remove('active');
+    document.getElementById('ver-email-hint').textContent=email;
+}
+async function verificarCodigo() {
+    const codigo=document.getElementById('ver-codigo').value.trim();
+    const erro=document.getElementById('ver-erro');
+    if (!codigo) { erro.textContent='Digite o código.'; return; }
+    const json=await fetch('/verificar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:window._emailVerificacao,codigo})}).then(r=>r.json());
+    if (json.erro) { erro.textContent=json.erro; return; }
+    fecharModal(); atualizarAuthUI(json.nome); carregarHistorico();
+}
+async function reenviarCodigo() {
+    const erro=document.getElementById('ver-erro');
+    const json=await fetch('/reenviar_codigo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:window._emailVerificacao})}).then(r=>r.json());
+    if (json.erro) { erro.textContent=json.erro; return; }
+    erro.style.color='#22c55e'; erro.textContent='Código reenviado!';
+    setTimeout(()=>{ erro.textContent=''; erro.style.color='#f87171'; },3000);
+}
+async function fazerLogout() {
+    await fetch('/logout',{method:'POST'});
+    atualizarAuthUI(null);
+    document.getElementById('secao-historico').style.display='none';
+}
+function atualizarAuthUI(nome) {
+    const area=document.getElementById('auth-area');
+    if (nome) {
+        area.innerHTML=`<span class="usuario-nome">${nome}</span><button class="btn-sair" onclick="fazerLogout()">Sair</button>`;
+        document.getElementById('secao-historico').style.display='block';
+    } else {
+        area.innerHTML=`<button class="btn-auth" onclick="abrirModal()">Entrar</button>`;
+        document.getElementById('secao-historico').style.display='none';
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HISTÓRICO
+// ═══════════════════════════════════════════════════════════════
+const nomeFormula = {};
+Object.values(categorias).flat().forEach(f => { nomeFormula[f.id]=f.label; });
+
+async function carregarHistorico() {
+    const lista=document.getElementById('historico-lista');
+    lista.innerHTML='<p class="hist-loading">Carregando...</p>';
+    const json=await fetch('/historico').then(r=>r.json());
+    if (json.erro||json.length===0) { lista.innerHTML='<p class="hist-vazio">Nenhum cálculo registrado ainda.</p>'; return; }
+    lista.innerHTML=json.map(r=>`
+        <div class="hist-card" id="hc-${r._id}">
+            <div class="hist-card-info">
+                <div class="hist-formula">${nomeFormula[r.formula]||r.formula}</div>
+                <div class="hist-entrada">${Object.entries(r.entrada).map(([k,v])=>`${k}=${v}`).join(' · ')}</div>
+                <div class="hist-resultado">${Object.entries(r.resultado).slice(0,3).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div>
+                <div class="hist-data">${r.data}</div>
+            </div>
+            <button class="hist-del" onclick="deletarRegistro('${r._id}')">x</button>
+        </div>`).join('');
+}
+async function deletarRegistro(id) {
+    await fetch(`/historico/${id}`,{method:'DELETE'});
+    document.getElementById(`hc-${id}`)?.remove();
+    if (!document.getElementById('historico-lista').children.length)
+        document.getElementById('historico-lista').innerHTML='<p class="hist-vazio">Nenhum cálculo registrado ainda.</p>';
+}
+async function limparHistorico() {
+    const confirmado = await mostrarConfirm();
+    if (!confirmado) return;
+    await fetch('/historico',{method:'DELETE'});
+    document.getElementById('historico-lista').innerHTML='<p class="hist-vazio">Nenhum cálculo registrado ainda.</p>';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+//  MODO CLARO / ESCURO
+// ═══════════════════════════════════════════════════════════════
+function alternarModo() {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('tema', isLight ? 'light' : 'dark');
+    atualizarBtnModo(isLight);
+    if (chart) redesenharGrafico();
+}
+function atualizarBtnModo(isLight) {
+    const txt = isLight ? 'Modo Escuro' : 'Modo Claro';
+    document.querySelectorAll('.btn-modo').forEach(b => b.textContent = txt);
+    const hdr = document.getElementById('btn-tema-header');
+    if (hdr) hdr.textContent = txt;
+}
+(function() {
+    const tema = localStorage.getItem('tema');
+    if (tema === 'light') { document.body.classList.add('light-mode'); }
+})();
+
+// ═══════════════════════════════════════════════════════════════
+//  NAVEGACAO DE ABAS
+// ═══════════════════════════════════════════════════════════════
+function mudarAba(aba) {
+    document.querySelectorAll('.pagina').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('active'));
+    document.getElementById('pagina-' + aba).classList.add('active');
+    const idx = ['calculadora','sobre','calculos'].indexOf(aba);
+    document.querySelectorAll('.nav-aba')[idx].classList.add('active');
+    if (aba === 'calculos') renderizarCalculos('todos');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ABA CALCULOS
+// ═══════════════════════════════════════════════════════════════
+const formulasTexto = {
+    calc_basica:'a + b  /  a - b  /  a × b  /  a ÷ b',funcao_1grau:'f(x) = ax + b',
+    funcao_2grau:'f(x) = ax² + bx + c',funcao_exponencial:'f(x) = b · aˣ',
+    funcao_logaritmica:'f(x) = log_a(x)',area_quadrado:'A = l²',area_retangulo:'A = b × h',
+    area_triangulo:'A = (b × h) / 2',area_circulo:'A = π r²',volume_cilindro:'V = π r² h',
+    volume_esfera:'V = (4/3) π r³',pitagoras:'a² + b² = c²',pa:'aₙ = a₁ + (n−1)r',
+    pg:'aₙ = a₁ · q^(n−1)',trigonometria:'sen²θ + cos²θ = 1',media_aritmetica:'x̄ = Σxᵢ / n',
+    media_ponderada:'x̄ₚ = Σxᵢpᵢ / Σpᵢ',probabilidade_simples:'P(A) = n(A) / n(Ω)',
+    probabilidade_composta:'P(A∩B) = P(A) · P(B)',velocidade_media:'v = Δs / Δt',
+    movimento_uniforme:'s = s₀ + vt',muv:'s = s₀ + v₀t + at²/2',torricelli:'v² = v₀² + 2aΔs',
+    segunda_lei_newton:'F = m · a',peso:'P = m · g',forca_atrito:'f = μN',
+    trabalho:'W = F · d · cos θ',energia_cinetica:'Ec = mv²/2',energia_potencial:'Ep = mgh',
+    conservacao_energia:'Em = Ec + Ep',lei_ohm:'V = R · I',potencia_eletrica:'P = V · I',
+    resistores_serie:'R_T = R₁ + R₂ + ...',resistores_paralelo:'1/R_T = 1/R₁ + 1/R₂ + ...',
+    calor_sensivel:'Q = mcΔT',calor_latente:'Q = mL',dilatacao_termica:'ΔL = L₀ · α · ΔT',
+    velocidade_onda:'v = f · λ',equacao_ondulatoria:'v = f · λ',refracao_snell:'n₁ sinθ₁ = n₂ sinθ₂',
+    juros_simples:'M = C(1 + it)',juros_compostos:'M = C(1 + i)^t',desconto_simples:'D = N · i · t',
+    desconto_composto:'VA = N / (1+i)^t',valor_presente:'VP = VF / (1+i)^t',
+    valor_futuro:'VF = VP · (1+i)^t',amortizacao_price:'PMT = PV · i(1+i)^n / ((1+i)^n−1)',
+    regra_72:'t ≈ 72 / i',
+};
+const explicacoesCalculo = {
+    calc_basica:'Realiza as quatro operacoes aritmeticas basicas entre dois numeros.',
+    funcao_1grau:'Equacao de uma reta. Calcula raiz, coeficientes e gera o grafico.',
+    funcao_2grau:'Equacao de parabola. Calcula delta, raizes reais, vertice e concavidade.',
+    funcao_exponencial:'Modela crescimento ou decrescimento exponencial com grafico.',
+    funcao_logaritmica:'Funcao inversa da exponencial. Calcula log em qualquer base positiva.',
+    area_quadrado:'Calcula area (l²) e perimetro (4l) com visualizacao SVG.',
+    area_retangulo:'Calcula area (b×h) e perimetro com visualizacao SVG.',
+    area_triangulo:'Area de qualquer triangulo pela formula base×altura/2.',
+    area_circulo:'Calcula area (πr²) e circunferencia (2πr).',
+    volume_cilindro:'Volume, area lateral e area total do cilindro reto.',
+    volume_esfera:'Volume (4πr³/3) e area da superficie (4πr²).',
+    pitagoras:'Dado dois lados, calcula o terceiro: a² + b² = c².',
+    pa:'Sequencia com razao constante. Calcula n-esimo termo e soma.',
+    pg:'Sequencia com fator constante. Calcula termo, soma finita e infinita.',
+    trigonometria:'Seno, cosseno e tangente de um angulo em graus.',
+    media_aritmetica:'Media simples: soma dos valores dividida pela quantidade.',
+    media_ponderada:'Media considerando pesos diferentes para cada valor.',
+    probabilidade_simples:'P(A) = casos favoraveis / total de casos possiveis.',
+    probabilidade_composta:'P(A∩B) = P(A)·P(B) e P(A∪B) para eventos independentes.',
+    velocidade_media:'Razao entre deslocamento e tempo. Resultado em m/s e km/h.',
+    movimento_uniforme:'Posicao com velocidade constante s = s0 + vt. Com grafico.',
+    muv:'Posicao e velocidade final com aceleracao constante.',
+    torricelli:'Relaciona velocidade, aceleracao e deslocamento sem o tempo.',
+    segunda_lei_newton:'Resultante das forcas sobre um corpo: F = m·a.',
+    peso:'Forca gravitacional: P = m·g. Gravidade configuravel.',
+    forca_atrito:'Forca de atrito: f = μN, onde N e a forca normal.',
+    trabalho:'Energia transferida por uma forca: W = F·d·cosθ.',
+    energia_cinetica:'Energia do movimento: Ec = mv²/2.',
+    energia_potencial:'Energia pela posicao: Ep = mgh.',
+    conservacao_energia:'Energia mecanica total conservada. Calcula velocidade final.',
+    lei_ohm:'V = R·I — informe dois dos tres e calcula o terceiro.',
+    potencia_eletrica:'P = V·I = V²/R = I²R. Dois campos suficientes.',
+    resistores_serie:'Resistencia equivalente: soma direta de todos os valores.',
+    resistores_paralelo:'Resistencia equivalente: inverso da soma dos inversos.',
+    calor_sensivel:'Calor trocado sem mudanca de fase: Q = mcΔT.',
+    calor_latente:'Calor trocado durante mudanca de fase: Q = mL.',
+    dilatacao_termica:'Variacao de comprimento com temperatura: ΔL = L₀·α·ΔT.',
+    velocidade_onda:'Relacao entre velocidade, frequencia e lambda: v = f·λ.',
+    equacao_ondulatoria:'Dado v, calcula frequencia ou comprimento de onda.',
+    refracao_snell:'Angulo de refracao entre dois meios: n₁·sinθ₁ = n₂·sinθ₂.',
+    juros_simples:'Montante com juros simples: M = C(1+it). Com grafico.',
+    juros_compostos:'Montante com capitalizacao: M = C(1+i)^t. Com grafico.',
+    desconto_simples:'Desconto comercial por fora: D = N·i·t.',
+    desconto_composto:'Desconto racional por dentro: VA = N/(1+i)^t.',
+    valor_presente:'Valor de hoje de um montante futuro: VP = VF/(1+i)^t.',
+    valor_futuro:'Valor acumulado de capital presente: VF = VP·(1+i)^t.',
+    amortizacao_price:'Parcelas fixas com tabela de juros, amortizacao e saldo.',
+    regra_72:'Estima tempo para dobrar capital a uma taxa de juros.',
+};
+
+function renderizarCalculos(cat) {
+    const lista = document.getElementById('calculos-lista');
+    const nomesCat = { matematica:'Matematica', fisica:'Fisica', financeiro:'Financeiro' };
+    let items = [];
+    if (cat === 'todos') {
+        Object.entries(categorias).forEach(([c, arr]) => arr.forEach(f => items.push({...f, cat:c, catLabel:nomesCat[c]})));
+    } else {
+        (categorias[cat]||[]).forEach(f => items.push({...f, cat, catLabel:nomesCat[cat]}));
+    }
+    lista.innerHTML = items.map(f => `<div class="calc-item" id="calc-item-${f.id}" onclick="abrirConsole('${f.id}','${f.cat}','${f.catLabel}')">
+        <div class="calc-item-cat">${f.catLabel}</div>
+        <div class="calc-item-nome">${f.label}</div>
+        <div class="calc-item-formula">${formulasTexto[f.id]||''}</div>
+        <div class="calc-item-desc">${explicacoesCalculo[f.id]||''}</div>
+    </div>`).join('');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  CONSOLE DE CALCULOS
+// ═══════════════════════════════════════════════════════════════
+
+const consoleDados = {
+    calc_basica: {
+        parametros: [
+            { nome: 'a', desc: 'Primeiro numero (qualquer valor real)' },
+            { nome: 'b', desc: 'Segundo numero (qualquer valor real)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a = 8,  b = 3' },
+            { label: 'Adicao', valor: '8 + 3 = 11' },
+            { label: 'Subtracao', valor: '8 - 3 = 5' },
+            { label: 'Multiplicacao', valor: '8 × 3 = 24' },
+            { label: 'Divisao', valor: '8 ÷ 3 = 2.6667' },
+        ]
+    },
+    funcao_1grau: {
+        parametros: [
+            { nome: 'a', desc: 'Coeficiente angular — inclinacao da reta (a ≠ 0)' },
+            { nome: 'b', desc: 'Coeficiente linear — ponto onde a reta corta o eixo y' },
+            { nome: 'x', desc: 'Valor de x para calcular f(x) — opcional' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a = 2,  b = -4' },
+            { label: 'Formula', valor: 'f(x) = 2x - 4' },
+            { label: 'Encontrar a raiz (f(x) = 0)', valor: '2x - 4 = 0  →  x = 4/2 = 2' },
+            { label: 'Calcular f(5)', valor: 'f(5) = 2(5) - 4 = 6' },
+            { label: 'Resultado', valor: 'Raiz = 2,  f(5) = 6' },
+        ]
+    },
+    funcao_2grau: {
+        parametros: [
+            { nome: 'a', desc: 'Coeficiente de x² — define concavidade (a ≠ 0)' },
+            { nome: 'b', desc: 'Coeficiente de x' },
+            { nome: 'c', desc: 'Termo independente' },
+            { nome: 'x', desc: 'Valor para calcular f(x) — opcional' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a = 1,  b = -5,  c = 6' },
+            { label: 'Calcular Delta', valor: 'Δ = b² - 4ac = 25 - 24 = 1' },
+            { label: 'Raiz 1', valor: 'x1 = (-(-5) + √1) / 2 = 6/2 = 3' },
+            { label: 'Raiz 2', valor: 'x2 = (-(-5) - √1) / 2 = 4/2 = 2' },
+            { label: 'Vertice', valor: 'Vx = -b/2a = 5/2 = 2.5,  Vy = -Δ/4a = -0.25' },
+        ]
+    },
+    funcao_exponencial: {
+        parametros: [
+            { nome: 'a', desc: 'Base da exponencial (a > 0 e a ≠ 1)' },
+            { nome: 'b', desc: 'Coeficiente multiplicador' },
+            { nome: 'x', desc: 'Valor para calcular f(x) — opcional' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a = 2,  b = 1' },
+            { label: 'Formula', valor: 'f(x) = 1 × 2^x' },
+            { label: 'f(0)', valor: '2^0 = 1' },
+            { label: 'f(3)', valor: '2^3 = 8' },
+            { label: 'f(10)', valor: '2^10 = 1024' },
+        ]
+    },
+    funcao_logaritmica: {
+        parametros: [
+            { nome: 'base', desc: 'Base do logaritmo (base > 0 e base ≠ 1)' },
+            { nome: 'x', desc: 'Valor para calcular log_base(x) — opcional' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'base = 10,  x = 1000' },
+            { label: 'Pergunta', valor: '10 elevado a quanto = 1000?' },
+            { label: 'Calcular', valor: 'log₁₀(1000) = log₁₀(10³) = 3' },
+            { label: 'Resultado', valor: 'log₁₀(1000) = 3' },
+        ]
+    },
+    area_quadrado: {
+        parametros: [
+            { nome: 'lado', desc: 'Comprimento de qualquer um dos lados (todos iguais)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'lado = 5' },
+            { label: 'Calcular area', valor: 'A = lado² = 5² = 25' },
+            { label: 'Calcular perimetro', valor: 'P = 4 × lado = 4 × 5 = 20' },
+            { label: 'Resultado', valor: 'Area = 25,  Perimetro = 20' },
+        ]
+    },
+    area_retangulo: {
+        parametros: [
+            { nome: 'base', desc: 'Comprimento horizontal do retangulo' },
+            { nome: 'altura', desc: 'Comprimento vertical do retangulo' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'base = 8,  altura = 3' },
+            { label: 'Calcular area', valor: 'A = base × altura = 8 × 3 = 24' },
+            { label: 'Calcular perimetro', valor: 'P = 2 × (8 + 3) = 2 × 11 = 22' },
+            { label: 'Resultado', valor: 'Area = 24,  Perimetro = 22' },
+        ]
+    },
+    area_triangulo: {
+        parametros: [
+            { nome: 'base', desc: 'Comprimento do lado base do triangulo' },
+            { nome: 'altura', desc: 'Altura perpendicular a base' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'base = 6,  altura = 4' },
+            { label: 'Aplicar formula', valor: 'A = (base × altura) / 2' },
+            { label: 'Calcular', valor: 'A = (6 × 4) / 2 = 24 / 2 = 12' },
+            { label: 'Resultado', valor: 'Area = 12' },
+        ]
+    },
+    area_circulo: {
+        parametros: [
+            { nome: 'raio', desc: 'Distancia do centro ate qualquer ponto da borda' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'raio = 7' },
+            { label: 'Calcular area', valor: 'A = π × r² = 3.14159 × 49 = 153.94' },
+            { label: 'Calcular circunferencia', valor: 'C = 2 × π × r = 2 × 3.14159 × 7 = 43.98' },
+            { label: 'Resultado', valor: 'Area = 153.94,  Circunferencia = 43.98' },
+        ]
+    },
+    volume_cilindro: {
+        parametros: [
+            { nome: 'raio', desc: 'Raio da base circular do cilindro' },
+            { nome: 'altura', desc: 'Comprimento/altura do cilindro' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'raio = 3,  altura = 10' },
+            { label: 'Calcular volume', valor: 'V = π × r² × h = 3.14159 × 9 × 10 = 282.74' },
+            { label: 'Calcular area lateral', valor: 'Al = 2π × r × h = 188.50' },
+            { label: 'Calcular area total', valor: 'At = 2π × r × (r + h) = 245.04' },
+            { label: 'Resultado', valor: 'Volume = 282.74' },
+        ]
+    },
+    volume_esfera: {
+        parametros: [
+            { nome: 'raio', desc: 'Raio da esfera' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'raio = 4' },
+            { label: 'Calcular volume', valor: 'V = (4/3) × π × r³ = (4/3) × 3.14159 × 64 = 268.08' },
+            { label: 'Calcular area da superficie', valor: 'A = 4 × π × r² = 4 × 3.14159 × 16 = 201.06' },
+            { label: 'Resultado', valor: 'Volume = 268.08,  Area = 201.06' },
+        ]
+    },
+    pitagoras: {
+        parametros: [
+            { nome: 'a', desc: 'Cateto a — deixe vazio para calcular' },
+            { nome: 'b', desc: 'Cateto b — deixe vazio para calcular' },
+            { nome: 'c', desc: 'Hipotenusa — deixe vazio para calcular' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a = 3,  b = 4  (calcular c)' },
+            { label: 'Aplicar formula', valor: 'c² = a² + b²' },
+            { label: 'Calcular', valor: 'c² = 9 + 16 = 25' },
+            { label: 'Resultado', valor: 'c = √25 = 5' },
+        ]
+    },
+    pa: {
+        parametros: [
+            { nome: 'a1', desc: 'Primeiro termo da sequencia' },
+            { nome: 'r', desc: 'Razao — diferenca constante entre termos consecutivos' },
+            { nome: 'n', desc: 'Posicao do termo que deseja calcular' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a1 = 2,  r = 3,  n = 10' },
+            { label: 'Sequencia', valor: '2, 5, 8, 11, 14, 17, 20, 23, 26, 29...' },
+            { label: 'Calcular termo an', valor: 'a10 = a1 + (n-1) × r = 2 + 9 × 3 = 29' },
+            { label: 'Calcular soma Sn', valor: 'S10 = (10 × (2 + 29)) / 2 = 155' },
+            { label: 'Resultado', valor: 'a10 = 29,  S10 = 155' },
+        ]
+    },
+    pg: {
+        parametros: [
+            { nome: 'a1', desc: 'Primeiro termo da sequencia' },
+            { nome: 'q', desc: 'Razao — fator constante entre termos consecutivos (q ≠ 0)' },
+            { nome: 'n', desc: 'Posicao do termo que deseja calcular' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'a1 = 2,  q = 3,  n = 5' },
+            { label: 'Sequencia', valor: '2, 6, 18, 54, 162...' },
+            { label: 'Calcular termo an', valor: 'a5 = 2 × 3^(5-1) = 2 × 81 = 162' },
+            { label: 'Calcular soma Sn', valor: 'S5 = 2 × (3^5 - 1) / (3-1) = 2 × 242/2 = 242' },
+            { label: 'Resultado', valor: 'a5 = 162,  S5 = 242' },
+        ]
+    },
+    trigonometria: {
+        parametros: [
+            { nome: 'angulo', desc: 'Angulo em graus (0° a 360°)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'angulo = 30°' },
+            { label: 'Converter para radianos', valor: '30 × π/180 = π/6 ≈ 0.5236 rad' },
+            { label: 'Calcular seno', valor: 'sen(30°) = 0.5' },
+            { label: 'Calcular cosseno', valor: 'cos(30°) = √3/2 ≈ 0.8660' },
+            { label: 'Calcular tangente', valor: 'tan(30°) = sen/cos = 0.5/0.866 ≈ 0.5774' },
+        ]
+    },
+    media_aritmetica: {
+        parametros: [
+            { nome: 'valores', desc: 'Lista de numeros separados por virgula' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: '4, 7, 9, 12, 8' },
+            { label: 'Somar todos', valor: '4 + 7 + 9 + 12 + 8 = 40' },
+            { label: 'Dividir pela quantidade', valor: '40 / 5 = 8' },
+            { label: 'Resultado', valor: 'Media = 8' },
+        ]
+    },
+    media_ponderada: {
+        parametros: [
+            { nome: 'valores', desc: 'Notas ou valores separados por virgula' },
+            { nome: 'pesos', desc: 'Peso de cada valor (mesma quantidade de valores)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'notas = 8, 6, 9  /  pesos = 2, 3, 5' },
+            { label: 'Multiplicar cada nota pelo peso', valor: '8×2=16,  6×3=18,  9×5=45' },
+            { label: 'Somar os produtos', valor: '16 + 18 + 45 = 79' },
+            { label: 'Dividir pela soma dos pesos', valor: '79 / (2+3+5) = 79/10 = 7.9' },
+            { label: 'Resultado', valor: 'Media ponderada = 7.9' },
+        ]
+    },
+    probabilidade_simples: {
+        parametros: [
+            { nome: 'favoraveis', desc: 'Numero de casos do evento desejado' },
+            { nome: 'possiveis', desc: 'Total de casos do espaco amostral' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Tirar um numero par em um dado (1 a 6)' },
+            { label: 'Casos favoraveis', valor: 'Pares: 2, 4, 6  →  favoraveis = 3' },
+            { label: 'Casos possiveis', valor: '1, 2, 3, 4, 5, 6  →  possiveis = 6' },
+            { label: 'Calcular', valor: 'P(A) = 3/6 = 0.5' },
+            { label: 'Resultado', valor: 'P(A) = 0.5  =  50%' },
+        ]
+    },
+    probabilidade_composta: {
+        parametros: [
+            { nome: 'p_a', desc: 'Probabilidade do evento A (entre 0 e 1)' },
+            { nome: 'p_b', desc: 'Probabilidade do evento B (entre 0 e 1)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'P(A) = 0.4,  P(B) = 0.3' },
+            { label: 'Intersecao (A e B)', valor: 'P(A∩B) = P(A) × P(B) = 0.4 × 0.3 = 0.12' },
+            { label: 'Uniao (A ou B)', valor: 'P(A∪B) = 0.4 + 0.3 - 0.12 = 0.58' },
+            { label: 'Resultado', valor: 'P(A∩B) = 12%,  P(A∪B) = 58%' },
+        ]
+    },
+    velocidade_media: {
+        parametros: [
+            { nome: 'ds', desc: 'Deslocamento em metros (Δs)' },
+            { nome: 'dt', desc: 'Intervalo de tempo em segundos (Δt)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'Δs = 180 m,  Δt = 12 s' },
+            { label: 'Aplicar formula', valor: 'v = Δs / Δt = 180 / 12 = 15 m/s' },
+            { label: 'Converter para km/h', valor: '15 × 3.6 = 54 km/h' },
+            { label: 'Resultado', valor: 'v = 15 m/s  =  54 km/h' },
+        ]
+    },
+    movimento_uniforme: {
+        parametros: [
+            { nome: 's0', desc: 'Posicao inicial em metros' },
+            { nome: 'v', desc: 'Velocidade constante em m/s' },
+            { nome: 't', desc: 'Instante de tempo final em segundos' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 's0 = 10 m,  v = 5 m/s,  t = 8 s' },
+            { label: 'Aplicar formula', valor: 's = s0 + v × t' },
+            { label: 'Calcular', valor: 's = 10 + 5 × 8 = 10 + 40 = 50 m' },
+            { label: 'Resultado', valor: 'Posicao final = 50 m' },
+        ]
+    },
+    muv: {
+        parametros: [
+            { nome: 's0', desc: 'Posicao inicial em metros' },
+            { nome: 'v0', desc: 'Velocidade inicial em m/s' },
+            { nome: 'a', desc: 'Aceleracao em m/s²' },
+            { nome: 't', desc: 'Tempo em segundos' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 's0 = 0,  v0 = 0,  a = 2 m/s²,  t = 5 s' },
+            { label: 'Calcular posicao', valor: 's = 0 + 0×5 + (1/2)×2×25 = 25 m' },
+            { label: 'Calcular velocidade final', valor: 'vf = v0 + a×t = 0 + 2×5 = 10 m/s' },
+            { label: 'Resultado', valor: 's = 25 m,  vf = 10 m/s' },
+        ]
+    },
+    torricelli: {
+        parametros: [
+            { nome: 'v0', desc: 'Velocidade inicial em m/s' },
+            { nome: 'a', desc: 'Aceleracao em m/s²' },
+            { nome: 'ds', desc: 'Deslocamento em metros (Δs)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'v0 = 0,  a = 2 m/s²,  Δs = 50 m' },
+            { label: 'Aplicar formula', valor: 'v² = v0² + 2×a×Δs' },
+            { label: 'Calcular v²', valor: 'v² = 0 + 2×2×50 = 200' },
+            { label: 'Calcular v', valor: 'v = √200 = 14.14 m/s' },
+            { label: 'Resultado', valor: 'v = 14.14 m/s  =  50.91 km/h' },
+        ]
+    },
+    segunda_lei_newton: {
+        parametros: [
+            { nome: 'm', desc: 'Massa do objeto em kg' },
+            { nome: 'a', desc: 'Aceleracao resultante em m/s²' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'm = 70 kg,  a = 3 m/s²' },
+            { label: 'Aplicar formula', valor: 'F = m × a' },
+            { label: 'Calcular', valor: 'F = 70 × 3 = 210 N' },
+            { label: 'Resultado', valor: 'Forca resultante = 210 N' },
+        ]
+    },
+    peso: {
+        parametros: [
+            { nome: 'm', desc: 'Massa do objeto em kg' },
+            { nome: 'g', desc: 'Aceleracao da gravidade — padrao 9.8 m/s² (Terra)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'm = 80 kg,  g = 9.8 m/s²' },
+            { label: 'Aplicar formula', valor: 'P = m × g' },
+            { label: 'Calcular', valor: 'P = 80 × 9.8 = 784 N' },
+            { label: 'Resultado', valor: 'Peso = 784 N' },
+        ]
+    },
+    forca_atrito: {
+        parametros: [
+            { nome: 'mi', desc: 'Coeficiente de atrito (μ) — adimensional' },
+            { nome: 'normal', desc: 'Forca normal em Newtons (N)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Caixa de 20 kg no chao, μ = 0.4' },
+            { label: 'Calcular forca normal', valor: 'N = m×g = 20×9.8 = 196 N' },
+            { label: 'Aplicar formula', valor: 'f = μ × N = 0.4 × 196 = 78.4 N' },
+            { label: 'Resultado', valor: 'Forca de atrito = 78.4 N' },
+        ]
+    },
+    trabalho: {
+        parametros: [
+            { nome: 'F', desc: 'Forca aplicada em Newtons' },
+            { nome: 'dist', desc: 'Distancia percorrida em metros' },
+            { nome: 'angulo', desc: 'Angulo entre a forca e o deslocamento em graus (padrao 0°)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'F = 100 N,  d = 10 m,  θ = 60°' },
+            { label: 'Calcular cos(60°)', valor: 'cos(60°) = 0.5' },
+            { label: 'Aplicar formula', valor: 'W = F × d × cos(θ)' },
+            { label: 'Calcular', valor: 'W = 100 × 10 × 0.5 = 500 J' },
+            { label: 'Resultado', valor: 'Trabalho = 500 J' },
+        ]
+    },
+    energia_cinetica: {
+        parametros: [
+            { nome: 'm', desc: 'Massa do objeto em kg' },
+            { nome: 'v', desc: 'Velocidade do objeto em m/s' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'm = 1000 kg (carro),  v = 20 m/s' },
+            { label: 'Aplicar formula', valor: 'Ec = (m × v²) / 2' },
+            { label: 'Calcular v²', valor: 'v² = 20² = 400' },
+            { label: 'Calcular', valor: 'Ec = (1000 × 400) / 2 = 200.000 J' },
+            { label: 'Resultado', valor: 'Ec = 200.000 J = 200 kJ' },
+        ]
+    },
+    energia_potencial: {
+        parametros: [
+            { nome: 'm', desc: 'Massa do objeto em kg' },
+            { nome: 'h', desc: 'Altura em relacao ao ponto de referencia em metros' },
+            { nome: 'g', desc: 'Gravidade — padrao 9.8 m/s²' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'm = 5 kg,  h = 20 m,  g = 9.8' },
+            { label: 'Aplicar formula', valor: 'Ep = m × g × h' },
+            { label: 'Calcular', valor: 'Ep = 5 × 9.8 × 20 = 980 J' },
+            { label: 'Resultado', valor: 'Energia potencial = 980 J' },
+        ]
+    },
+    conservacao_energia: {
+        parametros: [
+            { nome: 'm', desc: 'Massa do objeto em kg' },
+            { nome: 'h', desc: 'Altura inicial em metros' },
+            { nome: 'v0', desc: 'Velocidade inicial em m/s — padrao 0' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Objeto de 2 kg largado do repouso a 10 m de altura' },
+            { label: 'Energia potencial inicial', valor: 'Ep = 2 × 9.8 × 10 = 196 J' },
+            { label: 'Energia cinetica inicial', valor: 'Ec = 0 J (v0 = 0)' },
+            { label: 'Energia total', valor: 'Em = 196 + 0 = 196 J' },
+            { label: 'Velocidade ao tocar o chao', valor: 'v = √(2×g×h) = √196 = 14 m/s' },
+        ]
+    },
+    lei_ohm: {
+        parametros: [
+            { nome: 'V', desc: 'Tensao eletrica em Volts — deixe vazio para calcular' },
+            { nome: 'I', desc: 'Corrente eletrica em Amperes — deixe vazio para calcular' },
+            { nome: 'R', desc: 'Resistencia em Ohms — deixe vazio para calcular' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Calcular corrente: V = 12V,  R = 4Ω' },
+            { label: 'Aplicar formula', valor: 'I = V / R' },
+            { label: 'Calcular', valor: 'I = 12 / 4 = 3 A' },
+            { label: 'Verificar', valor: 'V = R × I = 4 × 3 = 12V ✓' },
+            { label: 'Resultado', valor: 'Corrente = 3 A' },
+        ]
+    },
+    potencia_eletrica: {
+        parametros: [
+            { nome: 'V', desc: 'Tensao em Volts' },
+            { nome: 'I', desc: 'Corrente em Amperes' },
+            { nome: 'R', desc: 'Resistencia em Ohms' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Lampada: V = 220V,  I = 0.5A' },
+            { label: 'Aplicar formula', valor: 'P = V × I' },
+            { label: 'Calcular', valor: 'P = 220 × 0.5 = 110 W' },
+            { label: 'Conferir com R', valor: 'R = V/I = 440Ω  →  P = V²/R = 110W ✓' },
+            { label: 'Resultado', valor: 'Potencia = 110 W' },
+        ]
+    },
+    resistores_serie: {
+        parametros: [
+            { nome: 'resistores', desc: 'Valores em Ohms separados por virgula' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'R1 = 10Ω,  R2 = 20Ω,  R3 = 30Ω' },
+            { label: 'Formula', valor: 'RT = R1 + R2 + R3' },
+            { label: 'Calcular', valor: 'RT = 10 + 20 + 30 = 60Ω' },
+            { label: 'Resultado', valor: 'Resistencia total = 60Ω' },
+        ]
+    },
+    resistores_paralelo: {
+        parametros: [
+            { nome: 'resistores', desc: 'Valores em Ohms separados por virgula' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'R1 = 10Ω,  R2 = 20Ω' },
+            { label: 'Formula', valor: '1/RT = 1/R1 + 1/R2' },
+            { label: 'Calcular', valor: '1/RT = 1/10 + 1/20 = 0.1 + 0.05 = 0.15' },
+            { label: 'Inverter', valor: 'RT = 1/0.15 = 6.67Ω' },
+            { label: 'Resultado', valor: 'Resistencia total = 6.67Ω' },
+        ]
+    },
+    calor_sensivel: {
+        parametros: [
+            { nome: 'm', desc: 'Massa em kg' },
+            { nome: 'c', desc: 'Calor especifico do material em J/(kg·°C)' },
+            { nome: 'dT', desc: 'Variacao de temperatura em °C (Tf - Ti)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Aquecer 2 kg de agua de 20°C a 100°C' },
+            { label: 'Dados', valor: 'm = 2 kg,  c = 4186 J/(kg·°C),  ΔT = 80°C' },
+            { label: 'Aplicar formula', valor: 'Q = m × c × ΔT' },
+            { label: 'Calcular', valor: 'Q = 2 × 4186 × 80 = 669.760 J' },
+            { label: 'Resultado', valor: 'Q = 669.760 J ≈ 670 kJ' },
+        ]
+    },
+    calor_latente: {
+        parametros: [
+            { nome: 'm', desc: 'Massa em kg' },
+            { nome: 'L', desc: 'Calor latente especifico em J/kg (fusao ou vaporizacao)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Derreter 0.5 kg de gelo a 0°C' },
+            { label: 'Dados', valor: 'm = 0.5 kg,  L = 334.000 J/kg (fusao do gelo)' },
+            { label: 'Aplicar formula', valor: 'Q = m × L' },
+            { label: 'Calcular', valor: 'Q = 0.5 × 334.000 = 167.000 J' },
+            { label: 'Resultado', valor: 'Q = 167.000 J = 167 kJ' },
+        ]
+    },
+    dilatacao_termica: {
+        parametros: [
+            { nome: 'L0', desc: 'Comprimento inicial do objeto em metros' },
+            { nome: 'alpha', desc: 'Coeficiente de dilatacao linear do material (1/°C)' },
+            { nome: 'dT', desc: 'Variacao de temperatura em °C' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Trilho de aco de 10m aquecido em 50°C' },
+            { label: 'Dados', valor: 'L0 = 10m,  α = 0.000012 /°C,  ΔT = 50°C' },
+            { label: 'Aplicar formula', valor: 'ΔL = L0 × α × ΔT' },
+            { label: 'Calcular', valor: 'ΔL = 10 × 0.000012 × 50 = 0.006 m = 6 mm' },
+            { label: 'Resultado', valor: 'Variacao = 6 mm,  L final = 10.006 m' },
+        ]
+    },
+    velocidade_onda: {
+        parametros: [
+            { nome: 'f', desc: 'Frequencia da onda em Hz (ciclos por segundo)' },
+            { nome: 'lam', desc: 'Comprimento de onda em metros (λ)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Onda sonora com f = 440 Hz e λ = 0.773 m' },
+            { label: 'Aplicar formula', valor: 'v = f × λ' },
+            { label: 'Calcular', valor: 'v = 440 × 0.773 = 340 m/s' },
+            { label: 'Resultado', valor: 'Velocidade = 340 m/s (velocidade do som)' },
+        ]
+    },
+    equacao_ondulatoria: {
+        parametros: [
+            { nome: 'v', desc: 'Velocidade de propagacao da onda em m/s' },
+            { nome: 'f', desc: 'Frequencia em Hz — deixe vazio para calcular' },
+            { nome: 'lam', desc: 'Comprimento de onda em metros — deixe vazio para calcular' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Onda de radio: v = 3×10⁸ m/s,  f = 100 MHz' },
+            { label: 'Converter frequencia', valor: 'f = 100 × 10⁶ = 100.000.000 Hz' },
+            { label: 'Aplicar formula', valor: 'λ = v / f' },
+            { label: 'Calcular', valor: 'λ = 300.000.000 / 100.000.000 = 3 m' },
+            { label: 'Resultado', valor: 'Comprimento de onda = 3 m' },
+        ]
+    },
+    refracao_snell: {
+        parametros: [
+            { nome: 'n1', desc: 'Indice de refracao do primeiro meio (ar = 1.0)' },
+            { nome: 'angulo1', desc: 'Angulo de incidencia em graus (relativo a normal)' },
+            { nome: 'n2', desc: 'Indice de refracao do segundo meio (agua = 1.33, vidro = 1.5)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Luz passando do ar para o vidro' },
+            { label: 'Dados', valor: 'n1 = 1.0,  θ1 = 45°,  n2 = 1.5' },
+            { label: 'Aplicar Lei de Snell', valor: 'n1 × sen(θ1) = n2 × sen(θ2)' },
+            { label: 'Calcular', valor: 'sen(θ2) = (1.0 × sen(45°)) / 1.5 = 0.707/1.5 = 0.4714' },
+            { label: 'Resultado', valor: 'θ2 = arcsen(0.4714) = 28.13°' },
+        ]
+    },
+    juros_simples: {
+        parametros: [
+            { nome: 'C', desc: 'Capital inicial investido ou emprestado' },
+            { nome: 'i', desc: 'Taxa de juros por periodo (ex: 0.05 = 5%)' },
+            { nome: 't', desc: 'Numero de periodos (meses, anos, etc)' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'C = R$ 1.000,  i = 5% ao mes,  t = 6 meses' },
+            { label: 'Calcular juros', valor: 'J = C × i × t = 1000 × 0.05 × 6 = R$ 300' },
+            { label: 'Calcular montante', valor: 'M = C + J = 1000 + 300 = R$ 1.300' },
+            { label: 'Resultado', valor: 'Juros = R$ 300,  Montante = R$ 1.300' },
+        ]
+    },
+    juros_compostos: {
+        parametros: [
+            { nome: 'C', desc: 'Capital inicial' },
+            { nome: 'i', desc: 'Taxa de juros por periodo (ex: 0.05 = 5%)' },
+            { nome: 't', desc: 'Numero de periodos' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'C = R$ 1.000,  i = 5% ao mes,  t = 6 meses' },
+            { label: 'Aplicar formula', valor: 'M = C × (1 + i)^t' },
+            { label: 'Calcular', valor: 'M = 1000 × (1.05)^6 = 1000 × 1.3401 = R$ 1.340,10' },
+            { label: 'Juros ganhos', valor: 'J = 1340.10 - 1000 = R$ 340,10' },
+            { label: 'Diferenca vs simples', valor: 'Compostos (340) > Simples (300) +R$40,10' },
+        ]
+    },
+    desconto_simples: {
+        parametros: [
+            { nome: 'N', desc: 'Valor nominal — valor do titulo no vencimento' },
+            { nome: 'i', desc: 'Taxa de desconto por periodo' },
+            { nome: 't', desc: 'Tempo ate o vencimento' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Titulo de R$1.000 com vencimento em 3 meses, taxa 3%' },
+            { label: 'Calcular desconto', valor: 'D = N × i × t = 1000 × 0.03 × 3 = R$ 90' },
+            { label: 'Calcular valor atual', valor: 'VA = N - D = 1000 - 90 = R$ 910' },
+            { label: 'Resultado', valor: 'Desconto = R$90,  Valor atual = R$910' },
+        ]
+    },
+    desconto_composto: {
+        parametros: [
+            { nome: 'N', desc: 'Valor nominal no vencimento' },
+            { nome: 'i', desc: 'Taxa de desconto por periodo' },
+            { nome: 't', desc: 'Numero de periodos ate o vencimento' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Titulo de R$1.000, taxa 3% ao mes, vence em 3 meses' },
+            { label: 'Aplicar formula', valor: 'VA = N / (1 + i)^t' },
+            { label: 'Calcular', valor: 'VA = 1000 / (1.03)^3 = 1000 / 1.0927 = R$ 915,14' },
+            { label: 'Desconto', valor: 'D = 1000 - 915.14 = R$ 84,86' },
+            { label: 'Resultado', valor: 'VA = R$915,14  (mais favoravel que simples)' },
+        ]
+    },
+    valor_presente: {
+        parametros: [
+            { nome: 'VF', desc: 'Valor futuro — quanto voce tera ou recebera' },
+            { nome: 'i', desc: 'Taxa de juros por periodo' },
+            { nome: 't', desc: 'Numero de periodos' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Quanto investir hoje para ter R$10.000 em 5 anos a 8%aa?' },
+            { label: 'Dados', valor: 'VF = 10.000,  i = 0.08,  t = 5' },
+            { label: 'Aplicar formula', valor: 'VP = VF / (1 + i)^t' },
+            { label: 'Calcular', valor: 'VP = 10.000 / (1.08)^5 = 10.000 / 1.4693 = R$ 6.805,83' },
+            { label: 'Resultado', valor: 'Investir hoje R$ 6.805,83' },
+        ]
+    },
+    valor_futuro: {
+        parametros: [
+            { nome: 'VP', desc: 'Valor presente — capital investido hoje' },
+            { nome: 'i', desc: 'Taxa de juros por periodo' },
+            { nome: 't', desc: 'Numero de periodos' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Investir R$5.000 a 8% ao ano por 5 anos' },
+            { label: 'Aplicar formula', valor: 'VF = VP × (1 + i)^t' },
+            { label: 'Calcular', valor: 'VF = 5000 × (1.08)^5 = 5000 × 1.4693 = R$ 7.346,64' },
+            { label: 'Resultado', valor: 'VF = R$ 7.346,64' },
+        ]
+    },
+    amortizacao_price: {
+        parametros: [
+            { nome: 'PV', desc: 'Valor do emprestimo (Presente Value)' },
+            { nome: 'i', desc: 'Taxa de juros mensal (ex: 0.02 = 2%)' },
+            { nome: 'n', desc: 'Numero de parcelas' },
+        ],
+        passos: [
+            { label: 'Valores de entrada', valor: 'PV = R$10.000,  i = 2% ao mes,  n = 12' },
+            { label: 'Aplicar formula', valor: 'PMT = PV × i(1+i)^n / ((1+i)^n - 1)' },
+            { label: 'Calcular (1.02)^12', valor: '(1.02)^12 = 1.2682' },
+            { label: 'Calcular parcela', valor: 'PMT = 10000 × 0.02×1.2682 / (1.2682-1) = R$ 948,79' },
+            { label: 'Total pago', valor: '948.79 × 12 = R$ 11.385,48  (juros = R$1.385,48)' },
+        ]
+    },
+    regra_72: {
+        parametros: [
+            { nome: 'i', desc: 'Taxa de juros anual em porcentagem (ex: 6 para 6% ao ano)' },
+        ],
+        passos: [
+            { label: 'Situacao', valor: 'Investimento a 9% ao ano — quando dobra?' },
+            { label: 'Aplicar formula', valor: 't ≈ 72 / i' },
+            { label: 'Calcular', valor: 't = 72 / 9 = 8 anos' },
+            { label: 'Verificar', valor: '(1.09)^8 = 1.9926 ≈ 2x o capital' },
+            { label: 'Resultado', valor: 'Capital dobra em aproximadamente 8 anos' },
+        ]
+    },
+};
+
+
+const consoleCotidiano = {
+    calc_basica: "Calcular o troco no supermercado, dividir a conta do restaurante entre amigos, ou saber quantos metros de tinta você precisa para cobrir uma parede.",
+    funcao_1grau: "Calcular o custo de um táxi (taxa fixa + valor por km), prever o salário com comissão fixa mais porcentagem de vendas, ou estimar consumo de combustível por distância.",
+    funcao_2grau: "Prever a trajetória de uma bola arremessada, calcular o lucro máximo de um produto em função do preço, ou determinar a área de um terreno retangular com perímetro fixo.",
+    funcao_exponencial: "Calcular o crescimento de uma aplicação financeira, estimar a propagação de um vírus em uma população, ou modelar o decaimento de um medicamento no organismo.",
+    funcao_logaritmica: "Medir a intensidade de terremotos (escala Richter), calcular o volume sonoro em decibéis, ou determinar o pH de uma solução química.",
+    area_quadrado: "Calcular a quantidade de piso necessária para um cômodo quadrado, dimensionar um jardim, ou determinar o tamanho de uma tela de TV.",
+    area_retangulo: "Calcular metros de piso para uma sala retangular, dimensionar uma pintura de parede, ou estimar o tecido necessário para uma cortina.",
+    area_triangulo: "Calcular a área de um telhado triangular, dimensionar uma placa de sinalização triangular, ou estimar a área de um terreno em formato de triângulo.",
+    area_circulo: "Calcular a área de uma pizza para comparar preços por cm², dimensionar a tampa de um reservatório circular, ou estimar a área irrigada por um aspersor.",
+    volume_cilindro: "Calcular a capacidade de uma caixa d'água cilíndrica, dimensionar um tanque de combustível, ou estimar quanto cimento cabe em um betoneiro.",
+    volume_esfera: "Calcular a quantidade de ar em uma bola de futebol, estimar o volume de um reservatório esférico de gás, ou dimensionar boias salva-vidas.",
+    pitagoras: "Calcular o comprimento de uma escada encostada na parede, verificar se um canto de obra está reto (3-4-5), ou determinar a distância em linha reta entre dois pontos num mapa.",
+    pa: "Calcular o total de assentos em um teatro com fileiras crescentes, planejar um regime de poupança com depósitos fixos mensais, ou prever a produção de uma fábrica com meta crescente.",
+    pg: "Calcular o crescimento de bactérias que dobram a cada hora, estimar o valor de um bem com depreciação percentual anual, ou modelar o pagamento de uma dívida com juros compostos.",
+    trigonometria: "Calcular a altura de um prédio usando o ângulo de visão, determinar a inclinação de uma rampa de acessibilidade, ou navegar usando bússola e ângulos de direção.",
+    media_aritmetica: "Calcular a média das notas do semestre, determinar a temperatura média mensal de uma cidade, ou avaliar o desempenho médio de uma equipe de vendas.",
+    media_ponderada: "Calcular a média final de uma disciplina onde provas valem mais que trabalhos, avaliar candidatos em processos seletivos com critérios de diferentes importâncias.",
+    probabilidade_simples: "Calcular a chance de tirar um número específico no dado, estimar a probabilidade de chover baseado em histórico, ou avaliar riscos em seguros.",
+    probabilidade_composta: "Calcular a chance de dois eventos ocorrerem juntos, como pegar dois ônibus certos seguidos, ou estimar a probabilidade de dois produtos falharem simultaneamente.",
+    velocidade_media: "Calcular a velocidade média de uma viagem de carro entre cidades, estimar o tempo de entrega de um pedido dado distância e velocidade do entregador.",
+    movimento_uniforme: "Prever onde estará um carro após X segundos em velocidade constante, calcular quando dois trens se encontram saindo em direções opostas.",
+    muv: "Calcular a distância de frenagem de um carro em emergência, prever a velocidade de um objeto em queda livre, ou dimensionar uma rampa de lançamento.",
+    torricelli: "Calcular a velocidade final de um carro ao fim de uma descida sem precisar medir o tempo, ou determinar a velocidade de impacto de um objeto em queda.",
+    segunda_lei_newton: "Calcular a força necessária para acelerar um carro, determinar o empuxo de um foguete, ou dimensionar o motor de um elevador.",
+    peso: "Verificar se a capacidade de carga de um piso ou prateleira será respeitada, calcular a força que um atleta exerce no solo ao pousar, ou dimensionar fundações de construção.",
+    forca_atrito: "Calcular a força necessária para arrastar um sofá pelo chão, dimensionar freios de um veículo, ou determinar se uma caixa vai deslizar numa rampa.",
+    trabalho: "Calcular a energia gasta para empurrar um carro enguiçado, dimensionar um motor para mover uma carga, ou estimar o consumo energético de uma máquina.",
+    energia_cinetica: "Calcular o impacto de um carro em uma colisão, dimensionar amortecedores, ou entender por que acidentes em alta velocidade são mais destrutivos.",
+    energia_potencial: "Calcular a energia armazenada em uma represa hidrelétrica, estimar a energia de um objeto antes de cair, ou dimensionar sistemas de segurança em altura.",
+    conservacao_energia: "Prever a velocidade de um ciclista ao fim de uma descida, calcular a altura máxima que uma bola atingirá após ser chutada, ou projetar montanhas-russas.",
+    lei_ohm: "Calcular a corrente que passa por um chuveiro elétrico, verificar se um fusível suportará a carga, ou dimensionar a fiação de uma instalação elétrica residencial.",
+    potencia_eletrica: "Calcular o consumo de energia de eletrodomésticos para estimar a conta de luz, dimensionar um gerador para uma casa, ou comparar eficiência de lâmpadas.",
+    resistores_serie: "Dimensionar circuitos de iluminação em série, calcular a resistência total de um circuito eletrônico, ou verificar quedas de tensão em instalações.",
+    resistores_paralelo: "Calcular a resistência de tomadas em paralelo numa instalação doméstica, dimensionar circuitos de distribuição de energia, ou projetar sistemas redundantes.",
+    calor_sensivel: "Calcular a energia gasta para aquecer água no chuveiro, dimensionar um aquecedor solar, ou estimar o consumo de gás para cozinhar.",
+    calor_latente: "Calcular a energia necessária para derreter gelo em um resfriador industrial, dimensionar sistemas de climatização, ou entender o funcionamento de geladeiras.",
+    dilatacao_termica: "Explicar por que pontes têm juntas de dilatação, calcular o espaço necessário entre trilhos de trem, ou dimensionar tubulações de vapor industrial.",
+    velocidade_onda: "Calcular o comprimento de onda de uma estação de rádio FM, dimensionar antenas, ou entender a diferença entre ondas de som e luz.",
+    equacao_ondulatoria: "Sintonizar frequências de rádio e TV, projetar instrumentos musicais, ou calcular a frequência de ultrassom usado em exames médicos.",
+    refracao_snell: "Entender por que objetos dentro d'água parecem mais próximos, projetar lentes de óculos e câmeras, ou calcular ângulos de prismas em instrumentos óticos.",
+    juros_simples: "Calcular juros de um empréstimo de curto prazo, estimar o rendimento de uma caderneta de poupança simples, ou determinar multas por atraso no pagamento.",
+    juros_compostos: "Simular o crescimento de um investimento em ações, calcular o total a pagar em um financiamento, ou comparar rentabilidade de diferentes aplicações financeiras.",
+    desconto_simples: "Calcular o valor de um título descontado antecipadamente em banco, determinar o preço à vista de uma compra parcelada, ou negociar duplicatas comerciais.",
+    desconto_composto: "Calcular o valor presente de um título financeiro, determinar o preço justo de um ativo com vencimento futuro, ou avaliar propostas de antecipação de recebíveis.",
+    valor_presente: "Calcular quanto você precisa investir hoje para garantir uma aposentadoria confortável, ou avaliar se um projeto de negócio vale o investimento inicial.",
+    valor_futuro: "Simular quanto seu dinheiro valerá daqui a 10 anos numa aplicação, planejar a compra de um imóvel, ou calcular o montante de um plano de previdência.",
+    amortizacao_price: "Calcular as parcelas de um financiamento de carro ou imóvel, entender o extrato de um empréstimo bancário, ou comparar propostas de crédito.",
+    regra_72: "Estimar rapidamente em quantos anos seu dinheiro dobra numa aplicação, comparar rentabilidade de investimentos de forma mental, ou explicar o poder dos juros compostos.",
+};
+
+function abrirConsole(id, cat, catLabel) {
+    const nomesCat = { matematica:'Matematica', fisica:'Fisica', financeiro:'Financeiro' };
+    const label = nomeFormula[id] || id;
+    const dados = consoleDados[id];
+    const formula = formulasTexto[id] || '';
+    const desc = explicacoesCalculo[id] || '';
+    const cotidiano = consoleCotidiano[id] || '';
+
+    document.getElementById('console-cat').textContent = catLabel || nomesCat[cat] || cat;
+    document.getElementById('console-titulo').textContent = label;
+    document.getElementById('console-formula-box').textContent = formula;
+    document.getElementById('console-desc').textContent = desc;
+    document.getElementById('console-cotidiano').textContent = cotidiano;
+
+    // Parametros
+    const pDiv = document.getElementById('console-parametros');
+    if (dados && dados.parametros) {
+        pDiv.innerHTML = dados.parametros.map(p =>
+            `<div class="console-param"><span class="console-param-nome">${p.nome}</span><span class="console-param-desc">${p.desc}</span></div>`
+        ).join('');
+    } else {
+        pDiv.innerHTML = '<p style="color:var(--dim);font-size:.85rem">Sem parametros detalhados.</p>';
+    }
+
+    // Passos
+    const stDiv = document.getElementById('console-passos');
+    if (dados && dados.passos) {
+        stDiv.innerHTML = dados.passos.map((p, i) =>
+            `<div class="console-passo">
+                <div class="console-passo-num">${i + 1}</div>
+                <div class="console-passo-body">
+                    <div class="console-passo-label">${p.label}</div>
+                    <div class="console-passo-valor">${p.valor}</div>
+                </div>
+            </div>`
+        ).join('');
+    } else {
+        stDiv.innerHTML = '<p style="color:var(--dim);font-size:.85rem">Exemplo nao disponivel.</p>';
+    }
+
+    // Abrir modal
+    const modal = document.getElementById('modal-console');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function fecharConsole() {
+    document.getElementById('modal-console').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function filtrarCalcCat(cat, btn) {
+    document.querySelectorAll('.calc-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderizarCalculos(cat);
+}
+
+function irParaCalculo(id, cat) {
+    mudarAba('calculadora');
+    const selCat = document.getElementById('sel-categoria');
+    selCat.value = cat; trocarCategoria(cat);
+    const selFor = document.getElementById('sel-formula');
+    selFor.value = id; trocarFormula(id);
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function isLightMode() { return document.body.classList.contains('light-mode'); }
+
+function redesenharGrafico() {
+    if (!chart) return;
+    const lm = isLightMode();
+    chart.options.scales.x.ticks.color = lm ? '#475569' : '#64748b';
+    chart.options.scales.y.ticks.color = lm ? '#475569' : '#64748b';
+    chart.options.scales.x.grid.color  = lm ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)';
+    chart.options.scales.y.grid.color  = lm ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)';
+    chart.update();
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  MODAL CONFIRMAÇÃO CUSTOMIZADO
+// ═══════════════════════════════════════════════════════════════
+function mostrarConfirm() {
+    return new Promise(resolve => {
+        const modal = document.getElementById('modal-confirm');
+        modal.style.display = 'flex';
+
+        const btnOk = document.getElementById('modal-confirm-ok');
+        const btnCancelar = document.getElementById('modal-confirm-cancelar');
+
+        function fechar(resultado) {
+            modal.style.display = 'none';
+            btnOk.removeEventListener('click', onOk);
+            btnCancelar.removeEventListener('click', onCancelar);
+            resolve(resultado);
+        }
+        const onOk = () => fechar(true);
+        const onCancelar = () => fechar(false);
+
+        btnOk.addEventListener('click', onOk);
+        btnCancelar.addEventListener('click', onCancelar);
+        modal.addEventListener('click', e => { if (e.target === modal) fechar(false); }, { once: true });
+    });
+}
+
+window.addEventListener('load', async () => {
+    const json=await fetch('/sessao').then(r=>r.json());
+    if (json.logado) { atualizarAuthUI(json.nome); carregarHistorico(); }
+    atualizarBtnModo(document.body.classList.contains('light-mode'));
+});
+</script>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div id="modal-confirm" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;z-index:300;">
+  <div style="background:#0f172a;border:1px solid rgba(248,113,113,.25);border-radius:16px;padding:2rem 1.75rem;width:min(380px,92vw);text-align:center;">
+    <div id="modal-confirm-icon" style="font-size:2.2rem;margin-bottom:.75rem;">🗑️</div>
+    <div id="modal-confirm-titulo" style="font-size:1.05rem;font-weight:700;color:#e2e8f0;margin-bottom:.5rem;font-family:'Space Grotesk',sans-serif;">Limpar histórico</div>
+    <div id="modal-confirm-msg" style="font-size:.88rem;color:#94a3b8;margin-bottom:1.5rem;line-height:1.6;font-family:'Space Grotesk',sans-serif;">Todos os cálculos salvos serão apagados permanentemente. Essa ação não pode ser desfeita.</div>
+    <div style="display:flex;gap:.75rem;justify-content:center;">
+      <button id="modal-confirm-cancelar" style="flex:1;padding:.65rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#94a3b8;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;width:auto;margin:0;text-transform:none;letter-spacing:0;transition:background .2s;">Cancelar</button>
+      <button id="modal-confirm-ok" style="flex:1;padding:.65rem 1rem;border-radius:10px;border:none;background:linear-gradient(135deg,#f87171,#ef4444);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;width:auto;margin:0;text-transform:none;letter-spacing:0;transition:opacity .2s;">Limpar tudo</button>
     </div>
-
-    <!-- Anúncio topo (banner horizontal) -->
-    <div style="text-align:center; margin-bottom: 16px;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5366946523055708"
-             data-ad-slot="auto"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <div class="controles-topo">
-        <select id="sel-categoria" onchange="trocarCategoria(this.value)">
-            <option value="">Categoria</option>
-            <option value="matematica">Matemática</option>
-            <option value="fisica">Física</option>
-            <option value="financeiro">Financeiro</option>
-        </select>
-        <select id="sel-formula" onchange="trocarFormula(this.value)" disabled>
-            <option value="">Fórmula</option>
-        </select>
-        <button class="btn-limpar" onclick="limparTudo()">🧹</button>
-    </div>
-
-    <div id="formula" class="math-display"></div>
-    <div id="explicacao" class="explicacao"></div>
-
-    <div id="calc_basica" class="form form-basica">
-        <div class="basica-display" id="basica-display">0</div>
-        <div class="basica-inputs">
-            <input id="bas_a" type="number" placeholder="Número A">
-            <input id="bas_b" type="number" placeholder="Número B">
-        </div>
-        <div class="basica-btns">
-            <button class="bas-op" onclick="calcBasica('adicao')">+</button>
-            <button class="bas-op" onclick="calcBasica('subtracao')">−</button>
-            <button class="bas-op" onclick="calcBasica('multiplicacao')">×</button>
-            <button class="bas-op" onclick="calcBasica('divisao')">÷</button>
-        </div>
-        <button onclick="calc('calc_basica')">Calcular Tudo</button>
-    </div>
-
-    <div id="funcao_1grau" class="form">
-        <div class="grid-inputs">
-            <input id="f1_a" type="number" placeholder="Coef. a (inclinação)">
-            <input id="f1_b" type="number" placeholder="Coef. b (intercepto)">
-            <input id="f1_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('funcao_1grau')">Calcular</button>
-    </div>
-
-    <div id="funcao_2grau" class="form">
-        <div class="grid-inputs">
-            <input id="f2_a" type="number" placeholder="Coef. a">
-            <input id="f2_b" type="number" placeholder="Coef. b">
-            <input id="f2_c" type="number" placeholder="Coef. c">
-            <input id="f2_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('funcao_2grau')">Calcular</button>
-    </div>
-
-    <div id="funcao_exponencial" class="form">
-        <div class="grid-inputs">
-            <input id="fe_a" type="number" placeholder="Base a (ex: 2)">
-            <input id="fe_b" type="number" placeholder="Coef. b (ex: 1)">
-            <input id="fe_x" type="number" placeholder="Calcular f(x) para x= (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('funcao_exponencial')">Calcular</button>
-    </div>
-
-    <div id="funcao_logaritmica" class="form">
-        <div class="grid-inputs">
-            <input id="fl_base" type="number" placeholder="Base do logaritmo (ex: 10)">
-            <input id="fl_x"    type="number" placeholder="Calcular log(x) para x= (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('funcao_logaritmica')">Calcular</button>
-    </div>
-
-    <div id="area_quadrado" class="form">
-        <div class="grid-inputs">
-            <input id="aq_lado" type="number" placeholder="Lado">
-        </div>
-        <button onclick="calc('area_quadrado')">Calcular</button>
-    </div>
-
-    <div id="area_retangulo" class="form">
-        <div class="grid-inputs">
-            <input id="ar_base"   type="number" placeholder="Base">
-            <input id="ar_altura" type="number" placeholder="Altura">
-        </div>
-        <button onclick="calc('area_retangulo')">Calcular</button>
-    </div>
-
-    <div id="area_triangulo" class="form">
-        <div class="grid-inputs">
-            <input id="at_base"   type="number" placeholder="Base">
-            <input id="at_altura" type="number" placeholder="Altura">
-        </div>
-        <button onclick="calc('area_triangulo')">Calcular</button>
-    </div>
-
-    <div id="area_circulo" class="form">
-        <div class="grid-inputs">
-            <input id="ac_raio" type="number" placeholder="Raio">
-        </div>
-        <button onclick="calc('area_circulo')">Calcular</button>
-    </div>
-
-    <div id="volume_cilindro" class="form">
-        <div class="grid-inputs">
-            <input id="vc_raio"   type="number" placeholder="Raio">
-            <input id="vc_altura" type="number" placeholder="Altura">
-        </div>
-        <button onclick="calc('volume_cilindro')">Calcular</button>
-    </div>
-
-    <div id="volume_esfera" class="form">
-        <div class="grid-inputs">
-            <input id="ve_raio" type="number" placeholder="Raio">
-        </div>
-        <button onclick="calc('volume_esfera')">Calcular</button>
-    </div>
-
-    <div id="pitagoras" class="form">
-        <div class="grid-inputs">
-            <input id="pit_a" type="number" placeholder="Cateto a (deixe vazio para calcular)">
-            <input id="pit_b" type="number" placeholder="Cateto b (deixe vazio para calcular)">
-            <input id="pit_c" type="number" placeholder="Hipotenusa c (deixe vazio para calcular)">
-        </div>
-        <button onclick="calc('pitagoras')">Calcular</button>
-    </div>
-
-    <div id="pa" class="form">
-        <div class="grid-inputs">
-            <input id="pa_a1" type="number" placeholder="Primeiro Termo (a1)">
-            <input id="pa_r"  type="number" placeholder="Razão (r)">
-            <input id="pa_n"  type="number" placeholder="Posição (n)" min="1">
-            <input id="pa_te" type="number" placeholder="Ver termo específico (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('pa')">Calcular</button>
-    </div>
-
-    <div id="pg" class="form">
-        <div class="grid-inputs">
-            <input id="pg_a1" type="number" placeholder="Primeiro Termo (a1)">
-            <input id="pg_q"  type="number" placeholder="Razão (q)">
-            <input id="pg_n"  type="number" placeholder="Posição (n)" min="1">
-            <input id="pg_te" type="number" placeholder="Ver termo específico (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('pg')">Calcular</button>
-    </div>
-
-    <div id="trigonometria" class="form">
-        <div class="grid-inputs">
-            <input id="trig_angulo" type="number" placeholder="Ângulo em graus">
-        </div>
-        <button onclick="calc('trigonometria')">Calcular</button>
-    </div>
-
-    <div id="media_aritmetica" class="form">
-        <div class="grid-inputs">
-            <input id="ma_valores" type="text" placeholder="Valores separados por vírgula (ex: 5, 7, 9)">
-        </div>
-        <button onclick="calc('media_aritmetica')">Calcular</button>
-    </div>
-
-    <div id="media_ponderada" class="form">
-        <div class="grid-inputs">
-            <input id="mp_valores" type="text" placeholder="Valores separados por vírgula (ex: 8, 6, 9)">
-            <input id="mp_pesos"   type="text" placeholder="Pesos separados por vírgula (ex: 2, 3, 5)">
-        </div>
-        <button onclick="calc('media_ponderada')">Calcular</button>
-    </div>
-
-    <div id="probabilidade_simples" class="form">
-        <div class="grid-inputs">
-            <input id="ps_fav" type="number" placeholder="Casos favoráveis">
-            <input id="ps_pos" type="number" placeholder="Total de casos possíveis">
-        </div>
-        <button onclick="calc('probabilidade_simples')">Calcular</button>
-    </div>
-
-    <div id="probabilidade_composta" class="form">
-        <div class="grid-inputs">
-            <input id="pc_pa" type="number" placeholder="P(A) — ex: 0.3">
-            <input id="pc_pb" type="number" placeholder="P(B) — ex: 0.5">
-        </div>
-        <button onclick="calc('probabilidade_composta')">Calcular</button>
-    </div>
-
-    <div id="velocidade_media" class="form">
-        <div class="grid-inputs">
-            <input id="vm_ds" type="number" placeholder="Deslocamento Δs (m)">
-            <input id="vm_dt" type="number" placeholder="Tempo Δt (s)">
-        </div>
-        <button onclick="calc('velocidade_media')">Calcular</button>
-    </div>
-
-    <div id="movimento_uniforme" class="form">
-        <div class="grid-inputs">
-            <input id="mu_s0" type="number" placeholder="Posição inicial s0 (m)">
-            <input id="mu_v"  type="number" placeholder="Velocidade v (m/s)">
-            <input id="mu_t"  type="number" placeholder="Tempo final t (s)">
-        </div>
-        <button onclick="calc('movimento_uniforme')">Calcular</button>
-    </div>
-
-    <div id="muv" class="form">
-        <div class="grid-inputs">
-            <input id="muv_s0" type="number" placeholder="Posição inicial s0 (m)">
-            <input id="muv_v0" type="number" placeholder="Velocidade inicial v0 (m/s)">
-            <input id="muv_a"  type="number" placeholder="Aceleração a (m/s²)">
-            <input id="muv_t"  type="number" placeholder="Tempo t (s)">
-        </div>
-        <button onclick="calc('muv')">Calcular</button>
-    </div>
-
-    <div id="torricelli" class="form">
-        <div class="grid-inputs">
-            <input id="tor_v0" type="number" placeholder="Velocidade Inicial v0 (m/s)">
-            <input id="tor_a"  type="number" placeholder="Aceleração a (m/s²)">
-            <input id="tor_ds" type="number" placeholder="Deslocamento Δs (m)">
-        </div>
-        <button onclick="calc('torricelli')">Calcular</button>
-    </div>
-
-    <div id="segunda_lei_newton" class="form">
-        <div class="grid-inputs">
-            <input id="sln_m" type="number" placeholder="Massa m (kg)">
-            <input id="sln_a" type="number" placeholder="Aceleração a (m/s²)">
-        </div>
-        <button onclick="calc('segunda_lei_newton')">Calcular</button>
-    </div>
-
-    <div id="peso" class="form">
-        <div class="grid-inputs">
-            <input id="pe_m" type="number" placeholder="Massa m (kg)">
-            <input id="pe_g" type="number" placeholder="g (m/s²) — padrão 9.8 (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('peso')">Calcular</button>
-    </div>
-
-    <div id="forca_atrito" class="form">
-        <div class="grid-inputs">
-            <input id="fa_mi"     type="number" placeholder="Coef. de atrito μ">
-            <input id="fa_normal" type="number" placeholder="Força normal N (N)">
-        </div>
-        <button onclick="calc('forca_atrito')">Calcular</button>
-    </div>
-
-    <div id="trabalho" class="form">
-        <div class="grid-inputs">
-            <input id="tr_F"    type="number" placeholder="Força F (N)">
-            <input id="tr_dist" type="number" placeholder="Distância d (m)">
-            <input id="tr_ang"  type="number" placeholder="Ângulo θ° (padrão 0°, opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('trabalho')">Calcular</button>
-    </div>
-
-    <div id="energia_cinetica" class="form">
-        <div class="grid-inputs">
-            <input id="ec_m" type="number" placeholder="Massa m (kg)">
-            <input id="ec_v" type="number" placeholder="Velocidade v (m/s)">
-        </div>
-        <button onclick="calc('energia_cinetica')">Calcular</button>
-    </div>
-
-    <div id="energia_potencial" class="form">
-        <div class="grid-inputs">
-            <input id="ep_m" type="number" placeholder="Massa m (kg)">
-            <input id="ep_h" type="number" placeholder="Altura h (m)">
-            <input id="ep_g" type="number" placeholder="g (m/s²) — padrão 9.8 (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('energia_potencial')">Calcular</button>
-    </div>
-
-    <div id="conservacao_energia" class="form">
-        <div class="grid-inputs">
-            <input id="ce_m"  type="number" placeholder="Massa m (kg)">
-            <input id="ce_h"  type="number" placeholder="Altura h (m)">
-            <input id="ce_v0" type="number" placeholder="Vel. inicial v0 (m/s) — padrão 0 (opcional)" class="input-opcional">
-        </div>
-        <button onclick="calc('conservacao_energia')">Calcular</button>
-    </div>
-
-    <div id="lei_ohm" class="form">
-        <div class="grid-inputs">
-            <input id="ohm_V" type="number" placeholder="Tensão V (V) — deixe vazio para calcular">
-            <input id="ohm_I" type="number" placeholder="Corrente I (A) — deixe vazio para calcular">
-            <input id="ohm_R" type="number" placeholder="Resistência R (Ω) — deixe vazio para calcular">
-        </div>
-        <button onclick="calc('lei_ohm')">Calcular</button>
-    </div>
-
-    <div id="potencia_eletrica" class="form">
-        <div class="grid-inputs">
-            <input id="pot_V" type="number" placeholder="Tensão V (V) — informe 2 dos 3">
-            <input id="pot_I" type="number" placeholder="Corrente I (A)">
-            <input id="pot_R" type="number" placeholder="Resistência R (Ω)">
-        </div>
-        <button onclick="calc('potencia_eletrica')">Calcular</button>
-    </div>
-
-    <div id="resistores_serie" class="form">
-        <div class="grid-inputs">
-            <input id="rs_res" type="text" placeholder="Resistências separadas por vírgula (ex: 10, 20, 30)">
-        </div>
-        <button onclick="calc('resistores_serie')">Calcular</button>
-    </div>
-
-    <div id="resistores_paralelo" class="form">
-        <div class="grid-inputs">
-            <input id="rp_res" type="text" placeholder="Resistências separadas por vírgula (ex: 10, 20, 30)">
-        </div>
-        <button onclick="calc('resistores_paralelo')">Calcular</button>
-    </div>
-
-    <div id="calor_sensivel" class="form">
-        <div class="grid-inputs">
-            <input id="cs_m"  type="number" placeholder="Massa m (kg)">
-            <input id="cs_c"  type="number" placeholder="Calor específico c (J/kg·°C)">
-            <input id="cs_dT" type="number" placeholder="Variação de temp. ΔT (°C)">
-        </div>
-        <button onclick="calc('calor_sensivel')">Calcular</button>
-    </div>
-
-    <div id="calor_latente" class="form">
-        <div class="grid-inputs">
-            <input id="cl_m" type="number" placeholder="Massa m (kg)">
-            <input id="cl_L" type="number" placeholder="Calor latente L (J/kg)">
-        </div>
-        <button onclick="calc('calor_latente')">Calcular</button>
-    </div>
-
-    <div id="dilatacao_termica" class="form">
-        <div class="grid-inputs">
-            <input id="dt_L0"    type="number" placeholder="Comprimento inicial L0 (m)">
-            <input id="dt_alpha" type="number" placeholder="Coef. dilatação α (ex: 0.000012)">
-            <input id="dt_dT"    type="number" placeholder="Variação de temp. ΔT (°C)">
-        </div>
-        <button onclick="calc('dilatacao_termica')">Calcular</button>
-    </div>
-
-    <div id="velocidade_onda" class="form">
-        <div class="grid-inputs">
-            <input id="vo_f"   type="number" placeholder="Frequência f (Hz)">
-            <input id="vo_lam" type="number" placeholder="Comprimento de onda λ (m)">
-        </div>
-        <button onclick="calc('velocidade_onda')">Calcular</button>
-    </div>
-
-    <div id="equacao_ondulatoria" class="form">
-        <div class="grid-inputs">
-            <input id="eo_v"   type="number" placeholder="Velocidade v (m/s)">
-            <input id="eo_f"   type="number" placeholder="Frequência f (Hz) — deixe vazio para calcular">
-            <input id="eo_lam" type="number" placeholder="Comprimento λ (m) — deixe vazio para calcular">
-        </div>
-        <button onclick="calc('equacao_ondulatoria')">Calcular</button>
-    </div>
-
-    <div id="refracao_snell" class="form">
-        <div class="grid-inputs">
-            <input id="sn_n1"  type="number" placeholder="Índice de refração n1">
-            <input id="sn_ang" type="number" placeholder="Ângulo de incidência θ1 (graus)">
-            <input id="sn_n2"  type="number" placeholder="Índice de refração n2">
-        </div>
-        <button onclick="calc('refracao_snell')">Calcular</button>
-    </div>
-
-    <div id="juros_simples" class="form">
-        <div class="grid-inputs">
-            <input id="js_C" type="number" placeholder="Capital C (R$)">
-            <input id="js_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="js_t" type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('juros_simples')">Calcular</button>
-    </div>
-
-    <div id="juros_compostos" class="form">
-        <div class="grid-inputs">
-            <input id="jc_C" type="number" placeholder="Capital C (R$)">
-            <input id="jc_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="jc_t" type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('juros_compostos')">Calcular</button>
-    </div>
-
-    <div id="desconto_simples" class="form">
-        <div class="grid-inputs">
-            <input id="ds_N" type="number" placeholder="Valor nominal N (R$)">
-            <input id="ds_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="ds_t" type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('desconto_simples')">Calcular</button>
-    </div>
-
-    <div id="desconto_composto" class="form">
-        <div class="grid-inputs">
-            <input id="dc_N" type="number" placeholder="Valor nominal N (R$)">
-            <input id="dc_i" type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="dc_t" type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('desconto_composto')">Calcular</button>
-    </div>
-
-    <div id="valor_presente" class="form">
-        <div class="grid-inputs">
-            <input id="vp_VF" type="number" placeholder="Valor Futuro VF (R$)">
-            <input id="vp_i"  type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="vp_t"  type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('valor_presente')">Calcular</button>
-    </div>
-
-    <div id="valor_futuro" class="form">
-        <div class="grid-inputs">
-            <input id="vf_VP" type="number" placeholder="Valor Presente VP (R$)">
-            <input id="vf_i"  type="number" placeholder="Taxa i (ex: 0.05 = 5%)">
-            <input id="vf_t"  type="number" placeholder="Tempo t (períodos)">
-        </div>
-        <button onclick="calc('valor_futuro')">Calcular</button>
-    </div>
-
-    <div id="amortizacao_price" class="form">
-        <div class="grid-inputs">
-            <input id="ap_PV" type="number" placeholder="Valor do empréstimo PV (R$)">
-            <input id="ap_i"  type="number" placeholder="Taxa mensal i (ex: 0.02 = 2%)">
-            <input id="ap_n"  type="number" placeholder="Nº de parcelas n">
-        </div>
-        <button onclick="calc('amortizacao_price')">Calcular</button>
-    </div>
-
-    <div id="regra_72" class="form">
-        <div class="grid-inputs">
-            <input id="r72_i" type="number" placeholder="Taxa anual i (ex: 6 = 6%)">
-        </div>
-        <button onclick="calc('regra_72')">Calcular</button>
-    </div>
-
-    <div id="resultado" class="resultado-box"></div>
-
-    <!-- Anúncio após resultado -->
-    <div style="text-align:center; margin: 16px 0;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5366946523055708"
-             data-ad-slot="auto"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <div class="visualizacao">
-        <canvas id="grafico"></canvas>
-    </div>
-
-    <div id="secao-historico" class="historico-secao" style="display:none">
-        <div class="historico-header">
-            <h3>🕘 Histórico</h3>
-            <button class="btn-limpar-hist" onclick="limparHistorico()">🗑 Limpar tudo</button>
-        </div>
-        <div id="historico-lista" class="historico-lista">
-            <p class="hist-vazio">Nenhum cálculo registrado ainda.</p>
-        </div>
-    </div>
-
-    <!-- Anúncio rodapé -->
-    <div style="text-align:center; margin-top: 24px;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5366946523055708"
-             data-ad-slot="auto"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
+  </div>
 </div>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- MODAL CONSOLE -->
+<div id="modal-console" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,.82);backdrop-filter:blur(10px);align-items:center;justify-content:center;z-index:250;padding:1rem;" onclick="if(event.target===this)fecharConsole()">
+  <div class="console-modal-box">
+    <div class="console-header">
+      <div>
+        <div class="console-cat" id="console-cat"></div>
+        <div class="console-titulo" id="console-titulo"></div>
+      </div>
+      <button class="console-fechar" onclick="fecharConsole()">&#x2715;</button>
+    </div>
+    <div class="console-modal-body">
+      <div class="console-formula-box" id="console-formula-box"></div>
+      <div class="console-secao">
+        <div class="console-secao-titulo">Parametros</div>
+        <div class="console-parametros" id="console-parametros"></div>
+      </div>
+      <div class="console-secao">
+        <div class="console-secao-titulo">Exemplo passo a passo</div>
+        <div class="console-passos" id="console-passos"></div>
+      </div>
+      <div class="console-secao console-secao-cotidiano">
+        <div class="console-secao-titulo">Uso no cotidiano</div>
+        <div class="console-cotidiano" id="console-cotidiano"></div>
+      </div>
+      <div class="console-secao">
+        <div class="console-secao-titulo">Descricao</div>
+        <div class="console-desc" id="console-desc"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
