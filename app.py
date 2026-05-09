@@ -405,6 +405,21 @@ def calc(tipo):
             res     = regra_72(f('i'))
             entrada = {"i": d['i']}
 
+        elif tipo == 'conv_base':
+            req('valor', 'base_origem', 'base_destino')
+            res     = conv_base(d['valor'], int(d['base_origem']), int(d['base_destino']))
+            entrada = {"valor": d['valor'], "base_origem": d['base_origem'], "base_destino": d['base_destino']}
+
+        elif tipo == 'conv_armazenamento':
+            req('valor', 'unidade_origem', 'unidade_destino')
+            res     = conv_armazenamento(f('valor'), d['unidade_origem'], d['unidade_destino'])
+            entrada = {"valor": d['valor'], "de": d['unidade_origem'], "para": d['unidade_destino']}
+
+        elif tipo == 'logica_booleana':
+            req('a', 'b')
+            res     = logica_booleana(d['a'], d['b'])
+            entrada = {"A": d['a'], "B": d['b']}
+
         else:
             return jsonify({"erro": "Fórmula não implementada."}), 404
 

@@ -8,6 +8,130 @@
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+/* Unit selects */
+.unit-select {
+  background: var(--surface, #1e293b);
+  color: var(--text, #e2e8f0);
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.82rem;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  min-width: 72px;
+  flex-shrink: 0;
+}
+.unit-select:focus { outline: 1px solid var(--accent, #38bdf8); }
+
+/* Passo a passo */
+.passo-box { margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; }
+.passo-titulo { font-size: .78rem; font-weight: 700; color: #475569; letter-spacing: .06em; margin-bottom: 10px; text-transform: uppercase; }
+.passo-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; font-size: .87rem; line-height: 1.5; }
+.passo-num { background: rgba(56,189,248,0.12); color: #38bdf8; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+/* Busca */
+#busca-input { transition: border-color .2s; }
+#busca-input:focus { outline: none; border-color: #38bdf8; }
+.busca-item { padding: .6rem 1rem; cursor: pointer; font-family:'Space Grotesk',sans-serif; font-size:.88rem; color:#e2e8f0; transition:background .15s; }
+.busca-item:hover { background: rgba(56,189,248,.1); }
+.busca-vazio { color:#475569; cursor:default; }
+
+/* Favoritos */
+.fav-chip {
+  background: rgba(251,191,36,.08);
+  border: 1px solid rgba(251,191,36,.22);
+  border-radius: 20px;
+  padding: .28rem .75rem;
+  font-size:.78rem;
+  color:#fbbf24;
+  cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+  white-space:nowrap;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  transition: background .2s;
+}
+.fav-chip:hover { background: rgba(251,191,36,.18); }
+.fav-vazio { font-size:.78rem; color:#334155; font-family:'Space Grotesk',sans-serif; }
+.fav-ativo { color:#fbbf24 !important; }
+
+/* Lógica booleana table */
+.bool-table { width:100%; border-collapse:collapse; margin-top:8px; font-family:'Fira Code',monospace; font-size:.9rem; }
+.bool-table th { color:#64748b; padding:6px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+.bool-table td { padding:7px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+.bool-1 { color:#38bdf8; font-weight:700; }
+.bool-0 { color:#475569; }
+
+/* Conversor */
+#conv-inputs input[type=number] {
+  background: var(--surface, #1e293b);
+  color: var(--text, #e2e8f0);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: .55rem .9rem;
+  font-size: .95rem;
+  font-family: 'Space Grotesk', sans-serif;
+}
+#conv-inputs input[type=number]:focus { outline: 1px solid #38bdf8; }
+
+/* ══ MOBILE IMPROVEMENTS ══ */
+@media (max-width: 640px) {
+  header { padding: .6rem 1rem; gap: .5rem; flex-wrap: wrap; }
+  .header-left { gap: .5rem; }
+  .logo { font-size: 1.2rem; }
+  .nav-abas { gap: 2px; }
+  .nav-aba { padding: .3rem .5rem; font-size: .75rem; }
+  .header-right { gap: .4rem; }
+  .btn-auth, .btn-tema-header, .btn-sair { padding: .3rem .6rem; font-size: .75rem; }
+  .usuario-nome { font-size: .75rem; }
+
+  main { padding: .75rem; }
+  .selects-row { flex-direction: column; gap: 8px; }
+  .selects-row select { width: 100%; }
+  .selects-row .btn-limpar { width: 100%; }
+
+  .form-row { flex-direction: column; gap: 8px; }
+  .form-row input, .form-row select { width: 100%; box-sizing: border-box; min-width: unset; }
+  .unit-select { width: 100%; min-width: unset; }
+
+  #fav-btn-wrap { flex-direction: column; align-items: flex-start; }
+  #fav-btn-wrap span { font-size:.7rem; }
+
+  .formula-box { padding: .75rem; }
+  #formula { font-size: .9rem; overflow-x: auto; }
+
+  .card-res { padding: 1rem; }
+  .card-res h3 { font-size: 1rem; }
+
+  .basica-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-calc { width: 100%; }
+
+  .hist-card { flex-direction: column; gap: .5rem; }
+  .hist-del { align-self: flex-end; }
+
+  /* Conversor mobile */
+  #conv-inputs > div { flex-direction: column; }
+  #conv-cat { font-size: .85rem; }
+
+  /* Calc console modal */
+  .console-modal-box { width: 98vw !important; max-height: 92vh; }
+
+  /* Aba calculos grid */
+  .calc-grid { grid-template-columns: 1fr !important; }
+
+  .bool-table th, .bool-table td { padding: 5px 8px; font-size: .82rem; }
+
+  /* Nav scroll horizontal em telas muito pequenas */
+  .nav-abas { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+}
+
+@media (max-width: 380px) {
+  .logo { font-size: 1rem; }
+  .nav-aba { font-size: .68rem; padding: .25rem .4rem; }
+}
+</style>
 <meta name="google-adsense-account" content="ca-pub-5366946523055708">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5366946523055708" crossorigin="anonymous"></script>
 </head>
@@ -30,6 +154,20 @@
 
 <main>
   <div class="pagina active" id="pagina-calculadora">
+  <!-- BUSCA -->
+  <div id="busca-wrapper" style="position:relative;margin-bottom:10px">
+    <input id="busca-input" type="text" placeholder="🔍 Buscar fórmula... (tecla /)" autocomplete="off"
+      oninput="buscarFormula(this.value)"
+      style="width:100%;box-sizing:border-box;padding:.55rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--surface,#1e293b);color:var(--text,#e2e8f0);font-family:'Space Grotesk',sans-serif;font-size:.9rem">
+    <div id="busca-resultados" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1e293b;border:1px solid rgba(255,255,255,0.12);border-radius:10px;z-index:200;max-height:260px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.4)"></div>
+  </div>
+
+  <!-- FAVORITOS BAR -->
+  <div style="margin-bottom:14px">
+    <div style="font-size:.75rem;color:#475569;margin-bottom:6px;font-weight:600;letter-spacing:.05em">★ FAVORITOS</div>
+    <div id="fav-bar" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  </div>
+
   <!-- SELETORES -->
   <div class="selects-row">
     <select id="sel-categoria" onchange="trocarCategoria(this.value)">
@@ -37,10 +175,17 @@
       <option value="matematica">Matematica</option>
       <option value="fisica">Fisica</option>
       <option value="financeiro">Financeiro</option>
+      <option value="informatica">Informatica</option>
     </select>
-    <select id="sel-formula" disabled onchange="trocarFormula(this.value)">
-      <option value="">Fórmula</option>
-    </select>
+    <div style="display:flex;gap:6px;flex:1;min-width:0">
+      <select id="sel-formula" disabled onchange="trocarFormula(this.value)" style="flex:1;min-width:0">
+        <option value="">Fórmula</option>
+      </select>
+      <button id="btn-fav-sel" onclick="if(formulaAtual)toggleFav(formulaAtual)"
+        title="Favoritar esta fórmula"
+        style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:.4rem .65rem;cursor:pointer;font-size:1.15rem;color:#94a3b8;flex-shrink:0;transition:color .15s,background .15s"
+        >☆</button>
+    </div>
     <button class="btn-limpar" onclick="limparTudo()">Limpar</button>
   </div>
 
@@ -48,6 +193,11 @@
   <div class="formula-box">
     <div id="formula"></div>
     <div id="explicacao"></div>
+  </div>
+  <!-- COMPARTILHAR -->
+  <div id="share-wrap" style="display:none;margin-bottom:10px">
+    <button onclick="compartilharResultado()" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:.38rem .9rem;cursor:pointer;font-size:.82rem;color:#38bdf8;font-family:'Space Grotesk',sans-serif;font-weight:600">📸 Compartilhar resultado</button>
+    <span style="font-size:.72rem;color:#334155;margin-left:10px">Enter ↵ calcula · / busca · Ctrl+L limpa</span>
   </div>
 
   <!-- FORMULÁRIOS -->
@@ -113,6 +263,7 @@
     <div class="form" id="area_quadrado">
       <div class="form-row">
         <input type="number" id="aq_lado" placeholder="lado" step="any" min="0">
+        <select id="aq_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select>
       </div>
       <button class="btn-calc" onclick="calc('area_quadrado')">Calcular</button>
     </div>
@@ -122,6 +273,7 @@
       <div class="form-row">
         <input type="number" id="ar_base" placeholder="base" step="any" min="0">
         <input type="number" id="ar_altura" placeholder="altura" step="any" min="0">
+        <select id="ar_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select>
       </div>
       <button class="btn-calc" onclick="calc('area_retangulo')">Calcular</button>
     </div>
@@ -131,6 +283,7 @@
       <div class="form-row">
         <input type="number" id="at_base" placeholder="base" step="any" min="0">
         <input type="number" id="at_altura" placeholder="altura" step="any" min="0">
+        <select id="at_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select>
       </div>
       <button class="btn-calc" onclick="calc('area_triangulo')">Calcular</button>
     </div>
@@ -139,6 +292,7 @@
     <div class="form" id="area_circulo">
       <div class="form-row">
         <input type="number" id="ac_raio" placeholder="raio" step="any" min="0">
+        <select id="ac_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select>
       </div>
       <button class="btn-calc" onclick="calc('area_circulo')">Calcular</button>
     </div>
@@ -148,6 +302,7 @@
       <div class="form-row">
         <input type="number" id="vc_raio" placeholder="raio" step="any" min="0">
         <input type="number" id="vc_altura" placeholder="altura" step="any" min="0">
+        <select id="vc_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option></select>
       </div>
       <button class="btn-calc" onclick="calc('volume_cilindro')">Calcular</button>
     </div>
@@ -156,6 +311,7 @@
     <div class="form" id="volume_esfera">
       <div class="form-row">
         <input type="number" id="ve_raio" placeholder="raio" step="any" min="0">
+        <select id="ve_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option></select>
       </div>
       <button class="btn-calc" onclick="calc('volume_esfera')">Calcular</button>
     </div>
@@ -167,6 +323,7 @@
         <input type="number" id="pit_a" placeholder="cateto a" step="any" min="0">
         <input type="number" id="pit_b" placeholder="cateto b" step="any" min="0">
         <input type="number" id="pit_c" placeholder="hipotenusa c" step="any" min="0">
+        <select id="pit_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select>
       </div>
       <button class="btn-calc" onclick="calc('pitagoras')">Calcular</button>
     </div>
@@ -239,8 +396,10 @@
     <!-- VELOCIDADE MÉDIA -->
     <div class="form" id="velocidade_media">
       <div class="form-row">
-        <input type="number" id="vm_ds" placeholder="Δs (m)" step="any">
-        <input type="number" id="vm_dt" placeholder="Δt (s)" step="any">
+        <input type="number" id="vm_ds" placeholder="Δs (distância)" step="any">
+        <select id="vm_ds_un" class="unit-select"><option value="m">m</option><option value="km">km</option><option value="cm">cm</option></select>
+        <input type="number" id="vm_dt" placeholder="Δt (tempo)" step="any">
+        <select id="vm_dt_un" class="unit-select"><option value="s">s</option><option value="min">min</option><option value="h">h</option></select>
       </div>
       <button class="btn-calc" onclick="calc('velocidade_media')">Calcular</button>
     </div>
@@ -250,7 +409,9 @@
       <div class="form-row">
         <input type="number" id="mu_s0" placeholder="s0 (pos. inicial)" step="any">
         <input type="number" id="mu_v" placeholder="v (velocidade)" step="any">
+        <select id="mu_v_un" class="unit-select"><option value="ms">m/s</option><option value="kmh">km/h</option></select>
         <input type="number" id="mu_t" placeholder="t (tempo final)" step="any" min="0">
+        <select id="mu_t_un" class="unit-select"><option value="s">s</option><option value="min">min</option><option value="h">h</option></select>
       </div>
       <button class="btn-calc" onclick="calc('movimento_uniforme')">Calcular</button>
     </div>
@@ -258,10 +419,11 @@
     <!-- MUV -->
     <div class="form" id="muv">
       <div class="form-row">
-        <input type="number" id="muv_s0" placeholder="s0" step="any">
-        <input type="number" id="muv_v0" placeholder="v0" step="any">
-        <input type="number" id="muv_a" placeholder="a (aceleração)" step="any">
+        <input type="number" id="muv_s0" placeholder="s0 (m)" step="any">
+        <input type="number" id="muv_v0" placeholder="v0 (m/s)" step="any">
+        <input type="number" id="muv_a" placeholder="a (m/s²)" step="any">
         <input type="number" id="muv_t" placeholder="t (tempo)" step="any">
+        <select id="muv_t_un" class="unit-select"><option value="s">s</option><option value="min">min</option><option value="h">h</option></select>
       </div>
       <button class="btn-calc" onclick="calc('muv')">Calcular</button>
     </div>
@@ -269,7 +431,8 @@
     <!-- TORRICELLI -->
     <div class="form" id="torricelli">
       <div class="form-row">
-        <input type="number" id="tor_v0" placeholder="v0 (m/s)" step="any">
+        <input type="number" id="tor_v0" placeholder="v0" step="any">
+        <select id="tor_v_un" class="unit-select"><option value="ms">m/s</option><option value="kmh">km/h</option></select>
         <input type="number" id="tor_a" placeholder="a (m/s²)" step="any">
         <input type="number" id="tor_ds" placeholder="Δs (m)" step="any">
       </div>
@@ -279,7 +442,8 @@
     <!-- 2ª LEI DE NEWTON -->
     <div class="form" id="segunda_lei_newton">
       <div class="form-row">
-        <input type="number" id="sln_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="sln_m" placeholder="m (massa)" step="any" min="0">
+        <select id="sln_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option><option value="t">t</option></select>
         <input type="number" id="sln_a" placeholder="a (m/s²)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('segunda_lei_newton')">Calcular</button>
@@ -288,7 +452,8 @@
     <!-- PESO -->
     <div class="form" id="peso">
       <div class="form-row">
-        <input type="number" id="pe_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="pe_m" placeholder="m (massa)" step="any" min="0">
+        <select id="pe_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option><option value="t">t</option></select>
         <input type="number" id="pe_g" placeholder="g (padrão 9.8)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('peso')">Calcular</button>
@@ -307,8 +472,9 @@
     <div class="form" id="trabalho">
       <div class="form-row">
         <input type="number" id="tr_F" placeholder="F (N)" step="any">
-        <input type="number" id="tr_dist" placeholder="d (m)" step="any">
-        <input type="number" id="tr_ang" placeholder="θ em graus (opcional, padrão 0)" step="any">
+        <input type="number" id="tr_dist" placeholder="d (distância)" step="any">
+        <select id="tr_dist_un" class="unit-select"><option value="m">m</option><option value="km">km</option><option value="cm">cm</option></select>
+        <input type="number" id="tr_ang" placeholder="θ em graus (padrão 0)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('trabalho')">Calcular</button>
     </div>
@@ -316,8 +482,10 @@
     <!-- ENERGIA CINÉTICA -->
     <div class="form" id="energia_cinetica">
       <div class="form-row">
-        <input type="number" id="ec_m" placeholder="m (kg)" step="any" min="0">
-        <input type="number" id="ec_v" placeholder="v (m/s)" step="any">
+        <input type="number" id="ec_m" placeholder="m (massa)" step="any" min="0">
+        <select id="ec_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option></select>
+        <input type="number" id="ec_v" placeholder="v (velocidade)" step="any">
+        <select id="ec_v_un" class="unit-select"><option value="ms">m/s</option><option value="kmh">km/h</option></select>
       </div>
       <button class="btn-calc" onclick="calc('energia_cinetica')">Calcular</button>
     </div>
@@ -325,8 +493,10 @@
     <!-- ENERGIA POTENCIAL -->
     <div class="form" id="energia_potencial">
       <div class="form-row">
-        <input type="number" id="ep_m" placeholder="m (kg)" step="any" min="0">
-        <input type="number" id="ep_h" placeholder="h (m)" step="any" min="0">
+        <input type="number" id="ep_m" placeholder="m (massa)" step="any" min="0">
+        <select id="ep_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option></select>
+        <input type="number" id="ep_h" placeholder="h (altura)" step="any" min="0">
+        <select id="ep_h_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="km">km</option></select>
         <input type="number" id="ep_g" placeholder="g (padrão 9.8)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('energia_potencial')">Calcular</button>
@@ -335,8 +505,10 @@
     <!-- CONSERVAÇÃO DE ENERGIA -->
     <div class="form" id="conservacao_energia">
       <div class="form-row">
-        <input type="number" id="ce_m" placeholder="m (kg)" step="any" min="0">
-        <input type="number" id="ce_h" placeholder="h (m)" step="any" min="0">
+        <input type="number" id="ce_m" placeholder="m (massa)" step="any" min="0">
+        <select id="ce_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option></select>
+        <input type="number" id="ce_h" placeholder="h (altura)" step="any" min="0">
+        <select id="ce_h_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option></select>
         <input type="number" id="ce_v0" placeholder="v0 (opcional, padrão 0)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('conservacao_energia')">Calcular</button>
@@ -383,9 +555,11 @@
     <!-- CALOR SENSÍVEL -->
     <div class="form" id="calor_sensivel">
       <div class="form-row">
-        <input type="number" id="cs_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="cs_m" placeholder="m (massa)" step="any" min="0">
+        <select id="cs_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option></select>
         <input type="number" id="cs_c" placeholder="c (calor específico)" step="any">
         <input type="number" id="cs_dT" placeholder="ΔT (variação temp.)" step="any">
+        <select id="cs_t_un" class="unit-select"><option value="C">°C / K</option><option value="F">°F</option></select>
       </div>
       <button class="btn-calc" onclick="calc('calor_sensivel')">Calcular</button>
     </div>
@@ -393,7 +567,8 @@
     <!-- CALOR LATENTE -->
     <div class="form" id="calor_latente">
       <div class="form-row">
-        <input type="number" id="cl_m" placeholder="m (kg)" step="any" min="0">
+        <input type="number" id="cl_m" placeholder="m (massa)" step="any" min="0">
+        <select id="cl_m_un" class="unit-select"><option value="kg">kg</option><option value="g">g</option></select>
         <input type="number" id="cl_L" placeholder="L (calor latente J/kg)" step="any">
       </div>
       <button class="btn-calc" onclick="calc('calor_latente')">Calcular</button>
@@ -403,8 +578,10 @@
     <div class="form" id="dilatacao_termica">
       <div class="form-row">
         <input type="number" id="dt_L0" placeholder="L0 (comp. inicial)" step="any" min="0">
+        <select id="dt_L_un" class="unit-select"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option></select>
         <input type="number" id="dt_alpha" placeholder="α (coef. dilatação)" step="any">
         <input type="number" id="dt_dT" placeholder="ΔT (variação temp.)" step="any">
+        <select id="dt_t_un" class="unit-select"><option value="C">°C / K</option><option value="F">°F</option></select>
       </div>
       <button class="btn-calc" onclick="calc('dilatacao_termica')">Calcular</button>
     </div>
@@ -445,6 +622,7 @@
         <input type="number" id="js_C" placeholder="C (capital)" step="any" min="0">
         <input type="number" id="js_i" placeholder="i (taxa, ex: 0.05)" step="any">
         <input type="number" id="js_t" placeholder="t (períodos)" step="any" min="0">
+        <select id="js_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('juros_simples')">Calcular</button>
     </div>
@@ -455,6 +633,7 @@
         <input type="number" id="jc_C" placeholder="C (capital)" step="any" min="0">
         <input type="number" id="jc_i" placeholder="i (taxa, ex: 0.05)" step="any">
         <input type="number" id="jc_t" placeholder="t (períodos)" step="any" min="0">
+        <select id="jc_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('juros_compostos')">Calcular</button>
     </div>
@@ -465,6 +644,7 @@
         <input type="number" id="ds_N" placeholder="N (valor nominal)" step="any" min="0">
         <input type="number" id="ds_i" placeholder="i (taxa)" step="any">
         <input type="number" id="ds_t" placeholder="t (tempo)" step="any" min="0">
+        <select id="ds_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('desconto_simples')">Calcular</button>
     </div>
@@ -475,6 +655,7 @@
         <input type="number" id="dc_N" placeholder="N (valor nominal)" step="any" min="0">
         <input type="number" id="dc_i" placeholder="i (taxa)" step="any">
         <input type="number" id="dc_t" placeholder="t (tempo)" step="any" min="0">
+        <select id="dc_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('desconto_composto')">Calcular</button>
     </div>
@@ -485,6 +666,7 @@
         <input type="number" id="vp_VF" placeholder="VF (valor futuro)" step="any" min="0">
         <input type="number" id="vp_i" placeholder="i (taxa)" step="any">
         <input type="number" id="vp_t" placeholder="t (períodos)" step="any" min="0">
+        <select id="vp_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('valor_presente')">Calcular</button>
     </div>
@@ -495,6 +677,7 @@
         <input type="number" id="vf_VP" placeholder="VP (valor presente)" step="any" min="0">
         <input type="number" id="vf_i" placeholder="i (taxa)" step="any">
         <input type="number" id="vf_t" placeholder="t (períodos)" step="any" min="0">
+        <select id="vf_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
       <button class="btn-calc" onclick="calc('valor_futuro')">Calcular</button>
     </div>
@@ -505,6 +688,7 @@
         <input type="number" id="ap_PV" placeholder="PV (valor do empréstimo)" step="any" min="0">
         <input type="number" id="ap_i" placeholder="i (taxa mensal, ex: 0.02)" step="any">
         <input type="number" id="ap_n" placeholder="n (nº parcelas)" step="any" min="1">
+        <select id="ap_n_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option></select>
       </div>
       <button class="btn-calc" onclick="calc('amortizacao_price')">Calcular</button>
     </div>
@@ -515,6 +699,67 @@
         <input type="number" id="r72_i" placeholder="i (taxa em %, ex: 6)" step="any" min="0">
       </div>
       <button class="btn-calc" onclick="calc('regra_72')">Calcular</button>
+    </div>
+
+    <!-- CONVERSÃO DE BASES -->
+    <div class="form" id="conv_base">
+      <div class="form-row">
+        <input type="text" id="cb_valor" placeholder="Valor (ex: 255, FF, 11111111)" style="flex:2">
+        <select id="cb_origem" class="unit-select" style="min-width:130px">
+          <option value="10">Decimal (10)</option>
+          <option value="2">Binário (2)</option>
+          <option value="8">Octal (8)</option>
+          <option value="16">Hexadecimal (16)</option>
+        </select>
+        <select id="cb_destino" class="unit-select" style="min-width:130px">
+          <option value="2">Binário (2)</option>
+          <option value="16">Hexadecimal (16)</option>
+          <option value="8">Octal (8)</option>
+          <option value="10">Decimal (10)</option>
+        </select>
+      </div>
+      <button class="btn-calc" onclick="calc('conv_base')">Converter</button>
+    </div>
+
+    <!-- CONVERSÃO DE ARMAZENAMENTO -->
+    <div class="form" id="conv_armazenamento">
+      <div class="form-row">
+        <input type="number" id="ca_valor" placeholder="Valor" step="any" min="0">
+        <select id="ca_origem" class="unit-select" style="min-width:90px">
+          <option value="byte">byte</option>
+          <option value="bit">bit</option>
+          <option value="KB">KB</option>
+          <option value="MB">MB</option>
+          <option value="GB">GB</option>
+          <option value="TB">TB</option>
+          <option value="PB">PB</option>
+        </select>
+        <select id="ca_destino" class="unit-select" style="min-width:90px">
+          <option value="MB">MB</option>
+          <option value="bit">bit</option>
+          <option value="byte">byte</option>
+          <option value="KB">KB</option>
+          <option value="GB">GB</option>
+          <option value="TB">TB</option>
+          <option value="PB">PB</option>
+        </select>
+      </div>
+      <button class="btn-calc" onclick="calc('conv_armazenamento')">Converter</button>
+    </div>
+
+    <!-- LÓGICA BOOLEANA -->
+    <div class="form" id="logica_booleana">
+      <div class="form-row">
+        <select id="lb_a" class="unit-select" style="min-width:100px">
+          <option value="0">A = 0 (FALSO)</option>
+          <option value="1">A = 1 (VERDADEIRO)</option>
+        </select>
+        <select id="lb_b" class="unit-select" style="min-width:100px">
+          <option value="0">B = 0 (FALSO)</option>
+          <option value="1">B = 1 (VERDADEIRO)</option>
+        </select>
+      </div>
+      <button class="btn-calc" onclick="calc('logica_booleana')">Calcular</button>
     </div>
 
   </div><!-- /forms-container -->
@@ -621,6 +866,7 @@
       <button class="calc-cat-btn" onclick="filtrarCalcCat('matematica', this)">Matematica</button>
       <button class="calc-cat-btn" onclick="filtrarCalcCat('fisica', this)">Fisica</button>
       <button class="calc-cat-btn" onclick="filtrarCalcCat('financeiro', this)">Financeiro</button>
+      <button class="calc-cat-btn" onclick="filtrarCalcCat('informatica', this)">Informatica</button>
     </div>
     <div class="calculos-lista" id="calculos-lista"></div>
   </div><!-- /pagina-calculos -->
@@ -727,6 +973,11 @@ const categorias = {
         { id:"valor_futuro",          label:"Valor Futuro" },
         { id:"amortizacao_price",     label:"Amortização (Tabela Price)" },
         { id:"regra_72",              label:"Regra de 72" },
+    ],
+    informatica: [
+        { id:"conv_base",             label:"Conversão de Bases (Bin/Hex/Oct/Dec)" },
+        { id:"conv_armazenamento",    label:"Conversão de Armazenamento" },
+        { id:"logica_booleana",       label:"Lógica Booleana (AND/OR/XOR...)" },
     ]
 };
 
@@ -779,6 +1030,9 @@ const formulasLatex = {
     valor_futuro:          "VF = VP \\cdot (1+i)^t",
     amortizacao_price:     "PMT = PV \\cdot \\dfrac{i(1+i)^n}{(1+i)^n - 1}",
     regra_72:              "t \\approx \\dfrac{72}{i}",
+    conv_base:             "N_{10} \\leftrightarrow N_{2} \\leftrightarrow N_{8} \\leftrightarrow N_{16}",
+    conv_armazenamento:    "1\\,\\text{byte} = 8\\,\\text{bits},\\quad 1\\,\\text{KB} = 1024\\,\\text{bytes}",
+    logica_booleana:       "A \\land B,\\quad A \\lor B,\\quad A \\oplus B",
 };
 
 const explicacoes = {
@@ -830,6 +1084,9 @@ const explicacoes = {
     valor_futuro:          "<b>VP:</b> valor presente, <b>i:</b> taxa, <b>t:</b> períodos.<br><small>💡 Teste: VP=1000, i=0.05, t=5 → VF≈1276.28</small>",
     amortizacao_price:     "<b>PV:</b> valor do empréstimo, <b>i:</b> taxa mensal, <b>n:</b> parcelas.<br><small>💡 Teste: PV=10000, i=0.02, n=12 → parcela≈948.79</small>",
     regra_72:              "<b>i:</b> taxa anual em % (ex: 6 = 6% ao ano).<br><small>💡 Teste: i=6 → tempo≈12 anos para dobrar</small>",
+    conv_base:             "<b>Valor</b> na base de origem → selecione as bases. Mostra em todas as representações.<br><small>💡 Teste: 255 decimal → FF hex → 11111111 binário</small>",
+    conv_armazenamento:    "Digite o <b>valor</b> e selecione unidade de origem e destino.<br><small>💡 Teste: 1 GB → 1024 MB → 1073741824 bytes</small>",
+    logica_booleana:       "<b>A</b> e <b>B</b> são 0 (falso) ou 1 (verdadeiro). Calcula todas as operações lógicas de uma vez.<br><small>💡 Teste: A=1, B=0 → AND=0, OR=1, XOR=1, NAND=1</small>",
 };
 
 const inputMap = {
@@ -881,6 +1138,9 @@ const inputMap = {
     valor_futuro:          { VP:'vf_VP', i:'vf_i', t:'vf_t' },
     amortizacao_price:     { PV:'ap_PV', i:'ap_i', n:'ap_n' },
     regra_72:              { i:'r72_i' },
+    conv_base:             { valor:'cb_valor', base_origem:'cb_origem', base_destino:'cb_destino' },
+    conv_armazenamento:    { valor:'ca_valor', unidade_origem:'ca_origem', unidade_destino:'ca_destino' },
+    logica_booleana:       { a:'lb_a', b:'lb_b' },
 };
 
 const temGrafico = new Set([
@@ -936,12 +1196,33 @@ function trocarCategoria(cat) {
     selF.innerHTML = '<option value="">Fórmula</option>';
     trocarFormula('');
     if (!cat) { selF.disabled = true; return; }
+    const favs = getFavs();
     categorias[cat].forEach(f => {
         const opt = document.createElement('option');
-        opt.value = f.id; opt.textContent = f.label;
+        opt.value = f.id;
+        opt.textContent = (favs.includes(f.id) ? '★ ' : '') + f.label;
         selF.appendChild(opt);
     });
     selF.disabled = false;
+}
+
+function atualizarEstrelaNoSelect(id) {
+    const selF = document.getElementById('sel-formula');
+    if (!selF) return;
+    for (const opt of selF.options) {
+        if (opt.value === id) {
+            const cat = document.getElementById('sel-categoria').value;
+            const label = categorias[cat]?.find(f=>f.id===id)?.label || opt.textContent.replace(/^★ /,'');
+            opt.textContent = (isFav(id) ? '★ ' : '') + label;
+            break;
+        }
+    }
+    // update star button color
+    const btn = document.getElementById('btn-fav-sel');
+    if (btn) {
+        btn.textContent = isFav(id) ? '★' : '☆';
+        btn.style.color = isFav(id) ? '#fbbf24' : '#94a3b8';
+    }
 }
 
 function trocarFormula(tipo) {
@@ -950,6 +1231,15 @@ function trocarFormula(tipo) {
     document.getElementById('figura-geo')?.remove();
     esconderGrafico();
     formulaAtual = tipo || null;
+    // star button state
+    const btn = document.getElementById('btn-fav-sel');
+    if (btn) {
+        btn.textContent = (tipo && isFav(tipo)) ? '★' : '☆';
+        btn.style.color = (tipo && isFav(tipo)) ? '#fbbf24' : '#94a3b8';
+    }
+    // share wrap
+    const sw = document.getElementById('share-wrap');
+    if (sw) sw.style.display = tipo ? 'block' : 'none';
     if (!tipo) {
         document.getElementById('formula').innerHTML   = '';
         document.getElementById('explicacao').innerHTML = '';
@@ -974,22 +1264,162 @@ function limparTudo() {
 // ═══════════════════════════════════════════════════════════════
 //  CALC
 // ═══════════════════════════════════════════════════════════════
+// ── Tabelas de conversão de unidades ──────────────────────────
+const _convLen  = { m:1, cm:0.01, mm:0.001, km:1000 };   // → metros
+const _convMas  = { kg:1, g:0.001, t:1000 };              // → kg
+const _convTem  = { s:1, min:60, h:3600 };                // → segundos
+const _convVel  = { ms:1, kmh:1/3.6 };                    // → m/s
+const _convDT   = { C:1, F:5/9 };                         // ΔT: °F → °C factor
+
+function _gs(id) { const el=document.getElementById(id); return el ? el.value : null; }
+
+function _finTime(val, un) {
+    const v = parseFloat(val);
+    if (isNaN(v)) return val;
+    if (un === 'ano') return v * 12;   // anos → meses
+    if (un === 'dia') return v / 30;   // dias  → meses
+    return v;                           // já em meses
+}
+
 async function calc(tipo) {
-    const btn = document.querySelector(`#${tipo} button`);
+    const btn = document.querySelector(`#${tipo} .btn-calc`) || document.querySelector(`#${tipo} button`);
     const map  = inputMap[tipo] || {};
-    const data = {};
+    const rawData = {};
     Object.entries(map).forEach(([key, elId]) => {
         const el = document.getElementById(elId);
-        data[key] = el ? el.value : '';
+        rawData[key] = el ? el.value : '';
     });
-    btn.disabled = true; btn.classList.add('btn-loading');
+
+    // ── Conversão de unidades antes de enviar ao backend ──────
+    const data = { ...rawData };
+
+    // Geometria – comprimento
+    if (['area_quadrado','area_retangulo','area_triangulo','area_circulo',
+         'volume_cilindro','volume_esfera','pitagoras'].includes(tipo)) {
+        const unMap = { area_quadrado:'aq_un', area_retangulo:'ar_un', area_triangulo:'at_un',
+                        area_circulo:'ac_un', volume_cilindro:'vc_un', volume_esfera:'ve_un', pitagoras:'pit_un' };
+        const un = _gs(unMap[tipo]) || 'm';
+        const f  = _convLen[un] || 1;
+        ['lado','base','altura','raio','a','b','c'].forEach(k => {
+            if (rawData[k] !== undefined && rawData[k] !== '')
+                data[k] = String(parseFloat(rawData[k]) * f);
+        });
+    }
+
+    // Velocidade média
+    if (tipo === 'velocidade_media') {
+        const dsUn = _gs('vm_ds_un') || 'm';
+        const dtUn = _gs('vm_dt_un') || 's';
+        if (rawData.ds !== '') data.ds = String(parseFloat(rawData.ds) * (_convLen[dsUn]||1));
+        if (rawData.dt !== '') data.dt = String(parseFloat(rawData.dt) * (_convTem[dtUn]||1));
+    }
+
+    // Movimento uniforme
+    if (tipo === 'movimento_uniforme') {
+        const vUn = _gs('mu_v_un') || 'ms';
+        const tUn = _gs('mu_t_un') || 's';
+        if (rawData.v !== '') data.v = String(parseFloat(rawData.v) * (_convVel[vUn]||1));
+        if (rawData.t !== '') data.t = String(parseFloat(rawData.t) * (_convTem[tUn]||1));
+    }
+
+    // MUV
+    if (tipo === 'muv') {
+        const tUn = _gs('muv_t_un') || 's';
+        if (rawData.t !== '') data.t = String(parseFloat(rawData.t) * (_convTem[tUn]||1));
+    }
+
+    // Torricelli
+    if (tipo === 'torricelli') {
+        const vUn = _gs('tor_v_un') || 'ms';
+        if (rawData.v0 !== '') data.v0 = String(parseFloat(rawData.v0) * (_convVel[vUn]||1));
+    }
+
+    // 2ª Lei Newton / Peso
+    if (tipo === 'segunda_lei_newton') {
+        const mUn = _gs('sln_m_un') || 'kg';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+    }
+    if (tipo === 'peso') {
+        const mUn = _gs('pe_m_un') || 'kg';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+    }
+
+    // Trabalho
+    if (tipo === 'trabalho') {
+        const dUn = _gs('tr_dist_un') || 'm';
+        if (rawData.dist !== '') data.dist = String(parseFloat(rawData.dist) * (_convLen[dUn]||1));
+    }
+
+    // Energia cinética
+    if (tipo === 'energia_cinetica') {
+        const mUn = _gs('ec_m_un') || 'kg';
+        const vUn = _gs('ec_v_un') || 'ms';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+        if (rawData.v !== '') data.v = String(parseFloat(rawData.v) * (_convVel[vUn]||1));
+    }
+
+    // Energia potencial
+    if (tipo === 'energia_potencial') {
+        const mUn = _gs('ep_m_un') || 'kg';
+        const hUn = _gs('ep_h_un') || 'm';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+        if (rawData.h !== '') data.h = String(parseFloat(rawData.h) * (_convLen[hUn]||1));
+    }
+
+    // Conservação de energia
+    if (tipo === 'conservacao_energia') {
+        const mUn = _gs('ce_m_un') || 'kg';
+        const hUn = _gs('ce_h_un') || 'm';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+        if (rawData.h !== '') data.h = String(parseFloat(rawData.h) * (_convLen[hUn]||1));
+    }
+
+    // Calor sensível
+    if (tipo === 'calor_sensivel') {
+        const mUn = _gs('cs_m_un') || 'kg';
+        const tUn = _gs('cs_t_un') || 'C';
+        if (rawData.m  !== '') data.m  = String(parseFloat(rawData.m)  * (_convMas[mUn]||1));
+        if (rawData.dT !== '') data.dT = String(parseFloat(rawData.dT) * (_convDT[tUn]||1));
+    }
+
+    // Calor latente
+    if (tipo === 'calor_latente') {
+        const mUn = _gs('cl_m_un') || 'kg';
+        if (rawData.m !== '') data.m = String(parseFloat(rawData.m) * (_convMas[mUn]||1));
+    }
+
+    // Dilatação térmica
+    if (tipo === 'dilatacao_termica') {
+        const lUn = _gs('dt_L_un') || 'm';
+        const tUn = _gs('dt_t_un') || 'C';
+        if (rawData.L0 !== '') data.L0 = String(parseFloat(rawData.L0) * (_convLen[lUn]||1));
+        if (rawData.dT !== '') data.dT = String(parseFloat(rawData.dT) * (_convDT[tUn]||1));
+    }
+
+    // Financeiro – tempo (anos/dias → meses)
+    const _finMap = {
+        juros_simples:'js_t_un', juros_compostos:'jc_t_un',
+        desconto_simples:'ds_t_un', desconto_composto:'dc_t_un',
+        valor_presente:'vp_t_un', valor_futuro:'vf_t_un'
+    };
+    if (_finMap[tipo]) {
+        const tUn = _gs(_finMap[tipo]) || 'mes';
+        if (rawData.t !== '') data.t = String(_finTime(rawData.t, tUn));
+    }
+    if (tipo === 'amortizacao_price') {
+        const nUn = _gs('ap_n_un') || 'mes';
+        if (rawData.n !== '') data.n = String(nUn === 'ano' ? parseFloat(rawData.n) * 12 : rawData.n);
+    }
+    // ──────────────────────────────────────────────────────────
+
+    if (btn) { btn.disabled = true; btn.classList.add('btn-loading'); }
     try {
         const res  = await fetch(`/calc/${tipo}`, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify(data)
         });
         const json = await res.json();
-        mostrarResultado(tipo, json);
+        mostrarResultado(tipo, json, data);
         if (!json.erro) {
             desenharGrafico(tipo, json, data);
             desenharFigura(tipo, json, data);
@@ -1000,17 +1430,409 @@ async function calc(tipo) {
         document.getElementById('resultado').innerHTML =
             `<div class="erro">Erro de conexao.</div>`;
     } finally {
-        btn.disabled = false; btn.classList.remove('btn-loading');
+        if (btn) { btn.disabled = false; btn.classList.remove('btn-loading'); }
     }
 }
 
 // ═══════════════════════════════════════════════════════════════
 //  RESULTADO
 // ═══════════════════════════════════════════════════════════════
-function mostrarResultado(tipo, json) {
+// Gera passo a passo com os valores reais do usuário
+function gerarPassos(tipo, d, json) {
+    const n = v => `<b style="color:#38bdf8">${v}</b>`;
+    const r = v => `<b style="color:#818cf8">${v}</b>`;
+    const fmtN = v => { const x=parseFloat(v); return isNaN(x)?v:parseFloat(x.toFixed(4)); };
+    const passos = [];
+    try {
+
+        // ── MATEMÁTICA ───────────────────────────────────────────
+        if (tipo === 'calc_basica') {
+            const a=fmtN(d.a), b=fmtN(d.b);
+            passos.push(`Adição: ${n(a)} + ${n(b)} = ${r(json.adicao)}`);
+            passos.push(`Subtração: ${n(a)} − ${n(b)} = ${r(json.subtracao)}`);
+            passos.push(`Multiplicação: ${n(a)} × ${n(b)} = ${r(json.multiplicacao)}`);
+            passos.push(b==0 ? `Divisão: ${n(a)} ÷ ${n(b)} = ${r('indefinido')}` : `Divisão: ${n(a)} ÷ ${n(b)} = ${r(json.divisao)}`);
+
+        } else if (tipo === 'funcao_1grau') {
+            const a=parseFloat(d.a), b=parseFloat(d.b);
+            passos.push(`Fórmula: f(x) = ax + b`);
+            passos.push(`Substituindo: f(x) = ${n(a)}x + (${n(b)})`);
+            passos.push(`Raiz: x = −b/a = −(${b}) / ${a} = ${r(json.raiz)}`);
+            if (json.y_para_x !== undefined) passos.push(`Para x = ${d.x}: f(${d.x}) = ${a}×${d.x} + ${b} = ${r(json.y_para_x)}`);
+
+        } else if (tipo === 'funcao_2grau') {
+            const a=parseFloat(d.a), b=parseFloat(d.b), c=parseFloat(d.c);
+            passos.push(`Fórmula: f(x) = ax² + bx + c`);
+            passos.push(`Δ = b² − 4ac = ${n(b)}² − 4×${n(a)}×${n(c)} = ${b*b} − ${4*a*c} = ${r(json.delta)}`);
+            if (json.delta >= 0) {
+                passos.push(`x = (−b ± √Δ) / 2a = (−${b} ± √${json.delta}) / ${2*a}`);
+                if (json.x1 !== undefined) passos.push(`x₁ = ${r(json.x1)},  x₂ = ${r(json.x2)}`);
+            } else { passos.push(`Δ < 0 → sem raízes reais (raízes complexas)`); }
+            passos.push(`Vértice: xᵥ = −b/2a = −${b}/${2*a} = ${r(json.vertice_x)},  yᵥ = ${r(json.vertice_y)}`);
+            if (json.y_para_x !== undefined) passos.push(`Para x = ${d.x}: f(${d.x}) = ${r(json.y_para_x)}`);
+
+        } else if (tipo === 'funcao_exponencial') {
+            const a=parseFloat(d.a), b=parseFloat(d.b);
+            passos.push(`Fórmula: f(x) = b · aˣ`);
+            passos.push(`Base a = ${n(a)} → função ${r(json.tipo)}`);
+            passos.push(`Coeficiente b = ${n(b)}`);
+            if (json.y_para_x !== undefined) passos.push(`Para x = ${d.x}: f(${d.x}) = ${b} × ${a}^${d.x} = ${r(json.y_para_x)}`);
+
+        } else if (tipo === 'funcao_logaritmica') {
+            const base=parseFloat(d.base);
+            passos.push(`Fórmula: f(x) = log_${n(base)}(x)`);
+            passos.push(`Base ${n(base)} > 1 → função ${r(json.tipo)}`);
+            if (json.log_x !== undefined) passos.push(`log_${base}(${d.x}) = ln(${d.x}) / ln(${base}) = ${r(json.log_x)}`);
+
+        } else if (tipo === 'area_quadrado') {
+            const l=fmtN(d.lado);
+            passos.push(`A = lado² = ${n(l)}² = ${r(json.area)}`);
+            passos.push(`Perímetro = 4 × lado = 4 × ${n(l)} = ${r(json.perimetro)}`);
+
+        } else if (tipo === 'area_retangulo') {
+            passos.push(`A = base × altura = ${n(fmtN(d.base))} × ${n(fmtN(d.altura))} = ${r(json.area)}`);
+            passos.push(`Perímetro = 2 × (base + altura) = 2 × (${fmtN(d.base)} + ${fmtN(d.altura)}) = ${r(json.perimetro)}`);
+
+        } else if (tipo === 'area_triangulo') {
+            passos.push(`A = (base × altura) / 2`);
+            passos.push(`A = (${n(fmtN(d.base))} × ${n(fmtN(d.altura))}) / 2 = ${fmtN(d.base)*fmtN(d.altura)} / 2 = ${r(json.area)}`);
+
+        } else if (tipo === 'area_circulo') {
+            passos.push(`A = π × r² = π × ${n(fmtN(d.raio))}² = ${r(json.area)}`);
+            passos.push(`Circunferência = 2 × π × r = 2 × π × ${n(fmtN(d.raio))} = ${r(json.circunferencia)}`);
+
+        } else if (tipo === 'volume_cilindro') {
+            passos.push(`Área da base = π × r² = π × ${n(fmtN(d.raio))}² = ${parseFloat((Math.PI*fmtN(d.raio)**2).toFixed(4))}`);
+            passos.push(`V = π × r² × h = ${parseFloat((Math.PI*fmtN(d.raio)**2).toFixed(4))} × ${n(fmtN(d.altura))} = ${r(json.volume)}`);
+            passos.push(`Área lateral = 2πr × h = ${r(json.area_lateral)}`);
+            passos.push(`Área total = 2πr × (r + h) = ${r(json.area_total)}`);
+
+        } else if (tipo === 'volume_esfera') {
+            passos.push(`V = (4/3) × π × r³ = (4/3) × π × ${n(fmtN(d.raio))}³`);
+            passos.push(`V = (4/3) × π × ${fmtN(d.raio)**3} = ${r(json.volume)}`);
+            passos.push(`Área de superfície = 4 × π × r² = ${r(json.area_superficie)}`);
+
+        } else if (tipo === 'pitagoras') {
+            const a=d.a?fmtN(d.a):null, b=d.b?fmtN(d.b):null, c=d.c?fmtN(d.c):null;
+            passos.push(`Teorema: a² + b² = c²`);
+            if (a && b) {
+                passos.push(`c² = a² + b² = ${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}`);
+                passos.push(`c = √${a*a+b*b} = ${r(json.hipotenusa)}`);
+            } else if (b && c) {
+                passos.push(`a² = c² − b² = ${c}² − ${b}² = ${c*c} − ${b*b} = ${c*c-b*b}`);
+                passos.push(`a = √${c*c-b*b} = ${r(json.cateto_a)}`);
+            } else {
+                passos.push(`b² = c² − a² = ${c}² − ${a}² = ${c*c} − ${a*a} = ${c*c-a*a}`);
+                passos.push(`b = √${c*c-a*a} = ${r(json.cateto_b)}`);
+            }
+
+        } else if (tipo === 'pa') {
+            const a1=fmtN(d.a1), rr=fmtN(d.r), nn=parseInt(d.n);
+            passos.push(`Fórmula do termo: aₙ = a₁ + (n−1) × r`);
+            passos.push(`a${nn} = ${n(a1)} + (${n(nn)} − 1) × ${n(rr)} = ${a1} + ${(nn-1)*rr} = ${r(json.an)}`);
+            passos.push(`Fórmula da soma: Sₙ = n × (a₁ + aₙ) / 2`);
+            passos.push(`S${nn} = ${nn} × (${a1} + ${json.an}) / 2 = ${nn*(a1+json.an)/2|0||json.soma} = ${r(json.soma)}`);
+            passos.push(`Tipo: ${r(json.tipo)} (r ${rr>0?'>':rr<0?'<':'='} 0)`);
+
+        } else if (tipo === 'pg') {
+            const a1=fmtN(d.a1), q=fmtN(d.q), nn=parseInt(d.n);
+            passos.push(`Fórmula do termo: aₙ = a₁ × q^(n−1)`);
+            passos.push(`a${nn} = ${n(a1)} × ${n(q)}^(${nn}−1) = ${a1} × ${q}^${nn-1} = ${r(json.an)}`);
+            if (q !== 1) {
+                passos.push(`Fórmula da soma: Sₙ = a₁ × (qⁿ − 1) / (q − 1)`);
+                passos.push(`S${nn} = ${a1} × (${q}^${nn} − 1) / (${q} − 1) = ${r(json.soma)}`);
+            } else {
+                passos.push(`q = 1 → S${nn} = a₁ × n = ${a1} × ${nn} = ${r(json.soma)}`);
+            }
+            if (json.soma_infinita !== 'Não converge') passos.push(`Soma infinita: a₁ / (1−q) = ${a1} / (1 − ${q}) = ${r(json.soma_infinita)}`);
+
+        } else if (tipo === 'trigonometria') {
+            passos.push(`Ângulo: ${n(d.angulo)}° → rad = ${n(parseFloat((parseFloat(d.angulo)*Math.PI/180).toFixed(4)))} rad`);
+            passos.push(`sen(${d.angulo}°) = ${r(json.seno)}`);
+            passos.push(`cos(${d.angulo}°) = ${r(json.cosseno)}`);
+            passos.push(`tan(${d.angulo}°) = ${r(json.tangente)}`);
+            passos.push(`Verificação: sen²θ + cos²θ = ${json.seno}² + ${json.cosseno}² = ${r(json.relacao_fundamental)}`);
+
+        } else if (tipo === 'media_aritmetica') {
+            passos.push(`Fórmula: x̄ = Σxᵢ / n`);
+            passos.push(`Quantidade de valores: ${n(json.quantidade)}`);
+            passos.push(`Soma = ${n(json.soma)}`);
+            passos.push(`Média = ${json.soma} / ${n(json.quantidade)} = ${r(json.media)}`);
+
+        } else if (tipo === 'media_ponderada') {
+            const vals  = d.valores.split(',').map(Number);
+            const pesos = d.pesos.split(',').map(Number);
+            const numerador = vals.reduce((s,v,i)=>s+v*pesos[i],0).toFixed(4);
+            passos.push(`Fórmula: x̄ₚ = Σ(xᵢ × pᵢ) / Σpᵢ`);
+            passos.push(`Numerador: Σ(xᵢ × pᵢ) = ${vals.map((v,i)=>`${v}×${pesos[i]}`).join(' + ')} = ${n(numerador)}`);
+            passos.push(`Σpᵢ = ${pesos.join(' + ')} = ${n(json.soma_pesos)}`);
+            passos.push(`Média pond. = ${numerador} / ${json.soma_pesos} = ${r(json.media_ponderada)}`);
+
+        } else if (tipo === 'probabilidade_simples') {
+            passos.push(`Fórmula: P(A) = n(A) / n(Ω)`);
+            passos.push(`P(A) = ${n(d.favoraveis)} / ${n(d.possiveis)} = ${r(json.probabilidade)}`);
+            passos.push(`Em percentual: ${json.probabilidade} × 100 = ${r(json.percentual)}%`);
+            passos.push(`Fração: ${r(json.fracao)}`);
+
+        } else if (tipo === 'probabilidade_composta') {
+            passos.push(`P(A) = ${n(d.p_a)},  P(B) = ${n(d.p_b)}`);
+            passos.push(`Interseção: P(A∩B) = P(A) × P(B) = ${d.p_a} × ${d.p_b} = ${r(json['P(A∩B)'])}`);
+            passos.push(`União: P(A∪B) = P(A) + P(B) − P(A∩B) = ${d.p_a} + ${d.p_b} − ${json['P(A∩B)']} = ${r(json['P(A∪B)'])}`);
+
+        // ── FÍSICA ────────────────────────────────────────────────
+        } else if (tipo === 'velocidade_media') {
+            passos.push(`Fórmula: v = Δs / Δt`);
+            passos.push(`v = ${n(fmtN(d.ds))} m / ${n(fmtN(d.dt))} s = ${r(json.velocidade_ms)} m/s`);
+            passos.push(`Conversão: ${json.velocidade_ms} m/s × 3,6 = ${r(json.velocidade_kmh)} km/h`);
+
+        } else if (tipo === 'movimento_uniforme') {
+            passos.push(`Fórmula: s = s₀ + v × t`);
+            passos.push(`s = ${n(fmtN(d.s0))} + ${n(fmtN(d.v))} × ${n(fmtN(d.t))}`);
+            passos.push(`s = ${fmtN(d.s0)} + ${fmtN(d.v)*fmtN(d.t)} = ${r(json.posicao_final)} m`);
+
+        } else if (tipo === 'muv') {
+            const s0=fmtN(d.s0), v0=fmtN(d.v0), a=fmtN(d.a), t=fmtN(d.t);
+            passos.push(`Fórmula: s = s₀ + v₀t + ½at²`);
+            passos.push(`s = ${n(s0)} + ${n(v0)}×${n(t)} + ½×${n(a)}×${n(t)}²`);
+            passos.push(`s = ${s0} + ${v0*t} + ${0.5*a*t*t} = ${r(json.posicao)} m`);
+            passos.push(`Velocidade final: vf = v₀ + a×t = ${v0} + ${a}×${t} = ${r(json.velocidade_final)} m/s`);
+
+        } else if (tipo === 'torricelli') {
+            const v0=fmtN(d.v0), a=fmtN(d.a), ds=fmtN(d.ds);
+            passos.push(`Fórmula: v² = v₀² + 2 × a × Δs`);
+            passos.push(`v² = ${n(v0)}² + 2 × ${n(a)} × ${n(ds)} = ${v0*v0} + ${2*a*ds} = ${v0*v0+2*a*ds}`);
+            passos.push(`v = √${fmtN(v0*v0+2*a*ds)} = ${r(json.v)} m/s  (${r(json.kmh)} km/h)`);
+
+        } else if (tipo === 'segunda_lei_newton') {
+            passos.push(`Fórmula: F = m × a`);
+            passos.push(`F = ${n(fmtN(d.m))} kg × ${n(fmtN(d.a))} m/s² = ${r(json.forca_N)} N`);
+
+        } else if (tipo === 'peso') {
+            const g = d.g || 9.8;
+            passos.push(`Fórmula: P = m × g`);
+            passos.push(`P = ${n(fmtN(d.m))} kg × ${n(fmtN(g))} m/s² = ${r(json.peso_N)} N`);
+
+        } else if (tipo === 'forca_atrito') {
+            passos.push(`Fórmula: f = μ × N`);
+            passos.push(`f = ${n(fmtN(d.mi))} × ${n(fmtN(d.normal))} N = ${r(json.forca_atrito_N)} N`);
+
+        } else if (tipo === 'trabalho') {
+            const ang = d.angulo || 0;
+            const cosAng = parseFloat(Math.cos(parseFloat(ang)*Math.PI/180).toFixed(4));
+            passos.push(`Fórmula: W = F × d × cos(θ)`);
+            passos.push(`cos(${ang}°) = ${n(cosAng)}`);
+            passos.push(`W = ${n(fmtN(d.F))} × ${n(fmtN(d.dist))} × ${cosAng} = ${r(json.trabalho_J)} J`);
+
+        } else if (tipo === 'energia_cinetica') {
+            const m=fmtN(d.m), v=fmtN(d.v);
+            passos.push(`Fórmula: Ec = m × v² / 2`);
+            passos.push(`Ec = ${n(m)} × ${n(v)}² / 2 = ${m} × ${v*v} / 2 = ${r(json.Ec)} J`);
+
+        } else if (tipo === 'energia_potencial') {
+            const g = d.g || 9.8;
+            passos.push(`Fórmula: Ep = m × g × h`);
+            passos.push(`Ep = ${n(fmtN(d.m))} × ${n(fmtN(g))} × ${n(fmtN(d.h))} = ${r(json.Ep)} J`);
+
+        } else if (tipo === 'conservacao_energia') {
+            const m=fmtN(d.m), h=fmtN(d.h), v0=fmtN(d.v0)||0, g=9.8;
+            passos.push(`Ep = m × g × h = ${n(m)} × ${g} × ${n(h)} = ${r(json.Ep)} J`);
+            passos.push(`Ec_inicial = m × v₀² / 2 = ${m} × ${v0}² / 2 = ${r(json.Ec_inicial)} J`);
+            passos.push(`Energia total: Em = Ep + Ec = ${json.Ep} + ${json.Ec_inicial} = ${r(json.energia_total_J)} J`);
+            passos.push(`Velocidade final: vf = √(2gh + v₀²) = √(2×${g}×${h} + ${v0}²) = ${r(json.velocidade_final_ms)} m/s`);
+
+        } else if (tipo === 'lei_ohm') {
+            passos.push(`Fórmula: V = I × R`);
+            if (json.V !== undefined) passos.push(`V = ${n(d.I)} × ${n(d.R)} = ${r(json.V)} V`);
+            else if (json.I !== undefined) passos.push(`I = V / R = ${n(d.V)} / ${n(d.R)} = ${r(json.I)} A`);
+            else passos.push(`R = V / I = ${n(d.V)} / ${n(d.I)} = ${r(json.R)} Ω`);
+
+        } else if (tipo === 'potencia_eletrica') {
+            passos.push(`Fórmula: P = V × I`);
+            if (d.V && d.I) passos.push(`P = ${n(d.V)} V × ${n(d.I)} A = ${r(json.P_W)} W`);
+            else if (d.V && d.R) { passos.push(`P = V² / R = ${d.V}² / ${d.R} = ${r(json.P_W)} W`); }
+            else passos.push(`P = I² × R = ${d.I}² × ${d.R} = ${r(json.P_W)} W`);
+
+        } else if (tipo === 'resistores_serie') {
+            const rs = d.resistores.split(',').map(Number);
+            passos.push(`Fórmula: R_T = R₁ + R₂ + ···`);
+            passos.push(`R_T = ${rs.join(' + ')} = ${r(json.R_total)} Ω`);
+
+        } else if (tipo === 'resistores_paralelo') {
+            const rs = d.resistores.split(',').map(Number);
+            passos.push(`Fórmula: 1/R_T = 1/R₁ + 1/R₂ + ···`);
+            passos.push(`1/R_T = ${rs.map(x=>`1/${x}`).join(' + ')} = ${rs.reduce((s,x)=>s+1/x,0).toFixed(4)}`);
+            passos.push(`R_T = 1 / ${rs.reduce((s,x)=>s+1/x,0).toFixed(4)} = ${r(json.R_total)} Ω`);
+
+        } else if (tipo === 'calor_sensivel') {
+            passos.push(`Fórmula: Q = m × c × ΔT`);
+            passos.push(`Q = ${n(fmtN(d.m))} kg × ${n(fmtN(d.c))} × ${n(fmtN(d.dT))} = ${r(json.Q_J)} J`);
+
+        } else if (tipo === 'calor_latente') {
+            passos.push(`Fórmula: Q = m × L`);
+            passos.push(`Q = ${n(fmtN(d.m))} kg × ${n(fmtN(d.L))} J/kg = ${r(json.Q_J)} J`);
+
+        } else if (tipo === 'dilatacao_termica') {
+            passos.push(`Fórmula: ΔL = L₀ × α × ΔT`);
+            passos.push(`ΔL = ${n(fmtN(d.L0))} × ${n(fmtN(d.alpha))} × ${n(fmtN(d.dT))}`);
+            passos.push(`ΔL = ${r(json.variacao_m)} m`);
+            passos.push(`Comprimento final: L = L₀ + ΔL = ${fmtN(d.L0)} + ${json.variacao_m} = ${r(json.comprimento_final_m)} m`);
+
+        } else if (tipo === 'velocidade_onda') {
+            passos.push(`Fórmula: v = f × λ`);
+            passos.push(`v = ${n(fmtN(d.f))} Hz × ${n(fmtN(d.lam))} m = ${r(json.v_ms)} m/s`);
+
+        } else if (tipo === 'equacao_ondulatoria') {
+            if (d.f) {
+                passos.push(`Fórmula: λ = v / f`);
+                passos.push(`λ = ${n(fmtN(d.v))} / ${n(fmtN(d.f))} = ${r(json.comprimento_onda_m)} m`);
+            } else {
+                passos.push(`Fórmula: f = v / λ`);
+                passos.push(`f = ${n(fmtN(d.v))} / ${n(fmtN(d.lam))} = ${r(json.frequencia_Hz)} Hz`);
+            }
+
+        } else if (tipo === 'refracao_snell') {
+            const rad1 = parseFloat((parseFloat(d.angulo1)*Math.PI/180).toFixed(4));
+            const sen1 = parseFloat(Math.sin(rad1).toFixed(4));
+            passos.push(`Lei de Snell: n₁ × sen(θ₁) = n₂ × sen(θ₂)`);
+            passos.push(`sen(${d.angulo1}°) = ${n(sen1)}`);
+            passos.push(`sen(θ₂) = n₁ × sen(θ₁) / n₂ = ${d.n1} × ${sen1} / ${d.n2} = ${parseFloat((parseFloat(d.n1)*sen1/parseFloat(d.n2)).toFixed(4))}`);
+            passos.push(`θ₂ = arcsen(...) = ${r(json.angulo_refracao_graus)}°`);
+
+        // ── FINANCEIRO ────────────────────────────────────────────
+        } else if (tipo === 'juros_simples') {
+            passos.push(`Fórmula: J = C × i × t`);
+            passos.push(`J = ${n(d.C)} × ${n(d.i)} × ${n(d.t)} = ${r(json.juros)}`);
+            passos.push(`Montante: M = C + J = ${d.C} + ${json.juros} = ${r(json.montante)}`);
+
+        } else if (tipo === 'juros_compostos') {
+            const fator = parseFloat(((1+parseFloat(d.i))**parseFloat(d.t)).toFixed(4));
+            passos.push(`Fórmula: M = C × (1 + i)ᵗ`);
+            passos.push(`Fator: (1 + ${d.i})^${d.t} = ${n(fator)}`);
+            passos.push(`M = ${d.C} × ${fator} = ${r(json.montante)}`);
+            passos.push(`Juros = M − C = ${json.montante} − ${d.C} = ${r(json.juros)}`);
+
+        } else if (tipo === 'desconto_simples') {
+            passos.push(`Fórmula: D = N × i × t`);
+            passos.push(`D = ${n(d.N)} × ${n(d.i)} × ${n(d.t)} = ${r(json.desconto)}`);
+            passos.push(`Valor atual: VA = N − D = ${d.N} − ${json.desconto} = ${r(json.valor_atual)}`);
+
+        } else if (tipo === 'desconto_composto') {
+            const fator = parseFloat(((1+parseFloat(d.i))**parseFloat(d.t)).toFixed(4));
+            passos.push(`Fórmula: VA = N / (1 + i)ᵗ`);
+            passos.push(`(1 + ${d.i})^${d.t} = ${n(fator)}`);
+            passos.push(`VA = ${d.N} / ${fator} = ${r(json.valor_atual)}`);
+            passos.push(`Desconto = N − VA = ${d.N} − ${json.valor_atual} = ${r(json.desconto)}`);
+
+        } else if (tipo === 'valor_presente') {
+            const fator = parseFloat(((1+parseFloat(d.i))**parseFloat(d.t)).toFixed(4));
+            passos.push(`Fórmula: VP = VF / (1 + i)ᵗ`);
+            passos.push(`(1 + ${d.i})^${d.t} = ${n(fator)}`);
+            passos.push(`VP = ${d.VF} / ${fator} = ${r(json.valor_presente)}`);
+
+        } else if (tipo === 'valor_futuro') {
+            const fator = parseFloat(((1+parseFloat(d.i))**parseFloat(d.t)).toFixed(4));
+            passos.push(`Fórmula: VF = VP × (1 + i)ᵗ`);
+            passos.push(`(1 + ${d.i})^${d.t} = ${n(fator)}`);
+            passos.push(`VF = ${d.VP} × ${fator} = ${r(json.valor_futuro)}`);
+
+        } else if (tipo === 'amortizacao_price') {
+            const i=parseFloat(d.i), n2=parseInt(d.n);
+            const fn = parseFloat(((1+i)**n2).toFixed(4));
+            passos.push(`Fórmula: PMT = PV × [i × (1+i)ⁿ] / [(1+i)ⁿ − 1]`);
+            passos.push(`(1 + ${i})^${n2} = ${n(fn)}`);
+            passos.push(`Numerador: ${d.PV} × ${i} × ${fn} = ${parseFloat((parseFloat(d.PV)*i*fn).toFixed(4))}`);
+            passos.push(`Denominador: ${fn} − 1 = ${parseFloat((fn-1).toFixed(4))}`);
+            passos.push(`PMT = ${r(json.parcela)} por período`);
+            passos.push(`Total pago: PMT × n = ${json.parcela} × ${n2} = ${r(json.total_pago)}`);
+            passos.push(`Total de juros = ${json.total_pago} − ${d.PV} = ${r(json.total_juros)}`);
+
+        } else if (tipo === 'regra_72') {
+            passos.push(`Fórmula: t ≈ 72 / i`);
+            passos.push(`t = 72 / ${n(d.i)} = ${r(json.tempo_anos)} anos`);
+            passos.push(`O capital dobra em aproximadamente ${r(json.tempo_anos)} anos com ${d.i}% ao ano.`);
+
+        // ── INFORMÁTICA ───────────────────────────────────────────
+        } else if (tipo === 'conv_base') {
+            passos.push(`Valor de entrada: ${n(d.valor)} (base ${d.base_origem})`);
+            passos.push(`Decimal (base 10): ${r(json.decimal)}`);
+            passos.push(`Binário (base 2): ${r(json.binario)}`);
+            passos.push(`Octal (base 8): ${r(json.octal)}`);
+            passos.push(`Hexadecimal (base 16): ${r(json.hexadecimal)}`);
+            passos.push(`Resultado em base ${d.base_destino}: ${r(json.resultado)}`);
+
+        } else if (tipo === 'conv_armazenamento') {
+            passos.push(`Valor de entrada: ${n(d.valor)} ${n(d.unidade_origem)}`);
+            passos.push(`Converte para bits → reconverte para ${n(d.unidade_destino)}`);
+            passos.push(`Resultado: ${r(json.resultado)} ${d.unidade_destino}`);
+
+        } else if (tipo === 'logica_booleana') {
+            passos.push(`Entradas: A = ${n(d.a)},  B = ${n(d.b)}`);
+            passos.push(`AND: A E B → ${json.A} E ${json.B} = ${r(json.AND)}`);
+            passos.push(`OR: A OU B → ${json.A} OU ${json.B} = ${r(json.OR)}`);
+            passos.push(`XOR: A OU exclusivo B → ${r(json.XOR)}`);
+            passos.push(`NOT A = ${r(json.NOT_A)},  NOT B = ${r(json.NOT_B)}`);
+        }
+
+    } catch(e) {}
+    return passos;
+}
+
+function mostrarResultado(tipo, json, data) {
     const resDiv = document.getElementById('resultado');
     if (json.erro) { resDiv.innerHTML = `<div class="erro">${json.erro}</div>`; return; }
-    let html = `<div class="card-res"><h3>Resultado</h3>`;
+
+    // ── INFORMÁTICA: renderizações especiais ──
+    if (tipo === 'conv_base') {
+        resDiv.innerHTML = `<div class="card-res"><h3>✅ Conversão de Bases</h3>
+            <table style="width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:.9rem;margin-top:8px">
+                <tr style="color:#64748b;font-size:.8rem"><th style="text-align:left;padding:5px 10px">Base</th><th style="text-align:left;padding:5px 10px">Representação</th><th style="text-align:left;padding:5px 10px">Valor</th></tr>
+                <tr><td style="padding:6px 10px;color:#64748b">Decimal</td><td style="padding:6px 10px;color:#475569">base 10</td><td style="padding:6px 10px;color:#38bdf8;font-weight:700">${json.decimal}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02)"><td style="padding:6px 10px;color:#64748b">Binário</td><td style="padding:6px 10px;color:#475569">base 2</td><td style="padding:6px 10px;color:#818cf8;font-weight:700">${json.binario}</td></tr>
+                <tr><td style="padding:6px 10px;color:#64748b">Octal</td><td style="padding:6px 10px;color:#475569">base 8</td><td style="padding:6px 10px;color:#38bdf8;font-weight:700">${json.octal}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02)"><td style="padding:6px 10px;color:#64748b">Hexadecimal</td><td style="padding:6px 10px;color:#475569">base 16</td><td style="padding:6px 10px;color:#818cf8;font-weight:700">${json.hexadecimal}</td></tr>
+            </table>
+            <p style="margin-top:12px;color:#64748b;font-size:.85rem">Resultado em ${json.base_destino}: <span style="color:#38bdf8;font-size:1.1rem;font-weight:700;font-family:'Fira Code',monospace">${json.resultado}</span></p>
+        </div>`;
+        return;
+    }
+    if (tipo === 'conv_armazenamento') {
+        const tab = json.tabela || {};
+        let rows = Object.entries(tab).map(([u,v]) =>
+            `<tr style="${u===json.unidade_destino?'color:#38bdf8;font-weight:700':''}"><td style="padding:5px 10px;color:#64748b">${u}</td><td style="padding:5px 10px;font-family:'Fira Code',monospace">${v}</td></tr>`
+        ).join('');
+        resDiv.innerHTML = `<div class="card-res"><h3>✅ Conversão de Armazenamento</h3>
+            <p style="font-size:1.1rem;margin-bottom:14px">${json.valor_entrada} <span style="color:#64748b">${json.unidade_origem}</span> = <span style="color:#38bdf8;font-weight:700">${json.resultado}</span> <span style="color:#64748b">${json.unidade_destino}</span></p>
+            <p style="font-size:.78rem;color:#475569;margin-bottom:8px">Equivalentes completos:</p>
+            <table style="width:100%;border-collapse:collapse;font-size:.88rem"><tbody>${rows}</tbody></table>
+        </div>`;
+        return;
+    }
+    if (tipo === 'logica_booleana') {
+        const ops = [
+            {op:'AND',  desc:`A E B`,           color: json.AND  ? '#38bdf8':'#475569'},
+            {op:'OR',   desc:`A OU B`,           color: json.OR   ? '#38bdf8':'#475569'},
+            {op:'XOR',  desc:`A OU exclusivo B`, color: json.XOR  ? '#38bdf8':'#475569'},
+            {op:'NAND', desc:`NÃO (A E B)`,      color: json.NAND ? '#38bdf8':'#475569'},
+            {op:'NOR',  desc:`NÃO (A OU B)`,     color: json.NOR  ? '#38bdf8':'#475569'},
+            {op:'XNOR', desc:`NÃO XOR`,          color: json.XNOR ? '#38bdf8':'#475569'},
+            {op:'NOT_A',desc:`NÃO A`,            color: json.NOT_A? '#38bdf8':'#475569'},
+            {op:'NOT_B',desc:`NÃO B`,            color: json.NOT_B? '#38bdf8':'#475569'},
+        ];
+        let rows = ops.map(o =>
+            `<tr><td style="padding:6px 10px;font-weight:700;font-family:'Fira Code',monospace;color:#e2e8f0">${o.op}</td><td style="padding:6px 10px;color:#475569;font-size:.82rem">${o.desc}</td><td style="padding:6px 10px;font-weight:700;color:${o.color};font-family:'Fira Code',monospace;font-size:1rem">${json[o.op]}</td></tr>`
+        ).join('');
+        resDiv.innerHTML = `<div class="card-res"><h3>✅ Lógica Booleana</h3>
+            <p style="margin-bottom:12px;font-family:'Fira Code',monospace">
+                A = <b style="color:${json.A?'#38bdf8':'#475569'}">${json.A}</b>
+                &nbsp;&nbsp;B = <b style="color:${json.B?'#38bdf8':'#475569'}">${json.B}</b>
+            </p>
+            <table style="width:100%;border-collapse:collapse"><thead><tr style="font-size:.78rem;color:#334155"><th style="text-align:left;padding:4px 10px">Operação</th><th style="text-align:left;padding:4px 10px">Descrição</th><th style="text-align:left;padding:4px 10px">Resultado</th></tr></thead><tbody>${rows}</tbody></table>
+        </div>`;
+        return;
+    }
+
+    // ── RESULTADO PADRÃO ──
+    let html = `<div class="card-res"><h3>✅ Resultado</h3>`;
     const omitir = new Set(['pontos','sequencia','tabela','termo_especifico_pos','termo_especifico_val','termo_especifico_erro','raizes']);
     Object.entries(json).forEach(([k,v]) => {
         if (omitir.has(k)) return;
@@ -1034,6 +1856,18 @@ function mostrarResultado(tipo, json) {
         });
         html += `</tbody></table></div>`;
     }
+
+    // ── PASSO A PASSO ──
+    const passos = data ? gerarPassos(tipo, data, json) : [];
+    if (passos.length) {
+        html += `<div class="passo-box">
+            <div class="passo-titulo">📋 Passo a passo</div>`;
+        passos.forEach((p, i) => {
+            html += `<div class="passo-item"><span class="passo-num">${i+1}</span><span>${p}</span></div>`;
+        });
+        html += `</div>`;
+    }
+
     html += `</div>`;
     resDiv.innerHTML = html;
 }
@@ -1673,7 +2507,7 @@ function mudarAba(aba) {
     document.querySelectorAll('.nav-aba').forEach(b => b.classList.remove('active'));
     document.getElementById('pagina-' + aba).classList.add('active');
     const idx = ['calculadora','sobre','calculos'].indexOf(aba);
-    document.querySelectorAll('.nav-aba')[idx].classList.add('active');
+    if (idx >= 0) document.querySelectorAll('.nav-aba')[idx].classList.add('active');
     if (aba === 'calculos') renderizarCalculos('todos');
 }
 
@@ -2556,10 +3390,179 @@ function mostrarConfirm() {
     });
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  FAVORITOS (localStorage)
+// ═══════════════════════════════════════════════════════════════
+function getFavs() {
+    try { return JSON.parse(localStorage.getItem('nexum_favs') || '[]'); } catch { return []; }
+}
+function saveFavs(arr) { localStorage.setItem('nexum_favs', JSON.stringify(arr)); }
+function isFav(id) { return getFavs().includes(id); }
+function toggleFav(id) {
+    let favs = getFavs();
+    favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id];
+    saveFavs(favs);
+    atualizarEstrelaNoSelect(id);
+    renderizarFavBar();
+}
+function atualizarBtnFav(id) {
+    const btn = document.getElementById('btn-fav');
+    if (!btn) return;
+    const ativo = isFav(id);
+    btn.textContent = ativo ? '★' : '☆';
+    btn.title = ativo ? 'Remover dos favoritos (Ctrl+B)' : 'Favoritar (Ctrl+B)';
+    btn.classList.toggle('fav-ativo', ativo);
+}
+function renderizarFavBar() {
+    const bar = document.getElementById('fav-bar');
+    if (!bar) return;
+    const favs = getFavs();
+    if (!favs.length) {
+        bar.innerHTML = '<span class="fav-vazio">Nenhum favorito ainda — clique ☆ após selecionar uma fórmula</span>';
+        return;
+    }
+    bar.innerHTML = favs.map(id => {
+        const label = nomeFormula[id] || id;
+        const cat = Object.entries(categorias).find(([,arr]) => arr.some(f => f.id === id))?.[0] || '';
+        return `<button class="fav-chip" onclick="irParaFormulaFav('${id}','${cat}')">${label}</button>`;
+    }).join('');
+}
+function irParaFormulaFav(id, cat) {
+    mudarAba('calculadora');
+    const selCat = document.getElementById('sel-categoria');
+    selCat.value = cat; trocarCategoria(cat);
+    const selFor = document.getElementById('sel-formula');
+    selFor.value = id; trocarFormula(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  BUSCA DE FÓRMULAS
+// ═══════════════════════════════════════════════════════════════
+function buscarFormula(q) {
+    const res = document.getElementById('busca-resultados');
+    if (!res) return;
+    if (!q || q.length < 2) { res.innerHTML = ''; res.style.display = 'none'; return; }
+    const lower = q.toLowerCase();
+    const matches = [];
+    Object.entries(categorias).forEach(([cat, arr]) => {
+        arr.forEach(f => {
+            if (f.label.toLowerCase().includes(lower) || f.id.toLowerCase().includes(lower)) {
+                matches.push({ ...f, cat });
+            }
+        });
+    });
+    if (!matches.length) {
+        res.innerHTML = '<div class="busca-item busca-vazio">Nenhuma fórmula encontrada</div>';
+    } else {
+        res.innerHTML = matches.map(m =>
+            `<div class="busca-item" onclick="selecionarBusca('${m.id}','${m.cat}')">${m.label}</div>`
+        ).join('');
+    }
+    res.style.display = 'block';
+}
+function selecionarBusca(id, cat) {
+    document.getElementById('busca-input').value = '';
+    document.getElementById('busca-resultados').style.display = 'none';
+    mudarAba('calculadora');
+    const selCat = document.getElementById('sel-categoria');
+    selCat.value = cat; trocarCategoria(cat);
+    const selFor = document.getElementById('sel-formula');
+    selFor.value = id; trocarFormula(id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.addEventListener('click', e => {
+    const busca = document.getElementById('busca-wrapper');
+    if (busca && !busca.contains(e.target)) {
+        const res = document.getElementById('busca-resultados');
+        if (res) res.style.display = 'none';
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  COMPARTILHAR — gerar card imagem PNG
+// ═══════════════════════════════════════════════════════════════
+async function compartilharResultado() {
+    const resDiv = document.getElementById('resultado');
+    if (!resDiv || !resDiv.querySelector('.card-res')) { alert('Calcule algo primeiro!'); return; }
+    const nomeF = (nomeFormula[formulaAtual] || formulaAtual || 'Resultado').replace(/^[^\w\u00C0-\u024F]*/, '');
+    const linhas = [];
+    resDiv.querySelectorAll('.card-res p').forEach(p => linhas.push(p.textContent.trim()));
+
+    const canvas = document.createElement('canvas');
+    const W = 600, H = Math.max(300, 130 + linhas.length * 36 + 50);
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#0f172a'); grad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = grad;
+    if (ctx.roundRect) ctx.roundRect(0, 0, W, H, 16); else ctx.rect(0, 0, W, H);
+    ctx.fill();
+
+    const stripe = ctx.createLinearGradient(0, 0, W, 0);
+    stripe.addColorStop(0, '#38bdf8'); stripe.addColorStop(1, '#818cf8');
+    ctx.fillStyle = stripe; ctx.fillRect(0, 0, W, 4);
+
+    ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#38bdf8';
+    ctx.fillText('NΣXUM', 28, 40);
+
+    ctx.font = 'bold 15px sans-serif'; ctx.fillStyle = '#e2e8f0';
+    ctx.fillText(nomeF, 28, 72);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(28, 86); ctx.lineTo(W - 28, 86); ctx.stroke();
+
+    ctx.font = '14px sans-serif';
+    let y = 112;
+    linhas.forEach(linha => {
+        const idx = linha.indexOf(':');
+        if (idx > 0) {
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(linha.slice(0, idx + 1), 28, y);
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText(linha.slice(idx + 1).trim(), 36 + ctx.measureText(linha.slice(0, idx + 1)).width, y);
+            ctx.font = '14px sans-serif';
+        } else {
+            ctx.fillStyle = '#94a3b8'; ctx.fillText(linha, 28, y);
+        }
+        y += 36;
+    });
+
+    ctx.font = '11px sans-serif'; ctx.fillStyle = '#334155';
+    ctx.fillText('nexum.app', W - 28 - ctx.measureText('nexum.app').width, H - 14);
+
+    const link = document.createElement('a');
+    link.download = `nexum-${formulaAtual || 'resultado'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ATALHOS DE TECLADO
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
+        if (e.key === 'Enter' && formulaAtual) { e.preventDefault(); calc(formulaAtual); }
+        if (e.key === 'Escape') { document.activeElement.blur(); document.getElementById('busca-resultados').style.display = 'none'; }
+        return;
+    }
+    if (tag === 'SELECT') return;
+    if (e.key === '/' || e.key === 'f') { e.preventDefault(); document.getElementById('busca-input')?.focus(); }
+    if (e.key === 'Escape') { document.getElementById('busca-resultados').style.display = 'none'; }
+    if (e.key === 'Enter' && formulaAtual) { e.preventDefault(); calc(formulaAtual); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); limparTudo(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); compartilharResultado(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); if (formulaAtual) toggleFav(formulaAtual); }
+});
+
 window.addEventListener('load', async () => {
-    const json=await fetch('/sessao').then(r=>r.json());
+    const json = await fetch('/sessao').then(r => r.json());
     if (json.logado) { atualizarAuthUI(json.nome); carregarHistorico(); }
     atualizarBtnModo(document.body.classList.contains('light-mode'));
+    renderizarFavBar();
 });
 </script>
 
