@@ -620,7 +620,8 @@
     <div class="form" id="juros_simples">
       <div class="form-row">
         <input type="number" id="js_C" placeholder="C (capital)" step="any" min="0">
-        <input type="number" id="js_i" placeholder="i (taxa, ex: 0.05)" step="any">
+        <input type="number" id="js_i" placeholder="i (taxa, ex: 5)" step="any" min="0">
+        <select id="js_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="js_t" placeholder="t (períodos)" step="any" min="0">
         <select id="js_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -631,7 +632,8 @@
     <div class="form" id="juros_compostos">
       <div class="form-row">
         <input type="number" id="jc_C" placeholder="C (capital)" step="any" min="0">
-        <input type="number" id="jc_i" placeholder="i (taxa, ex: 0.05)" step="any">
+        <input type="number" id="jc_i" placeholder="i (taxa, ex: 5)" step="any" min="0">
+        <select id="jc_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="jc_t" placeholder="t (períodos)" step="any" min="0">
         <select id="jc_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -642,7 +644,8 @@
     <div class="form" id="desconto_simples">
       <div class="form-row">
         <input type="number" id="ds_N" placeholder="N (valor nominal)" step="any" min="0">
-        <input type="number" id="ds_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="ds_i" placeholder="i (taxa, ex: 3)" step="any" min="0">
+        <select id="ds_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="ds_t" placeholder="t (tempo)" step="any" min="0">
         <select id="ds_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -653,7 +656,8 @@
     <div class="form" id="desconto_composto">
       <div class="form-row">
         <input type="number" id="dc_N" placeholder="N (valor nominal)" step="any" min="0">
-        <input type="number" id="dc_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="dc_i" placeholder="i (taxa, ex: 3)" step="any" min="0">
+        <select id="dc_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="dc_t" placeholder="t (tempo)" step="any" min="0">
         <select id="dc_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -664,7 +668,8 @@
     <div class="form" id="valor_presente">
       <div class="form-row">
         <input type="number" id="vp_VF" placeholder="VF (valor futuro)" step="any" min="0">
-        <input type="number" id="vp_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="vp_i" placeholder="i (taxa, ex: 5)" step="any" min="0">
+        <select id="vp_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="vp_t" placeholder="t (períodos)" step="any" min="0">
         <select id="vp_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -675,7 +680,8 @@
     <div class="form" id="valor_futuro">
       <div class="form-row">
         <input type="number" id="vf_VP" placeholder="VP (valor presente)" step="any" min="0">
-        <input type="number" id="vf_i" placeholder="i (taxa)" step="any">
+        <input type="number" id="vf_i" placeholder="i (taxa, ex: 5)" step="any" min="0">
+        <select id="vf_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="vf_t" placeholder="t (períodos)" step="any" min="0">
         <select id="vf_t_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option><option value="dia">dias</option></select>
       </div>
@@ -686,7 +692,8 @@
     <div class="form" id="amortizacao_price">
       <div class="form-row">
         <input type="number" id="ap_PV" placeholder="PV (valor do empréstimo)" step="any" min="0">
-        <input type="number" id="ap_i" placeholder="i (taxa mensal, ex: 0.02)" step="any">
+        <input type="number" id="ap_i" placeholder="i (taxa, ex: 2)" step="any" min="0">
+        <select id="ap_i_un" class="unit-select"><option value="mes">% ao mês</option><option value="ano">% ao ano</option></select>
         <input type="number" id="ap_n" placeholder="n (nº parcelas)" step="any" min="1">
         <select id="ap_n_un" class="unit-select"><option value="mes">meses</option><option value="ano">anos</option></select>
       </div>
@@ -1076,8 +1083,8 @@ const explicacoes = {
     velocidade_onda:       "<b>f:</b> frequência (Hz), <b>λ:</b> comprimento de onda (m).<br><small>💡 Teste: f=440, λ=0.77 → v≈339 m/s</small>",
     equacao_ondulatoria:   "<b>v:</b> velocidade, deixe <b>f ou λ vazio</b> para calcular.<br><small>💡 Teste: v=340, f=170 → λ=2 m</small>",
     refracao_snell:        "<b>n1, θ1:</b> meio e ângulo de incidência, <b>n2:</b> meio de refração.<br><small>💡 Teste: n1=1, θ1=30, n2=1.5 → θ2≈19.47°</small>",
-    juros_simples:         "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M=1600</small>",
-    juros_compostos:       "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M≈1795.86</small>",
+    juros_simples:         "<b>C:</b> capital, <b>i:</b> taxa em % (ex: 5 = 5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=5, t=12 meses → M=1600</small>",
+    juros_compostos:       "<b>C:</b> capital, <b>i:</b> taxa em % (ex: 5 = 5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=5, t=12 meses → M≈1795.86</small>",
     desconto_simples:      "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA=910</small>",
     desconto_composto:     "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA≈915.14</small>",
     valor_presente:        "<b>VF:</b> valor futuro, <b>i:</b> taxa, <b>t:</b> períodos.<br><small>💡 Teste: VF=1000, i=0.05, t=5 → VP≈783.53</small>",
@@ -1410,6 +1417,30 @@ async function calc(tipo) {
         const nUn = _gs('ap_n_un') || 'mes';
         if (rawData.n !== '') data.n = String(nUn === 'ano' ? parseFloat(rawData.n) * 12 : rawData.n);
     }
+
+    // Financeiro – taxa: % → decimal + ao ano → ao mês
+    const _finRateMap = {
+        juros_simples:    { unId: 'js_i_un',  tipo: 'simples'  },
+        juros_compostos:  { unId: 'jc_i_un',  tipo: 'composto' },
+        desconto_simples: { unId: 'ds_i_un',  tipo: 'simples'  },
+        desconto_composto:{ unId: 'dc_i_un',  tipo: 'composto' },
+        valor_presente:   { unId: 'vp_i_un',  tipo: 'composto' },
+        valor_futuro:     { unId: 'vf_i_un',  tipo: 'composto' },
+        amortizacao_price:{ unId: 'ap_i_un',  tipo: 'composto' },
+    };
+    if (_finRateMap[tipo] && rawData.i !== '') {
+        const cfg  = _finRateMap[tipo];
+        const iUn  = _gs(cfg.unId) || 'mes';
+        let   iDec = parseFloat(rawData.i) / 100;
+        if (iUn === 'ano') {
+            iDec = cfg.tipo === 'composto'
+                ? Math.pow(1 + iDec, 1/12) - 1   // equivalência composta
+                : iDec / 12;                       // proporcional simples
+        }
+        data.i = String(iDec);
+        data._iOrig = rawData.i;   // guarda % original p/ exibição
+        data._iUn   = iUn;
+    }
     // ──────────────────────────────────────────────────────────
 
     if (btn) { btn.disabled = true; btn.classList.add('btn-loading'); }
@@ -1700,14 +1731,18 @@ function gerarPassos(tipo, d, json) {
 
         // ── FINANCEIRO ────────────────────────────────────────────
         } else if (tipo === 'juros_simples') {
+            const iLabel = d._iOrig !== undefined ? `${d._iOrig}% ${d._iUn==='ano'?'ao ano':'ao mês'} (${parseFloat((parseFloat(d.i)*100).toFixed(4))}% a.m.)` : n(d.i);
             passos.push(`Fórmula: J = C × i × t`);
-            passos.push(`J = ${n(d.C)} × ${n(d.i)} × ${n(d.t)} = ${r(json.juros)}`);
+            passos.push(`Taxa usada: ${n(iLabel)}`);
+            passos.push(`J = ${n(d.C)} × ${n(parseFloat((parseFloat(d.i)*100).toFixed(4)))}% × ${n(d.t)} = ${r(json.juros)}`);
             passos.push(`Montante: M = C + J = ${d.C} + ${json.juros} = ${r(json.montante)}`);
 
         } else if (tipo === 'juros_compostos') {
+            const iLabel = d._iOrig !== undefined ? `${d._iOrig}% ${d._iUn==='ano'?'ao ano':'ao mês'} (${parseFloat((parseFloat(d.i)*100).toFixed(4))}% a.m.)` : n(d.i);
             const fator = parseFloat(((1+parseFloat(d.i))**parseFloat(d.t)).toFixed(4));
             passos.push(`Fórmula: M = C × (1 + i)ᵗ`);
-            passos.push(`Fator: (1 + ${d.i})^${d.t} = ${n(fator)}`);
+            passos.push(`Taxa usada: ${n(iLabel)}`);
+            passos.push(`Fator: (1 + ${parseFloat((parseFloat(d.i)*100).toFixed(4))}%)^${d.t} = ${n(fator)}`);
             passos.push(`M = ${d.C} × ${fator} = ${r(json.montante)}`);
             passos.push(`Juros = M − C = ${json.montante} − ${d.C} = ${r(json.juros)}`);
 
@@ -1737,10 +1772,12 @@ function gerarPassos(tipo, d, json) {
 
         } else if (tipo === 'amortizacao_price') {
             const i=parseFloat(d.i), n2=parseInt(d.n);
+            const iLabel = d._iOrig !== undefined ? `${d._iOrig}% ${d._iUn==='ano'?'ao ano':'ao mês'} (${parseFloat((i*100).toFixed(4))}% a.m.)` : n(d.i);
             const fn = parseFloat(((1+i)**n2).toFixed(4));
             passos.push(`Fórmula: PMT = PV × [i × (1+i)ⁿ] / [(1+i)ⁿ − 1]`);
-            passos.push(`(1 + ${i})^${n2} = ${n(fn)}`);
-            passos.push(`Numerador: ${d.PV} × ${i} × ${fn} = ${parseFloat((parseFloat(d.PV)*i*fn).toFixed(4))}`);
+            passos.push(`Taxa usada: ${n(iLabel)}`);
+            passos.push(`(1 + ${parseFloat((i*100).toFixed(4))}%)^${n2} = ${fmtN(fn)}`);
+            passos.push(`Numerador: ${d.PV} × ${parseFloat((i*100).toFixed(4))}% × ${fn} = ${parseFloat((parseFloat(d.PV)*i*fn).toFixed(4))}`);
             passos.push(`Denominador: ${fn} − 1 = ${parseFloat((fn-1).toFixed(4))}`);
             passos.push(`PMT = ${r(json.parcela)} por período`);
             passos.push(`Total pago: PMT × n = ${json.parcela} × ${n2} = ${r(json.total_pago)}`);
@@ -3127,7 +3164,7 @@ const consoleDados = {
     juros_simples: {
         parametros: [
             { nome: 'C', desc: 'Capital inicial investido ou emprestado' },
-            { nome: 'i', desc: 'Taxa de juros por periodo (ex: 0.05 = 5%)' },
+            { nome: 'i', desc: 'Taxa de juros em % (ex: 5 = 5%). Selecione ao mês ou ao ano.' },
             { nome: 't', desc: 'Numero de periodos (meses, anos, etc)' },
         ],
         passos: [
@@ -3140,7 +3177,7 @@ const consoleDados = {
     juros_compostos: {
         parametros: [
             { nome: 'C', desc: 'Capital inicial' },
-            { nome: 'i', desc: 'Taxa de juros por periodo (ex: 0.05 = 5%)' },
+            { nome: 'i', desc: 'Taxa de juros em % (ex: 5 = 5%). Selecione ao mês ou ao ano.' },
             { nome: 't', desc: 'Numero de periodos' },
         ],
         passos: [
@@ -3208,7 +3245,7 @@ const consoleDados = {
     amortizacao_price: {
         parametros: [
             { nome: 'PV', desc: 'Valor do emprestimo (Presente Value)' },
-            { nome: 'i', desc: 'Taxa de juros mensal (ex: 0.02 = 2%)' },
+            { nome: 'i', desc: 'Taxa de juros em % (ex: 2 = 2%). Selecione ao mês ou ao ano.' },
             { nome: 'n', desc: 'Numero de parcelas' },
         ],
         passos: [

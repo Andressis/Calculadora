@@ -157,8 +157,8 @@ const explicacoes = {
     velocidade_onda:       "<b>f:</b> frequência (Hz), <b>λ:</b> comprimento de onda (m).<br><small>💡 Teste: f=440, λ=0.77 → v≈339 m/s</small>",
     equacao_ondulatoria:   "<b>v:</b> velocidade, deixe <b>f ou λ vazio</b> para calcular.<br><small>💡 Teste: v=340, f=170 → λ=2 m</small>",
     refracao_snell:        "<b>n1, θ1:</b> meio e ângulo de incidência, <b>n2:</b> meio de refração.<br><small>💡 Teste: n1=1, θ1=30, n2=1.5 → θ2≈19.47°</small>",
-    juros_simples:         "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M=1600</small>",
-    juros_compostos:       "<b>C:</b> capital, <b>i:</b> taxa (ex: 0.05=5%), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=0.05, t=12 → M≈1795.86</small>",
+    juros_simples:         "<b>C:</b> capital, <b>i:</b> taxa em % (ex: 5 = 5% ao mês), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=5, t=12 meses → M=1600</small>",
+    juros_compostos:       "<b>C:</b> capital, <b>i:</b> taxa em % (ex: 5 = 5% ao mês), <b>t:</b> períodos.<br><small>💡 Teste: C=1000, i=5, t=12 meses → M≈1795.86</small>",
     desconto_simples:      "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA=910</small>",
     desconto_composto:     "<b>N:</b> valor nominal, <b>i:</b> taxa, <b>t:</b> tempo.<br><small>💡 Teste: N=1000, i=0.03, t=3 → VA≈915.14</small>",
     valor_presente:        "<b>VF:</b> valor futuro, <b>i:</b> taxa, <b>t:</b> períodos.<br><small>💡 Teste: VF=1000, i=0.05, t=5 → VP≈783.53</small>",
@@ -763,6 +763,33 @@ async function calc(tipo) {
         unitCtx.finTimeUnit = nUn;
     }
 
+    // FINANCEIRO — taxa: converte % → decimal e ao ano → ao mês
+    const finRateMap = {
+        juros_simples:    { iId: 'js_i',  unId: 'js_i_un',  tipo: 'simples'   },
+        juros_compostos:  { iId: 'jc_i',  unId: 'jc_i_un',  tipo: 'composto'  },
+        desconto_simples: { iId: 'ds_i',  unId: 'ds_i_un',  tipo: 'simples'   },
+        desconto_composto:{ iId: 'dc_i',  unId: 'dc_i_un',  tipo: 'composto'  },
+        valor_presente:   { iId: 'vp_i',  unId: 'vp_i_un',  tipo: 'composto'  },
+        valor_futuro:     { iId: 'vf_i',  unId: 'vf_i_un',  tipo: 'composto'  },
+        amortizacao_price:{ iId: 'ap_i',  unId: 'ap_i_un',  tipo: 'composto'  },
+    };
+    if (finRateMap[tipo] && rawData.i !== '') {
+        const cfg   = finRateMap[tipo];
+        const iUn   = gs(cfg.unId) || 'mes';
+        let   iDec  = parseFloat(rawData.i) / 100; // % → decimal
+        if (iUn === 'ano') {
+            // converte taxa anual → mensal
+            if (cfg.tipo === 'composto') {
+                iDec = Math.pow(1 + iDec, 1/12) - 1;  // equivalência composta
+            } else {
+                iDec = iDec / 12;                       // proporcional simples
+            }
+        }
+        data.i = String(iDec);
+        unitCtx.finRateUnit = iUn;
+        unitCtx.finRateOrig = rawData.i;
+    }
+
     if (btn) { btn.disabled = true; btn.classList.add('btn-loading'); }
 
     try {
@@ -950,6 +977,11 @@ function mostrarResultado(tipo, json, unitCtx = {}) {
     if (unitCtx.finTimeUnit) {
         const tl = finTimeLabel(unitCtx.finTimeUnit);
         dynLabel['tempo_anos'] = `Tempo (${tl})`;
+    }
+    // Financial rate: show original % and period in result
+    if (unitCtx.finRateOrig !== undefined) {
+        const rLabel = unitCtx.finRateUnit === 'ano' ? '% ao ano' : '% ao mês';
+        dynLabel['taxa_usada'] = `Taxa (${rLabel})`;
     }
 
     // Dilatação térmica: convert back to user length unit
