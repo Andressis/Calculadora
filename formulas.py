@@ -316,17 +316,40 @@ def refracao_snell(n1, angulo1_graus, n2):
         "n2": n2
     }
 
-def juros_simples(C, i, t):
+def juros_simples(C, i, t, aporte=0):
+    # Juros simples: juro calculado sempre sobre o capital inicial
+    # Aporte mensal: somado ao saldo sem render juros (critério conservador)
     J = C * i * t
-    M = C + J
-    pontos = [{"t": k, "M": round(C + C*i*k, 2)} for k in range(0, int(t)+1)]
-    return {"juros": round(J, 2), "montante": round(M, 2), "pontos": pontos}
+    M = C + J + aporte * t
+    pontos = [{"t": k, "M": round(C + C*i*k + aporte*k, 2)} for k in range(0, int(t)+1)]
+    res = {"juros": round(J, 2), "montante": round(M, 2), "pontos": pontos}
+    if aporte > 0:
+        res["aporte_total"] = round(aporte * t, 2)
+    return res
 
-def juros_compostos(C, i, t):
-    M = C * (1 + i)**t
-    J = M - C
-    pontos = [{"t": k, "M": round(C * (1+i)**k, 2)} for k in range(0, int(t)+1)]
-    return {"juros": round(J, 2), "montante": round(M, 2), "pontos": pontos}
+def juros_compostos(C, i, t, aporte=0):
+    # Montante do capital inicial
+    M_capital = C * (1 + i)**t
+    # Montante dos aportes mensais (série de pagamentos postecipada)
+    if aporte > 0:
+        if i > 0:
+            M_aporte = aporte * ((1 + i)**t - 1) / i
+        else:
+            M_aporte = aporte * t
+    else:
+        M_aporte = 0
+    M = M_capital + M_aporte
+    J = M - C - aporte * t
+    # Pontos mês a mês para o gráfico
+    saldo = C
+    pontos = []
+    for k in range(0, int(t) + 1):
+        pontos.append({"t": k, "M": round(saldo, 2)})
+        saldo = saldo * (1 + i) + aporte
+    res = {"juros": round(J, 2), "montante": round(M, 2), "pontos": pontos}
+    if aporte > 0:
+        res["aporte_total"] = round(aporte * t, 2)
+    return res
 
 def desconto_simples(N, i, t):
     D = N * i * t

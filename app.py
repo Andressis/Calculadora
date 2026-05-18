@@ -367,12 +367,14 @@ def calc(tipo):
 
         elif tipo == 'juros_simples':
             req('C', 'i', 't')
-            res     = juros_simples(f('C'), f('i'), f('t'))
+            aporte  = f('aporte') if d.get('aporte', '') != '' else 0
+            res     = juros_simples(f('C'), f('i'), f('t'), aporte)
             entrada = {"C": d['C'], "i": d['i'], "t": d['t']}
 
         elif tipo == 'juros_compostos':
             req('C', 'i', 't')
-            res     = juros_compostos(f('C'), f('i'), f('t'))
+            aporte  = f('aporte') if d.get('aporte', '') != '' else 0
+            res     = juros_compostos(f('C'), f('i'), f('t'), aporte)
             entrada = {"C": d['C'], "i": d['i'], "t": d['t']}
 
         elif tipo == 'desconto_simples':
